@@ -1,0 +1,49 @@
+{
+  "appInstanceResources": [],
+  "appInstances": [
+    {
+      "_id": "6156e70ab253020033364411",
+      "settings": {},
+      "item": "2356e70ab2530200333634a2",
+      "createdAt": "2019-01-01T00:00:00.000Z",
+      "updatedAt": "2019-01-01T00:00:00.000Z"
+    }
+  ],
+  "spaces": [
+    {
+      "_id": "5b56e70ab253020033364411"
+    }
+  ],
+  "lightUsers": [
+    {
+      "id": "5b56e70ab253020033364416",
+      "name": "juan carlos",
+      "spaceId": "5b56e70ab253020033364411"
+    },
+    {
+      "id": "5c055c1083d22e0211c24ad8",
+      "name": "pamela",
+      "spaceId": "5b56e70ab253020033364411"
+    },
+    {
+      "id": "5c055c1083d22e0211c24ad9",
+      "name": "joana",
+      "spaceId": "5b56e70ab253020033364411"
+    },
+    {
+      "id": "5c055c1083d22e0211c24ad6",
+      "name": "maria",
+      "spaceId": "5b56e70ab253020033364411"
+    },
+    {
+      "id": "5c055c1083d22e0211c24ad1",
+      "name": "andré",
+      "spaceId": "5b56e70ab253020033364411"
+    },
+    {
+      "id": "5c055c1083d22e0211c24ad1",
+      "name": "mashkour",
+      "spaceId": "5b56e70ab253020033364411"
+    }
+  ]
+}

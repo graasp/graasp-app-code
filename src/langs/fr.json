@@ -1,0 +1,7 @@
+{
+  "translations": {
+    "This is the student view. Switch to the teacher view by clicking on the URL below.": "Ceci est la vue des étudiants. Passez à la vue enseignant en cliquant sur l’URL ci-dessous.",
+    "This is the teacher view. Switch to the student view by clicking on the URL below.": "Ceci est la vue de l'enseignant. Passez à la vue des étudiants en cliquant sur l’URL ci-dessous.",
+    "Welcome to the Graasp App Starter Kit": "Bienvenue dans le kit de démarrage de l'application Graasp"
+  }
+}
