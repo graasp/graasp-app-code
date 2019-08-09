@@ -3,3 +3,4 @@ export * from './appInstanceResources';
 export * from './users';
 export * from './appInstance';
 export * from './settings';
+export * from './code';

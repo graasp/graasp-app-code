@@ -8,3 +8,9 @@ export const DEFAULT_API_HOST =
 
 export const DEFAULT_MAX_INPUT_LENGTH = 5000;
 export const DEFAULT_MAX_ROWS = 10;
+
+// we haven't decided what to call the student mode
+export const STUDENT_MODES = ['student', 'consumer', 'learner'];
+
+// we haven't decided what to call the teacher mode
+export const TEACHER_MODES = ['teacher', 'producer', 'educator', 'admin'];

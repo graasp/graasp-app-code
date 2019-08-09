@@ -1,6 +1,12 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+// brace is required by our code editor
+// eslint-disable-next-line
+import brace from 'brace';
+import 'brace/mode/javascript';
+import 'brace/theme/monokai';
+import 'brace/theme/xcode';
 import Root from './components/Root';
 import registerServiceWorker from './registerServiceWorker';
 import configureStore from './store/configureStore';

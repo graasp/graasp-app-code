@@ -4,18 +4,42 @@ import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
+import { IconButton } from '@material-ui/core';
+import SaveIcon from '@material-ui/icons/Save';
 import { withTranslation } from 'react-i18next';
 import { ReactComponent as Logo } from '../../resources/logo.svg';
+import { DEFAULT_MODE, STUDENT_MODES } from '../../config/settings';
 import './Header.css';
-import { addQueryParamsToUrl } from '../../utils/url';
+import {
+  patchAppInstanceResource,
+  postAppInstanceResource,
+} from '../../actions';
+import { INPUT } from '../../config/appInstanceResourceTypes';
 
 class Header extends Component {
   static propTypes = {
     t: PropTypes.func.isRequired,
-    classes: PropTypes.shape({}).isRequired,
-    appInstanceId: PropTypes.string,
-    spaceId: PropTypes.string,
+    dispatchPostAppInstanceResource: PropTypes.func.isRequired,
+    dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
+    classes: PropTypes.shape({
+      root: PropTypes.string,
+      grow: PropTypes.string,
+      logo: PropTypes.string,
+    }).isRequired,
+    mode: PropTypes.string,
+    currentCode: PropTypes.string.isRequired,
+    savedCode: PropTypes.string,
+    inputResourceId: PropTypes.string,
+    userId: PropTypes.string,
+  };
+
+  static defaultProps = {
+    mode: DEFAULT_MODE,
+    savedCode: '',
+    userId: null,
+    inputResourceId: null,
   };
 
   static styles = theme => ({
@@ -31,42 +55,45 @@ class Header extends Component {
     },
   });
 
-  static defaultProps = {
-    appInstanceId: null,
-    spaceId: null,
+  handleSave = () => {
+    const {
+      dispatchPatchAppInstanceResource,
+      dispatchPostAppInstanceResource,
+      inputResourceId,
+      userId,
+      currentCode,
+    } = this.props;
+
+    // if there is a resource id already, update, otherwise create
+    if (inputResourceId) {
+      dispatchPatchAppInstanceResource({
+        data: currentCode,
+        id: inputResourceId,
+      });
+    } else {
+      dispatchPostAppInstanceResource({
+        data: currentCode,
+        type: INPUT,
+        userId,
+      });
+    }
   };
 
-  renderAppInstanceLink = () => {
-    const { appInstanceId, t } = this.props;
-    if (!appInstanceId) {
-      return (
-        <a
-          href={addQueryParamsToUrl({
-            appInstanceId: '6156e70ab253020033364411',
-          })}
-          className="HeaderLink"
-        >
-          {t('Use Sample App Instance')}
-        </a>
-      );
-    }
-    return <div />;
-  };
+  renderButtons() {
+    const { mode, t, currentCode, savedCode } = this.props;
 
-  renderSpaceLink = () => {
-    const { spaceId, t } = this.props;
-    if (!spaceId) {
-      return (
-        <a
-          href={addQueryParamsToUrl({ spaceId: '5b56e70ab253020033364411' })}
-          className="HeaderLink"
-        >
-          {t('Use Sample Space')}
-        </a>
-      );
+    if (STUDENT_MODES.includes(mode)) {
+      const disabled = currentCode === savedCode;
+      return [
+        <Tooltip title={t('Save')}>
+          <IconButton onClick={this.handleSave} key="save" disabled={disabled}>
+            <SaveIcon nativeColor="#fff" opacity={disabled ? 0.5 : 1} />
+          </IconButton>
+        </Tooltip>,
+      ];
     }
-    return <div />;
-  };
+    return null;
+  }
 
   render() {
     const { t, classes } = this.props;
@@ -76,10 +103,9 @@ class Header extends Component {
           <Toolbar>
             <Logo className={classes.logo} />
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              {t('Graasp App Starter')}
+              {t('Code')}
             </Typography>
-            {this.renderSpaceLink()}
-            {this.renderAppInstanceLink()}
+            {this.renderButtons()}
           </Toolbar>
         </AppBar>
       </header>
@@ -87,12 +113,34 @@ class Header extends Component {
   }
 }
 
-const mapStateToProps = ({ context }) => ({
-  appInstanceId: context.appInstanceId,
-  spaceId: context.spaceId,
-});
+const mapStateToProps = ({ context, code, appInstanceResources }) => {
+  const { userId } = context;
+  // check to see if there is already an app instance
+  // resource containing input from this user
+  const inputResource = appInstanceResources.content.find(({ user, type }) => {
+    return user === userId && type === INPUT;
+  });
+  return {
+    userId,
+    inputResourceId: inputResource && (inputResource.id || inputResource._id),
+    appInstanceId: context.appInstanceId,
+    spaceId: context.spaceId,
+    mode: context.mode,
+    view: context.view,
+    currentCode: code.content,
+    savedCode: inputResource && inputResource.data,
+  };
+};
 
-const ConnectedComponent = connect(mapStateToProps)(Header);
+const mapDispatchToProps = {
+  dispatchPostAppInstanceResource: postAppInstanceResource,
+  dispatchPatchAppInstanceResource: patchAppInstanceResource,
+};
+
+const ConnectedComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Header);
 const TranslatedComponent = withTranslation()(ConnectedComponent);
 
 export default withStyles(Header.styles)(TranslatedComponent);
