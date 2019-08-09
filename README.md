@@ -10,7 +10,7 @@
   <img
     alt="Screenshot"
     src="https://raw.githubusercontent.com/graasp/graasp-app-code/master/docs/assets/screenshot.png"
-    width="300"
+    width="600"
   >
 </p>
 
