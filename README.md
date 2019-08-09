@@ -1,4 +1,27 @@
-# Graasp App: Code
+<p align="center">
+  <a href="https://graasp.eu/">
+    <img alt="Graasp" src="https://avatars3.githubusercontent.com/u/43075056" width="300">
+  </a>
+</p>
+
+<h1 align="center">Graasp App: Code</h1>
+
+<p align="center">
+  <img
+    alt="Screenshot"
+    src="https://raw.githubusercontent.com/graasp/graasp-app-code/master/docs/assets/screenshot.png"
+    width="300"
+  >
+</p>
+
+<p align="center">
+  <a href="https://conventionalcommits.org">
+    <img
+      alt="Conventional Commits"
+      src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg"
+    >
+  </a>
+</p>
 
 ## Getting Started
 
