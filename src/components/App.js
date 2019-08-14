@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import TeacherView from './modes/teacher/TeacherView';
 import StudentView from './modes/student/StudentView';
-import { getAppInstanceResources, getContext } from '../actions';
+import { getContext } from '../actions';
 import { DEFAULT_LANG, DEFAULT_MODE } from '../config/settings';
 import { getAppInstance } from '../actions/appInstance';
 
@@ -15,8 +15,6 @@ export class App extends Component {
     }).isRequired,
     dispatchGetContext: PropTypes.func.isRequired,
     dispatchGetAppInstance: PropTypes.func.isRequired,
-    dispatchGetAppInstanceResources: PropTypes.func.isRequired,
-    appInstanceId: PropTypes.string,
     lang: PropTypes.string,
     mode: PropTypes.string,
   };
@@ -24,7 +22,6 @@ export class App extends Component {
   static defaultProps = {
     lang: DEFAULT_LANG,
     mode: DEFAULT_MODE,
-    appInstanceId: null,
   };
 
   constructor(props) {
@@ -35,28 +32,17 @@ export class App extends Component {
     props.dispatchGetAppInstance();
   }
 
-  async componentDidMount() {
-    const { lang, appInstanceId, dispatchGetAppInstanceResources } = this.props;
+  componentDidMount() {
+    const { lang } = this.props;
     // set the language on first load
     this.handleChangeLang(lang);
-    // only fetch app instance resources if app instance id is available
-    if (appInstanceId) {
-      await dispatchGetAppInstanceResources(appInstanceId);
-    }
   }
 
-  async componentDidUpdate({
-    lang: prevLang,
-    appInstanceId: prevAppInstanceId,
-  }) {
-    const { lang, appInstanceId, dispatchGetAppInstanceResources } = this.props;
+  componentDidUpdate({ lang: prevLang }) {
+    const { lang } = this.props;
     // handle a change of language
     if (lang !== prevLang) {
       this.handleChangeLang(lang);
-    }
-    // handle receiving the app instance id
-    if (appInstanceId !== prevAppInstanceId) {
-      await dispatchGetAppInstanceResources();
     }
   }
 
@@ -95,7 +81,6 @@ const mapStateToProps = ({ context }) => ({
 const mapDispatchToProps = {
   dispatchGetContext: getContext,
   dispatchGetAppInstance: getAppInstance,
-  dispatchGetAppInstanceResources: getAppInstanceResources,
 };
 
 const ConnectedApp = connect(
