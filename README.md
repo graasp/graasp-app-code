@@ -7,20 +7,20 @@
 <h1 align="center">Graasp App: Code</h1>
 
 <p align="center">
-  <img
-    alt="Screenshot"
-    src="https://raw.githubusercontent.com/graasp/graasp-app-code/master/docs/assets/screenshot.png"
-    width="600"
-  >
-</p>
-
-<p align="center">
   <a href="https://conventionalcommits.org">
     <img
       alt="Conventional Commits"
       src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg"
     >
   </a>
+</p>
+
+<p align="center">
+  <img
+    alt="Screenshot"
+    src="https://raw.githubusercontent.com/graasp/graasp-app-code/master/docs/assets/screenshot.png"
+    width="600"
+  >
 </p>
 
 ## Getting Started

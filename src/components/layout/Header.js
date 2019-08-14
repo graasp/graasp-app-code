@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,6 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { withTranslation } from 'react-i18next';
 import { ReactComponent as Logo } from '../../resources/logo.svg';
 import { DEFAULT_MODE, STUDENT_MODES } from '../../config/settings';
@@ -15,6 +17,7 @@ import './Header.css';
 import {
   patchAppInstanceResource,
   postAppInstanceResource,
+  runCode,
 } from '../../actions';
 import { INPUT } from '../../config/appInstanceResourceTypes';
 
@@ -23,6 +26,7 @@ class Header extends Component {
     t: PropTypes.func.isRequired,
     dispatchPostAppInstanceResource: PropTypes.func.isRequired,
     dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
+    dispatchRunCode: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       root: PropTypes.string,
       grow: PropTypes.string,
@@ -79,15 +83,26 @@ class Header extends Component {
     }
   };
 
+  handleRun = () => {
+    const { currentCode, dispatchRunCode } = this.props;
+    dispatchRunCode(currentCode);
+  };
+
   renderButtons() {
     const { mode, t, currentCode, savedCode } = this.props;
 
     if (STUDENT_MODES.includes(mode)) {
-      const disabled = currentCode === savedCode;
+      const saveDisabled = currentCode === savedCode;
+      const runDisabled = _.isEmpty(currentCode);
       return [
-        <Tooltip title={t('Save')}>
-          <IconButton onClick={this.handleSave} key="save" disabled={disabled}>
-            <SaveIcon nativeColor="#fff" opacity={disabled ? 0.5 : 1} />
+        <Tooltip title={t('Save')} key="save">
+          <IconButton onClick={this.handleSave} disabled={saveDisabled}>
+            <SaveIcon nativeColor="#fff" opacity={saveDisabled ? 0.5 : 1} />
+          </IconButton>
+        </Tooltip>,
+        <Tooltip title={t('Run')} key="run">
+          <IconButton onClick={this.handleRun} disabled={runDisabled}>
+            <PlayArrowIcon nativeColor="#fff" opacity={runDisabled ? 0.5 : 1} />
           </IconButton>
         </Tooltip>,
       ];
@@ -135,6 +150,7 @@ const mapStateToProps = ({ context, code, appInstanceResources }) => {
 const mapDispatchToProps = {
   dispatchPostAppInstanceResource: postAppInstanceResource,
   dispatchPatchAppInstanceResource: patchAppInstanceResource,
+  dispatchRunCode: runCode,
 };
 
 const ConnectedComponent = connect(

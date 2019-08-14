@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { I18nextProvider } from 'react-i18next';
-import { connect } from 'react-redux';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles,
+} from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
-import indigo from '@material-ui/core/colors/indigo';
 import pink from '@material-ui/core/colors/pink';
 import grey from '@material-ui/core/colors/grey';
 import orange from '@material-ui/core/colors/orange';
@@ -13,9 +15,18 @@ import Header from './layout/Header';
 import i18nConfig from '../config/i18n';
 import App from './App';
 
+const styles = {
+  root: {
+    flexGrow: 1,
+    height: '100%',
+  },
+};
+
 const theme = createMuiTheme({
   palette: {
-    primary: indigo,
+    primary: {
+      main: '#5050d2',
+    },
     secondary: pink,
     default: grey,
     background: {
@@ -33,23 +44,24 @@ const theme = createMuiTheme({
   },
 });
 
-const Root = ({ headerVisible }) => (
-  <MuiThemeProvider theme={theme}>
-    <I18nextProvider i18n={i18nConfig}>
-      {headerVisible ? <Header /> : null}
-      <App />
-      <ToastContainer />
-    </I18nextProvider>
-  </MuiThemeProvider>
+const Root = ({ classes }) => (
+  <div className={classes.root}>
+    <MuiThemeProvider theme={theme}>
+      <I18nextProvider i18n={i18nConfig}>
+        <Header />
+        <App />
+        <ToastContainer />
+      </I18nextProvider>
+    </MuiThemeProvider>
+  </div>
 );
 
 Root.propTypes = {
-  headerVisible: PropTypes.bool.isRequired,
+  classes: PropTypes.shape({
+    root: PropTypes.string,
+  }).isRequired,
 };
 
-const mapStateToProps = ({ appInstance }) => ({
-  // by default this is true, but you can change that in the reducer
-  headerVisible: appInstance.settings.headerVisible,
-});
+const StyledComponent = withStyles(styles)(Root);
 
-export default connect(mapStateToProps)(Root);
+export default StyledComponent;

@@ -3,7 +3,7 @@ import context from './context';
 import appInstanceResources from './appInstanceResources';
 import users from './users';
 import appInstance from './appInstance';
-import settings from './settings';
+import layout from './layout';
 import code from './code';
 
 export default combineReducers({
@@ -12,6 +12,6 @@ export default combineReducers({
   appInstanceResources,
   users,
   appInstance,
-  settings,
+  layout,
   code,
 });

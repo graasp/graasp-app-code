@@ -1,7 +1,9 @@
 import { OPEN_SETTINGS, CLOSE_SETTINGS } from '../types';
 
 const INITIAL_STATE = {
-  open: false,
+  settings: {
+    open: false,
+  },
 };
 
 export default (state = INITIAL_STATE, { type }) => {
@@ -9,12 +11,18 @@ export default (state = INITIAL_STATE, { type }) => {
     case OPEN_SETTINGS:
       return {
         ...state,
-        open: true,
+        settings: {
+          ...state.settings,
+          open: true,
+        },
       };
     case CLOSE_SETTINGS:
       return {
         ...state,
-        open: false,
+        settings: {
+          ...state.settings,
+          open: false,
+        },
       };
     default:
       return state;

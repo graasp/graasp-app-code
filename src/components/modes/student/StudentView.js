@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import AceEditor from 'react-ace';
+import ReactTerminal, { ReactThemes } from 'react-terminal-component';
 import {
   getAppInstanceResources,
   patchAppInstanceResource,
@@ -12,14 +12,16 @@ import {
 } from '../../../actions';
 import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
+import Editor from './Editor';
 // import {
 //   DEFAULT_MAX_INPUT_LENGTH,
 //   DEFAULT_MAX_ROWS,
 // } from '../../../config/settings';
 
+const Terminal = require('javascript-terminal');
+
 const styles = theme => ({
   main: {
-    textAlign: 'center',
     flex: 1,
     // 64px is the height of the header
     height: 'calc(100% - 64px)',
@@ -48,7 +50,6 @@ class StudentView extends Component {
   static propTypes = {
     t: PropTypes.func.isRequired,
     dispatchGetAppInstanceResources: PropTypes.func.isRequired,
-    dispatchSetCode: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
@@ -60,8 +61,7 @@ class StudentView extends Component {
     userId: PropTypes.string,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
-    code: PropTypes.string,
-    appInstanceId: PropTypes.string,
+    output: PropTypes.string,
   };
 
   static defaultProps = {
@@ -69,8 +69,7 @@ class StudentView extends Component {
     userId: null,
     activity: false,
     ready: false,
-    code: '',
-    appInstanceId: null,
+    output: '',
   };
 
   constructor(props) {
@@ -80,18 +79,8 @@ class StudentView extends Component {
     props.dispatchGetAppInstanceResources({ userId });
   }
 
-  onChange = code => {
-    const { dispatchSetCode } = this.props;
-    dispatchSetCode(code);
-  };
-
-  onLoad = () => {
-    const { dispatchSetCode, code } = this.props;
-    dispatchSetCode(code);
-  };
-
   render() {
-    const { t, classes, ready, code, activity, appInstanceId } = this.props;
+    const { t, classes, ready, activity, output } = this.props;
 
     // todo: implement feedback
     let { feedback } = this.props;
@@ -103,36 +92,31 @@ class StudentView extends Component {
       return <Loader />;
     }
 
+    // prepare output for printing in the terminal
+    const textOutput = Terminal.OutputFactory.makeTextOutput(output);
+    const customOutputs = Terminal.Outputs.create([textOutput]);
+    const emulatorState = Terminal.EmulatorState.create({
+      outputs: customOutputs,
+    });
+
     return (
       <div className={classes.main}>
-        <AceEditor
-          placeholder="function () { console.log('Placeholder Text'); }"
-          mode="javascript"
-          theme="xcode"
-          name={appInstanceId || Math.random()}
-          height="100%"
-          width="100%"
-          onLoad={this.onLoad}
-          onChange={this.onChange}
-          fontSize={14}
-          showPrintMargin
-          showGutter
-          highlightActiveLine
-          value={code || ''}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
+        <Editor />
+        <ReactTerminal
+          theme={{
+            ...ReactThemes.hacker,
+            width: '100%',
+            height: '50%',
+            spacing: '0 5px',
           }}
+          emulatorState={emulatorState}
         />
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources }) => {
+const mapStateToProps = ({ context, appInstanceResources, code }) => {
   const { userId, offline, appInstanceId } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
@@ -152,6 +136,7 @@ const mapStateToProps = ({ context, appInstanceResources }) => {
     ready: appInstanceResources.ready,
     code: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
+    output: code.output,
   };
 };
 

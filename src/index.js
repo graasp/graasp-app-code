@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 // eslint-disable-next-line
 import brace from 'brace';
 import 'brace/mode/javascript';
+import 'brace/mode/python';
 import 'brace/theme/monokai';
 import 'brace/theme/xcode';
 import Root from './components/Root';
