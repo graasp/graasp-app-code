@@ -9,7 +9,6 @@ import 'brace/mode/python';
 import 'brace/theme/monokai';
 import 'brace/theme/xcode';
 import Root from './components/Root';
-import registerServiceWorker from './registerServiceWorker';
 import configureStore from './store/configureStore';
 import './index.css';
 
@@ -36,5 +35,3 @@ if (module.hot) {
     renderApp(NextRoot, store, history);
   });
 }
-
-registerServiceWorker();

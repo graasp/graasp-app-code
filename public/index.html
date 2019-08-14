@@ -30,6 +30,11 @@
     <script>
       // required to use the api
       document.domain = '%REACT_APP_GRAASP_DOMAIN%';
+
+      // sets a minimum height when embedded
+      if (window.frameElement) {
+        window.frameElement.style['min-height'] = '600px';
+      }
     </script>
   </head>
   <body>
