@@ -34,6 +34,7 @@ class Header extends Component {
     }).isRequired,
     mode: PropTypes.string,
     currentCode: PropTypes.string.isRequired,
+    programmingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     inputResourceId: PropTypes.string,
     userId: PropTypes.string,
@@ -110,6 +111,12 @@ class Header extends Component {
     return null;
   }
 
+  renderLanguage() {
+    const { t, programmingLanguage } = this.props;
+
+    return `: ${t(programmingLanguage)}`;
+  }
+
   render() {
     const { t, classes } = this.props;
     return (
@@ -118,7 +125,7 @@ class Header extends Component {
           <Toolbar>
             <Logo className={classes.logo} />
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              {t('Code')}
+              {t('Code') + this.renderLanguage()}
             </Typography>
             {this.renderButtons()}
           </Toolbar>
@@ -128,7 +135,12 @@ class Header extends Component {
   }
 }
 
-const mapStateToProps = ({ context, code, appInstanceResources }) => {
+const mapStateToProps = ({
+  context,
+  code,
+  appInstanceResources,
+  appInstance,
+}) => {
   const { userId } = context;
   // check to see if there is already an app instance
   // resource containing input from this user
@@ -143,6 +155,7 @@ const mapStateToProps = ({ context, code, appInstanceResources }) => {
     mode: context.mode,
     view: context.view,
     currentCode: code.content,
+    programmingLanguage: appInstance.content.settings.programmingLanguage,
     savedCode: inputResource && inputResource.data,
   };
 };
