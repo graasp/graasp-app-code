@@ -1,5 +1,8 @@
 import { SET_CODE, RUN_CODE_FAILED } from '../types';
-import { runJavaScript } from '../runners/javascript';
+import {
+  runJavaScript,
+  runJavaScriptWithHeaderAndFooter,
+} from '../runners/javascript';
 import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
 
@@ -13,7 +16,7 @@ const runCode = data => (dispatch, getState) => {
   const {
     appInstance: {
       content: {
-        settings: { programmingLanguage },
+        settings: { programmingLanguage, headerCode, footerCode },
       },
     },
   } = getState();
@@ -23,6 +26,13 @@ const runCode = data => (dispatch, getState) => {
         runPython(data, dispatch);
         break;
       case JAVASCRIPT:
+        runJavaScriptWithHeaderAndFooter(
+          headerCode,
+          data,
+          footerCode,
+          dispatch
+        );
+        break;
       default:
         runJavaScript(data, dispatch);
     }
