@@ -45,6 +45,7 @@ export class TeacherView extends Component {
         name: PropTypes.string,
       })
     ).isRequired,
+    programmingLanguage: PropTypes.string.isRequired,
   };
 
   static styles = theme => ({
@@ -76,6 +77,7 @@ export class TeacherView extends Component {
     // extract properties from the props object
     const {
       t,
+      programmingLanguage,
       students,
       appInstanceResources,
       dispatchOpenSettings,
@@ -87,6 +89,7 @@ export class TeacherView extends Component {
         <Grid container spacing={0} className={classes.root}>
           <Grid item xs={12} className={classes.main}>
             <Responses
+              programmingLanguage={programmingLanguage}
               students={students}
               appInstanceResources={appInstanceResources.filter(
                 resource => resource.type === INPUT
@@ -113,10 +116,18 @@ TeacherView.defaultProps = {
 };
 
 // get the app instance resources that are saved in the redux store
-const mapStateToProps = ({ users, appInstanceResources }) => ({
-  students: users.content,
-  appInstanceResources: appInstanceResources.content,
-});
+const mapStateToProps = ({ users, appInstance, appInstanceResources }) => {
+  const {
+    content: {
+      settings: { programmingLanguage },
+    },
+  } = appInstance;
+  return {
+    programmingLanguage,
+    students: users.content,
+    appInstanceResources: appInstanceResources.content,
+  };
+};
 
 // allow this component to dispatch a post
 // request to create an app instance resource

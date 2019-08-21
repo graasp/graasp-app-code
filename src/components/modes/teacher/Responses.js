@@ -42,6 +42,7 @@ class Responses extends Component {
       root: PropTypes.string,
       table: PropTypes.string,
     }).isRequired,
+    programmingLanguage: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
@@ -50,7 +51,12 @@ class Responses extends Component {
   };
 
   renderAppInstanceResources() {
-    const { t, students, appInstanceResources } = this.props;
+    const {
+      t,
+      students,
+      appInstanceResources,
+      programmingLanguage,
+    } = this.props;
 
     // if there are no resources, show an empty table
     if (!appInstanceResources.length) {
@@ -72,7 +78,13 @@ class Responses extends Component {
       const studentObject =
         students.find(student => student.id === user) || anonymousUser;
       return (
-        <Response _id={_id} key={_id} student={studentObject} data={data} />
+        <Response
+          _id={_id}
+          key={_id}
+          student={studentObject}
+          data={data}
+          programmingLanguage={programmingLanguage}
+        />
       );
     });
   }

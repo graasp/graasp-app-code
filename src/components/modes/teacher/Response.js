@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React, { Component, Fragment } from 'react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import IconButton from '@material-ui/core/IconButton';
@@ -16,7 +17,7 @@ import {
   postAppInstanceResource,
 } from '../../../actions';
 import { FEEDBACK } from '../../../config/appInstanceResourceTypes';
-import FormDialog from '../../common/FormDialog';
+import DiffDialog from '../../common/DiffDialog';
 import { showErrorToast } from '../../../utils/toasts';
 
 class Response extends Component {
@@ -32,6 +33,7 @@ class Response extends Component {
     dispatchPostAppInstanceResource: PropTypes.func.isRequired,
     dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
     _id: PropTypes.string.isRequired,
+    programmingLanguage: PropTypes.string.isRequired,
     data: PropTypes.string,
     student: PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -79,6 +81,7 @@ class Response extends Component {
       feedbackResource,
       dispatchPostAppInstanceResource,
       dispatchPatchAppInstanceResource,
+      dispatchDeleteAppInstanceResource,
     } = this.props;
 
     const { id } = student;
@@ -87,6 +90,15 @@ class Response extends Component {
       showErrorToast(
         'Currently we do not support giving feedback to anonymous users.'
       );
+    }
+
+    // if the feedback is exactly the same as the data abort
+    // this means that the teacher left the diff untouched
+    if (feedback === '') {
+      if (!_.isEmpty(feedbackResource)) {
+        dispatchDeleteAppInstanceResource(feedbackResource._id);
+      }
+      return this.handleToggleFeedbackDialog(false)();
     }
 
     // if no feedback resource yet, create it, otherwise, update it
@@ -102,46 +114,67 @@ class Response extends Component {
         data: feedback,
       });
     }
-    this.handleToggleFeedbackDialog(false)();
+    return this.handleToggleFeedbackDialog(false)();
   };
 
   renderFeedbackCell() {
     const {
+      _id,
       feedbackResource: { data = '' },
       t,
+      data: response,
+      programmingLanguage,
     } = this.props;
     const { feedbackDialogOpen } = this.state;
 
+    const iconComponent = (
+      <IconButton
+        color="primary"
+        onClick={this.handleToggleFeedbackDialog(true)}
+      >
+        <EditIcon />
+      </IconButton>
+    );
+
+    const tableCells = [
+      <TableCell>
+        <SyntaxHighlighter language={programmingLanguage}>
+          {_.truncate(data)}
+        </SyntaxHighlighter>
+      </TableCell>,
+      <TableCell>{iconComponent}</TableCell>,
+    ];
     return (
       <Fragment>
-        {data}
-        <IconButton
-          color="primary"
-          onClick={this.handleToggleFeedbackDialog(true)}
-        >
-          <EditIcon />
-        </IconButton>
-        <FormDialog
+        {data ? tableCells : iconComponent}
+        <DiffDialog
+          id={_id}
           handleClose={this.handleToggleFeedbackDialog(false)}
           title={t('Feedback')}
           text={t('Submit feedback that will be visible to the student.')}
           open={feedbackDialogOpen}
+          response={response}
           initialInput={data}
           handleSubmit={this.handleSubmitFeedback}
+          programmingLanguage={programmingLanguage}
         />
       </Fragment>
     );
   }
 
   render() {
-    const { t, _id, data, student, activity } = this.props;
+    const { t, _id, data, student, activity, programmingLanguage } = this.props;
 
     const { confirmDialogOpen } = this.state;
 
     return (
       <TableRow key={_id}>
         <TableCell>{activity ? <CircularProgress /> : student.name}</TableCell>
-        <TableCell>{data}</TableCell>
+        <TableCell>
+          <SyntaxHighlighter language={programmingLanguage}>
+            {_.truncate(data)}
+          </SyntaxHighlighter>
+        </TableCell>
         <TableCell>{this.renderFeedbackCell()}</TableCell>
         <TableCell>
           <IconButton
