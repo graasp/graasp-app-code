@@ -1,12 +1,15 @@
-// example sanitize function
-const sanitize = code => {
-  return code;
-};
-
 // example run function
-const runPython = (code = '') => {
-  const sanitizedCode = sanitize(code);
-  return `Python: ${sanitizedCode.length}`;
+import { PRINT_OUTPUT } from '../types';
+
+const runPython = (code = '', dispatch) => {
+  if (window.pyodide) {
+    const output = window.pyodide.runPython(code);
+    dispatch({
+      type: PRINT_OUTPUT,
+      payload: output,
+    });
+  }
 };
 
-export { sanitize, runPython };
+// eslint-disable-next-line import/prefer-default-export
+export { runPython };
