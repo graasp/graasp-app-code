@@ -8,8 +8,16 @@ const sanitize = code => {
   return code;
 };
 
+// We would like to use module type worker, but Firefox still does not support that (16/8/2019).
+const workerOptions = {
+  type: 'classic',
+};
+
 function createWorker(dispatch) {
-  const worker = new Worker(`data://application/javascript,${workerCode}`);
+  const worker = new Worker(
+    `data://application/javascript,${workerCode}`,
+    workerOptions
+  );
   worker.onmessage = ev => {
     switch (ev.data.cmd) {
       case PRINT:
@@ -36,4 +44,23 @@ const runJavaScript = (code = '', dispatch) => {
   worker.postMessage(code);
 };
 
-export { sanitize, runJavaScript };
+// Header code is intended to be used for importing libraries, initialize screens, and so on.
+// Footer code is intended to be used for display runnning status, free resources, and so on.
+const runJavaScriptWithHeaderAndFooter = (
+  headerCode = '',
+  code = '',
+  footerCode = '',
+  dispatch
+) => {
+  const worker = createWorker(dispatch);
+  if (headerCode) {
+    worker.postMessage(headerCode);
+  }
+
+  worker.postMessage(code);
+
+  if (footerCode) {
+    worker.postMessage(footerCode);
+  }
+};
+export { sanitize, runJavaScript, runJavaScriptWithHeaderAndFooter };
