@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import ReactTerminal, { ReactThemes } from 'react-terminal-component';
+import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
 import {
   getAppInstanceResources,
   patchAppInstanceResource,
@@ -64,6 +64,10 @@ class StudentView extends Component {
     output: PropTypes.string,
   };
 
+  state = {
+    terminalInput: '',
+  };
+
   static defaultProps = {
     feedback: '',
     userId: null,
@@ -78,6 +82,32 @@ class StudentView extends Component {
     // get the resources for this user
     props.dispatchGetAppInstanceResources({ userId });
   }
+
+  // this handler is called for each new input character
+  // new line character is not received here
+  handleTerminalInput = c => {
+    const { terminalInput } = this.state;
+
+    // console.log("terminal input: "+c);
+
+    // process new character
+    this.setState({ terminalInput: terminalInput + c });
+
+    // send a new character to worker (or just buffering ?)
+  };
+
+  // this handler is called for each new line character
+  handleTerminalStateChange = () => {
+    // const { terminalInput } = this.state;
+
+    // process new line
+    // console.log("terminal received new line: "+terminalInput);
+
+    // send a new line to worker (or just send new line character ?)
+
+    // clear input buffer
+    this.setState({ terminalInput: '' });
+  };
 
   render() {
     const { t, classes, ready, activity, output } = this.props;
@@ -99,10 +129,12 @@ class StudentView extends Component {
       outputs: customOutputs,
     });
 
+    // const { terminalInput } = this.state;
+
     return (
       <div className={classes.main}>
         <Editor />
-        <ReactTerminal
+        <ReactTerminalStateless
           theme={{
             ...ReactThemes.hacker,
             width: '100%',
@@ -110,6 +142,9 @@ class StudentView extends Component {
             spacing: '0 5px',
           }}
           emulatorState={emulatorState}
+          onInputChange={this.handleTerminalInput}
+          onStateChange={this.handleTerminalStateChange}
+          acceptInput="true"
         />
       </div>
     );
