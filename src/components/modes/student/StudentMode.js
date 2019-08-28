@@ -12,7 +12,6 @@ class StudentMode extends Component {
     appInstanceId: PropTypes.string,
     view: PropTypes.string,
     activity: PropTypes.number,
-    userId: PropTypes.string,
     dispatchGetAppInstanceResources: PropTypes.func.isRequired,
   };
 
@@ -20,14 +19,12 @@ class StudentMode extends Component {
     view: 'normal',
     appInstanceId: null,
     activity: 0,
-    userId: null,
   };
 
   constructor(props) {
     super(props);
-    const { userId } = props;
     // get the resources for this user
-    props.dispatchGetAppInstanceResources({ userId });
+    props.dispatchGetAppInstanceResources();
   }
 
   componentDidUpdate({ appInstanceId: prevAppInstanceId }) {

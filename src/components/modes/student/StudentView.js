@@ -4,12 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import ReactTerminal, { ReactThemes } from 'react-terminal-component';
-import {
-  getAppInstanceResources,
-  patchAppInstanceResource,
-  postAppInstanceResource,
-  setCode,
-} from '../../../actions';
+import { setCode } from '../../../actions';
 import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
@@ -123,9 +118,6 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
 };
 
 const mapDispatchToProps = {
-  dispatchGetAppInstanceResources: getAppInstanceResources,
-  dispatchPostAppInstanceResource: postAppInstanceResource,
-  dispatchPatchAppInstanceResource: patchAppInstanceResource,
   dispatchSetCode: setCode,
 };
 
