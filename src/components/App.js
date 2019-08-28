@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import TeacherView from './modes/teacher/TeacherView';
-import StudentView from './modes/student/StudentView';
+import StudentMode from './modes/student/StudentMode';
 import { getContext } from '../actions';
 import { DEFAULT_LANG, DEFAULT_MODE } from '../config/settings';
 import { getAppInstance } from '../actions/appInstance';
+import { DEFAULT_VIEW } from '../config/views';
 
 export class App extends Component {
   static propTypes = {
@@ -17,11 +18,13 @@ export class App extends Component {
     dispatchGetAppInstance: PropTypes.func.isRequired,
     lang: PropTypes.string,
     mode: PropTypes.string,
+    view: PropTypes.string,
   };
 
   static defaultProps = {
     lang: DEFAULT_LANG,
     mode: DEFAULT_MODE,
+    view: DEFAULT_VIEW,
   };
 
   constructor(props) {
@@ -52,7 +55,7 @@ export class App extends Component {
   };
 
   render() {
-    const { mode } = this.props;
+    const { mode, view } = this.props;
 
     switch (mode) {
       // show teacher view when in producer (educator) mode
@@ -67,7 +70,7 @@ export class App extends Component {
       case 'consumer':
       case 'learner':
       default:
-        return <StudentView />;
+        return <StudentMode view={view} />;
     }
   }
 }
@@ -75,6 +78,7 @@ export class App extends Component {
 const mapStateToProps = ({ context }) => ({
   lang: context.lang,
   mode: context.mode,
+  view: context.view,
   appInstanceId: context.appInstanceId,
 });
 

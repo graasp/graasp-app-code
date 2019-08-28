@@ -10,16 +10,31 @@ import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import VerticalSplitIcon from '@material-ui/icons/VerticalSplit';
+import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
+import TableIcon from '@material-ui/icons/TableChart';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import CloudIcon from '@material-ui/icons/Cloud';
 import { withTranslation } from 'react-i18next';
+import { addQueryParamsToUrl } from '../../utils/url';
 import { ReactComponent as Logo } from '../../resources/logo.svg';
-import { DEFAULT_MODE, STUDENT_MODES } from '../../config/settings';
+import {
+  DEFAULT_MODE,
+  STUDENT_MODES,
+  TEACHER_MODES,
+} from '../../config/settings';
+import {
+  DEFAULT_VIEW,
+  DASHBOARD_VIEW,
+  FEEDBACK_VIEW,
+} from '../../config/views';
 import './Header.css';
 import {
+  runCode,
   patchAppInstanceResource,
   postAppInstanceResource,
-  runCode,
 } from '../../actions';
-import { INPUT } from '../../config/appInstanceResourceTypes';
+import { FEEDBACK, INPUT } from '../../config/appInstanceResourceTypes';
 
 class Header extends Component {
   static propTypes = {
@@ -38,13 +53,17 @@ class Header extends Component {
     savedCode: PropTypes.string,
     inputResourceId: PropTypes.string,
     userId: PropTypes.string,
+    view: PropTypes.string,
+    feedback: PropTypes.string,
   };
 
   static defaultProps = {
     mode: DEFAULT_MODE,
+    view: DEFAULT_VIEW,
     savedCode: '',
     userId: null,
     inputResourceId: null,
+    feedback: null,
   };
 
   static styles = theme => ({
@@ -89,24 +108,105 @@ class Header extends Component {
     dispatchRunCode(currentCode);
   };
 
-  renderButtons() {
-    const { mode, t, currentCode, savedCode } = this.props;
+  renderTeacherButtons() {
+    const { view } = this.props;
+    const buttons = [
+      <IconButton onClick={this.handleRefresh} key="refresh">
+        <RefreshIcon nativeColor="#fff" />
+      </IconButton>,
+    ];
 
-    if (STUDENT_MODES.includes(mode)) {
-      const saveDisabled = currentCode === savedCode;
-      const runDisabled = _.isEmpty(currentCode);
-      return [
-        <Tooltip title={t('Save')} key="save">
+    if (view === DEFAULT_VIEW) {
+      buttons.push(
+        <IconButton
+          key="dashboard"
+          href={`index.html${addQueryParamsToUrl({ view: DASHBOARD_VIEW })}`}
+        >
+          <CloudIcon nativeColor="#fff" />
+        </IconButton>
+      );
+    } else {
+      buttons.push(
+        <IconButton
+          key="table"
+          href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
+        >
+          <TableIcon nativeColor="#fff" />
+        </IconButton>
+      );
+    }
+    return buttons;
+  }
+
+  renderStudentButtons() {
+    const { t, currentCode, savedCode, feedback, view } = this.props;
+    const feedbackDisabled = !feedback;
+    const saveDisabled = currentCode === savedCode;
+    const runDisabled = _.isEmpty(currentCode);
+
+    const buttons = [
+      <Tooltip title={t('Save')} key="save">
+        <div>
           <IconButton onClick={this.handleSave} disabled={saveDisabled}>
             <SaveIcon nativeColor="#fff" opacity={saveDisabled ? 0.5 : 1} />
           </IconButton>
-        </Tooltip>,
-        <Tooltip title={t('Run')} key="run">
+        </div>
+      </Tooltip>,
+      <Tooltip title={t('Run')} key="run">
+        <div>
           <IconButton onClick={this.handleRun} disabled={runDisabled}>
             <PlayArrowIcon nativeColor="#fff" opacity={runDisabled ? 0.5 : 1} />
           </IconButton>
-        </Tooltip>,
-      ];
+        </div>
+      </Tooltip>,
+    ];
+
+    if (view === DEFAULT_VIEW) {
+      buttons.unshift(
+        <Tooltip title={t('Show Feedback')} key="feedback">
+          <div>
+            <IconButton
+              href={`index.html${addQueryParamsToUrl({ view: FEEDBACK_VIEW })}`}
+              disabled={feedbackDisabled}
+            >
+              <VerticalSplitIcon
+                nativeColor="#fff"
+                opacity={feedbackDisabled ? 0.5 : 1}
+                style={{
+                  transform: 'rotate(180deg)',
+                }}
+              />
+            </IconButton>
+          </div>
+        </Tooltip>
+      );
+    }
+
+    if (view === FEEDBACK_VIEW) {
+      buttons.unshift(
+        <Tooltip title={t('Show Editor')} key="editor">
+          <div>
+            <IconButton
+              href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
+            >
+              <ViewHeadlineIcon nativeColor="#fff" />
+            </IconButton>
+          </div>
+        </Tooltip>
+      );
+    }
+    return buttons;
+  }
+
+  renderButtons() {
+    const { mode } = this.props;
+
+    if (STUDENT_MODES.includes(mode)) {
+      return this.renderStudentButtons();
+    }
+    if (TEACHER_MODES.includes(mode)) {
+      // return this.renderTeacherButtons();
+      return null;
     }
     return null;
   }
@@ -147,6 +247,11 @@ const mapStateToProps = ({
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
   });
+  const feedbackResource = appInstanceResources.content.find(
+    ({ user, type }) => {
+      return user === userId && type === FEEDBACK;
+    }
+  );
   return {
     userId,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
@@ -157,6 +262,7 @@ const mapStateToProps = ({
     currentCode: code.content,
     programmingLanguage: appInstance.content.settings.programmingLanguage,
     savedCode: inputResource && inputResource.data,
+    feedback: feedbackResource && feedbackResource.data,
   };
 };
 
