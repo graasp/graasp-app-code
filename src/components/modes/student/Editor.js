@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core';
 import { INPUT } from '../../../config/appInstanceResourceTypes';
-import { setCode } from '../../../actions';
+import { setCode, runCode } from '../../../actions';
 import { JAVASCRIPT } from '../../../config/programmingLanguages';
 import './Editor.css';
 
@@ -14,6 +14,7 @@ const styles = () => ({});
 class Editor extends Component {
   static propTypes = {
     dispatchSetCode: PropTypes.func.isRequired,
+    dispatchRunCode: PropTypes.func.isRequired,
     code: PropTypes.string,
     programmingLanguage: PropTypes.string,
     appInstanceId: PropTypes.string,
@@ -35,6 +36,12 @@ class Editor extends Component {
     dispatchSetCode(code);
   };
 
+  handleCommandEnter = editor => {
+    const code = editor.getValue();
+    const { dispatchRunCode } = this.props;
+    dispatchRunCode(code);
+  };
+
   render() {
     // eslint-disable-next-line react/prop-types
     const { code, appInstanceId, programmingLanguage } = this.props;
@@ -52,6 +59,13 @@ class Editor extends Component {
         showPrintMargin
         showGutter
         highlightActiveLine
+        commands={[
+          {
+            name: 'run',
+            bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
+            exec: this.handleCommandEnter,
+          },
+        ]}
         value={code || ''}
         setOptions={{
           enableBasicAutocompletion: true,
@@ -84,6 +98,7 @@ const mapStateToProps = ({ context, appInstanceResources, appInstance }) => {
 
 const mapDispatchToProps = {
   dispatchSetCode: setCode,
+  dispatchRunCode: runCode,
 };
 
 const StyledComponent = withStyles(styles)(Editor);
