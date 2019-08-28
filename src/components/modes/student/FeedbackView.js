@@ -12,8 +12,7 @@ const Terminal = require('javascript-terminal');
 const styles = theme => ({
   main: {
     flex: 1,
-    // 64px is the height of the header
-    height: 'calc(100% - 64px)',
+    height: '100%',
   },
   container: {
     display: 'flex',
@@ -74,6 +73,7 @@ class StudentView extends Component {
       <div className={classes.main}>
         <DiffEditor />
         <ReactTerminal
+          autoFocus={false}
           theme={{
             ...ReactThemes.hacker,
             width: '100%',

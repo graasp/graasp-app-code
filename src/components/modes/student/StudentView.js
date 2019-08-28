@@ -8,18 +8,13 @@ import { setCode } from '../../../actions';
 import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
-// import {
-//   DEFAULT_MAX_INPUT_LENGTH,
-//   DEFAULT_MAX_ROWS,
-// } from '../../../config/settings';
 
 const Terminal = require('javascript-terminal');
 
 const styles = theme => ({
   main: {
     flex: 1,
-    // 64px is the height of the header
-    height: 'calc(100% - 64px)',
+    height: '100%',
   },
   container: {
     display: 'flex',
@@ -80,6 +75,7 @@ class StudentView extends Component {
       <div className={classes.main}>
         <Editor />
         <ReactTerminal
+          autoFocus={false}
           theme={{
             ...ReactThemes.hacker,
             width: '100%',
@@ -111,7 +107,6 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
-    code: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
     output: code.output,
   };
