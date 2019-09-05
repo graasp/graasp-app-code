@@ -27,6 +27,8 @@
     -->
     <base href="%REACT_APP_BASE%" />
     <title>Graasp App</title>
+    <!-- using cdn for pyodide for now -->
+    <script src="https://graasp-pyodide.s3.amazonaws.com/v0.14.0/pyodide.js"></script>
     <script>
       // required to use the api
       document.domain = '%REACT_APP_GRAASP_DOMAIN%';
@@ -35,6 +37,12 @@
       if (window.frameElement) {
         window.frameElement.style['min-height'] = '600px';
       }
+
+      languagePluginUrl = 'https://graasp-pyodide.s3.amazonaws.com/v0.14.0/';
+      languagePluginLoader.then(() => {
+        // pyodide is now ready to use
+        window.pyodide = pyodide;
+      });
     </script>
   </head>
   <body>

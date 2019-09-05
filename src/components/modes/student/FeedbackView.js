@@ -3,15 +3,9 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
-import { setCode } from '../../../actions';
-import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
+import ReactTerminal, { ReactThemes } from 'react-terminal-component';
 import Loader from '../../common/Loader';
-import Editor from './Editor';
-// import {
-//   DEFAULT_MAX_INPUT_LENGTH,
-//   DEFAULT_MAX_ROWS,
-// } from '../../../config/settings';
+import DiffEditor from '../../common/DiffEditor';
 
 const Terminal = require('javascript-terminal');
 
@@ -56,40 +50,10 @@ class StudentView extends Component {
     output: PropTypes.string,
   };
 
-  state = {
-    terminalInput: '',
-  };
-
   static defaultProps = {
     activity: false,
     ready: false,
     output: '',
-  };
-
-  // this handler is called for each new input character
-  // new line character is not received here
-  handleTerminalInput = c => {
-    const { terminalInput } = this.state;
-
-    // console.log("terminal input: "+c);
-
-    // process new character
-    this.setState({ terminalInput: terminalInput + c });
-
-    // send a new character to worker (or just buffering ?)
-  };
-
-  // this handler is called for each new line character
-  handleTerminalStateChange = () => {
-    // const { terminalInput } = this.state;
-
-    // process new line
-    // console.log("terminal received new line: "+terminalInput);
-
-    // send a new line to worker (or just send new line character ?)
-
-    // clear input buffer
-    this.setState({ terminalInput: '' });
   };
 
   render() {
@@ -106,12 +70,10 @@ class StudentView extends Component {
       outputs: customOutputs,
     });
 
-    // const { terminalInput } = this.state;
-
     return (
       <div className={classes.main}>
-        <Editor />
-        <ReactTerminalStateless
+        <DiffEditor />
+        <ReactTerminal
           theme={{
             ...ReactThemes.hacker,
             width: '100%',
@@ -119,48 +81,22 @@ class StudentView extends Component {
             spacing: '0',
           }}
           emulatorState={emulatorState}
-          onInputChange={this.handleTerminalInput}
-          onStateChange={this.handleTerminalStateChange}
-          acceptInput="true"
         />
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources, code }) => {
-  const { userId, offline, appInstanceId } = context;
-  const inputResource = appInstanceResources.content.find(({ user, type }) => {
-    return user === userId && type === INPUT;
-  });
-  const feedbackResource = appInstanceResources.content.find(
-    ({ user, type }) => {
-      return user === userId && type === FEEDBACK;
-    }
-  );
-
+const mapStateToProps = ({ appInstanceResources, code }) => {
   return {
-    userId,
-    offline,
-    appInstanceId,
-    inputResourceId: inputResource && (inputResource.id || inputResource._id),
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
-    code: inputResource && inputResource.data,
-    feedback: feedbackResource && feedbackResource.data,
     output: code.output,
   };
 };
 
-const mapDispatchToProps = {
-  dispatchSetCode: setCode,
-};
-
 const StyledComponent = withStyles(styles)(StudentView);
 
-const ConnectedComponent = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(StyledComponent);
+const ConnectedComponent = connect(mapStateToProps)(StyledComponent);
 
 export default withTranslation()(ConnectedComponent);

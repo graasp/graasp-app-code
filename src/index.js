@@ -8,6 +8,7 @@ import 'brace/mode/javascript';
 import 'brace/mode/python';
 import 'brace/theme/monokai';
 import 'brace/theme/xcode';
+import 'brace/theme/github';
 import Root from './components/Root';
 import configureStore from './store/configureStore';
 import './index.css';

@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core';
 import { INPUT } from '../../../config/appInstanceResourceTypes';
 import { setCode } from '../../../actions';
 import { JAVASCRIPT } from '../../../config/programmingLanguages';
+import './Editor.css';
 
 const styles = () => ({});
 
@@ -35,6 +36,7 @@ class Editor extends Component {
   };
 
   render() {
+    // eslint-disable-next-line react/prop-types
     const { code, appInstanceId, programmingLanguage } = this.props;
     return (
       <AceEditor
