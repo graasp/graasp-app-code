@@ -31,6 +31,30 @@ onmessage = function (ev) {
 				return val;
 			}
 
+			function readline(){
+				const eol = '\\n';
+
+				if(!__STDIN_FIFO__) {
+					return undefined;
+				}
+
+				if(__STDIN_FIFO__.length == 0) {
+					return undefined;
+				}
+
+				const index = __STDIN_FIFO__.indexOf(eol);
+				if(index < 0) {
+					val = readAll();
+				} else {
+					val = '';
+					while((c = read()) != eol){
+						val += c;
+					}
+				}
+
+				return val;
+			}
+
 			function readAll(){
 				const val = __STDIN_FIFO__.join('');
 				__STDIN_FIFO__ = [];
@@ -38,8 +62,8 @@ onmessage = function (ev) {
 				return val;
 			}
 
-			const f = new Function("print", "println", "clear", "read", "readAll", data);
-			f(print, println, clear, read, readAll);
+			const f = new Function("print", "println", "clear", "read", "readline", "readAll", data);
+			f(print, println, clear, read, readline, readAll);
 	}
 };
 `);

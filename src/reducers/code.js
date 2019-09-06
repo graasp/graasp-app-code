@@ -56,9 +56,6 @@ export default (state = INITIAL_STATE, { type, payload }) => {
         input: state.input + payload,
       };
     case REGISTER_WORKER:
-      console.log('register worker');
-      console.log(payload);
-
       return {
         ...state,
         worker: payload,
