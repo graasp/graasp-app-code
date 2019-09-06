@@ -2,10 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
-import { setCode } from '../../../actions';
-import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
+import AceEditor from 'react-ace';
+import { setCode, printOutput, setInput, appendInput } from '../../../actions';
+import {
+  FEEDBACK,
+  INPUT,
+  STDIN,
+} from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
 // import {
@@ -39,11 +45,19 @@ const styles = theme => ({
   button: {
     marginRight: theme.spacing.unit,
   },
+  helperText: {
+    color: 'rgba(0, 0, 0, 0.54)',
+    marginTop: '8px',
+  },
 });
 
 // eslint-disable-next-line react/prefer-stateless-function
 class StudentView extends Component {
   static propTypes = {
+    t: PropTypes.func.isRequired,
+    dispatchPrintOutput: PropTypes.func.isRequired,
+    dispatchSetInput: PropTypes.func.isRequired,
+    dispatchAppendInput: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
@@ -51,46 +65,87 @@ class StudentView extends Component {
       button: PropTypes.string,
       textField: PropTypes.string,
     }).isRequired,
+    appInstanceId: PropTypes.string.isRequired,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
     output: PropTypes.string,
-  };
-
-  state = {
-    terminalInput: '',
+    stdin: PropTypes.string,
   };
 
   static defaultProps = {
     activity: false,
     ready: false,
     output: '',
+    stdin: '',
   };
 
   // this handler is called for each new input character
   // new line character is not received here
   handleTerminalInput = c => {
-    const { terminalInput } = this.state;
+    const { dispatchPrintOutput, dispatchAppendInput } = this.props;
 
-    // console.log("terminal input: "+c);
-
-    // process new character
-    this.setState({ terminalInput: terminalInput + c });
+    // echo back new character
+    dispatchPrintOutput(c);
 
     // send a new character to worker (or just buffering ?)
+    dispatchAppendInput(c);
   };
 
   // this handler is called for each new line character
   handleTerminalStateChange = () => {
-    // const { terminalInput } = this.state;
+    const { dispatchPrintOutput, dispatchAppendInput } = this.props;
+    const c = '\n';
 
-    // process new line
-    // console.log("terminal received new line: "+terminalInput);
+    // echo back new line character
+    dispatchPrintOutput(c);
 
     // send a new line to worker (or just send new line character ?)
-
-    // clear input buffer
-    this.setState({ terminalInput: '' });
+    dispatchAppendInput(c);
   };
+
+  onStdinLoad = () => {
+    const { dispatchSetInput, stdin } = this.props;
+    dispatchSetInput(stdin || '');
+  };
+
+  onStdinChange = value => {
+    const { dispatchSetInput } = this.props;
+    dispatchSetInput(value);
+  };
+
+  renderInput() {
+    const { t, classes, appInstanceId, stdin } = this.props;
+
+    return (
+      <div>
+        <Typography variant="subtitle2" id="stdin-caption">
+          <div className={classes.helperText}>{t('input data')}</div>
+        </Typography>
+        <AceEditor
+          placeholder={t('// Write input data here (ex. csv, json, xml, etc.)')}
+          mode="csv"
+          theme="xcode"
+          name={appInstanceId || Math.random()}
+          width="100%"
+          height="120px"
+          fontSize={14}
+          showPrintMargin
+          showGutter
+          highlightActiveLine
+          value={stdin || ''}
+          onLoad={this.onStdinLoad}
+          onChange={this.onStdinChange}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </div>
+    );
+  }
 
   render() {
     const { classes, ready, activity, output } = this.props;
@@ -106,11 +161,10 @@ class StudentView extends Component {
       outputs: customOutputs,
     });
 
-    // const { terminalInput } = this.state;
-
     return (
       <div className={classes.main}>
         <Editor />
+        <div>{this.renderInput()}</div>
         <ReactTerminalStateless
           theme={{
             ...ReactThemes.hacker,
@@ -122,6 +176,7 @@ class StudentView extends Component {
           onInputChange={this.handleTerminalInput}
           onStateChange={this.handleTerminalStateChange}
           acceptInput="true"
+          clickToFocus="true"
         />
       </div>
     );
@@ -138,6 +193,9 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
       return user === userId && type === FEEDBACK;
     }
   );
+  const stdinResource = appInstanceResources.content.find(({ user, type }) => {
+    return user === userId && type === STDIN;
+  });
 
   return {
     userId,
@@ -148,12 +206,16 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
     ready: appInstanceResources.ready,
     code: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
+    stdin: stdinResource && stdinResource.data,
     output: code.output,
   };
 };
 
 const mapDispatchToProps = {
   dispatchSetCode: setCode,
+  dispatchSetInput: setInput,
+  dispatchAppendInput: appendInput,
+  dispatchPrintOutput: printOutput,
 };
 
 const StyledComponent = withStyles(styles)(StudentView);

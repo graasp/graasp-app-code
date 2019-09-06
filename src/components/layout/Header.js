@@ -31,10 +31,11 @@ import {
 import './Header.css';
 import {
   runCode,
+  setInput,
   patchAppInstanceResource,
   postAppInstanceResource,
 } from '../../actions';
-import { FEEDBACK, INPUT } from '../../config/appInstanceResourceTypes';
+import { FEEDBACK, INPUT, STDIN } from '../../config/appInstanceResourceTypes';
 
 class Header extends Component {
   static propTypes = {
@@ -49,9 +50,12 @@ class Header extends Component {
     }).isRequired,
     mode: PropTypes.string,
     currentCode: PropTypes.string.isRequired,
+    currentInput: PropTypes.string,
     programmingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
+    savedInput: PropTypes.string,
     inputResourceId: PropTypes.string,
+    stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
     view: PropTypes.string,
     feedback: PropTypes.string,
@@ -61,9 +65,12 @@ class Header extends Component {
     mode: DEFAULT_MODE,
     view: DEFAULT_VIEW,
     savedCode: '',
+    savedInput: '',
     userId: null,
     inputResourceId: null,
+    stdinResourceId: null,
     feedback: null,
+    currentInput: '',
   };
 
   static styles = theme => ({
@@ -101,11 +108,46 @@ class Header extends Component {
         userId,
       });
     }
+
+    // DIRTY HACK HERE
+    // In local api server, consecutive calling of dispatchPostAppInstanceResource often
+    // results in 'NetworkError when attempting to fetch resource'  (6/Sep/2019).
+    // this.handleSaveInput();
+    setTimeout(this.handleSaveInput, 300);
+  };
+
+  handleSaveInput = () => {
+    const {
+      dispatchPatchAppInstanceResource,
+      dispatchPostAppInstanceResource,
+      stdinResourceId,
+      userId,
+      currentInput,
+    } = this.props;
+
+    // if there is a resource id already, update, otherwise create
+    if (stdinResourceId) {
+      dispatchPatchAppInstanceResource({
+        data: currentInput,
+        id: stdinResourceId,
+      });
+    } else {
+      dispatchPostAppInstanceResource({
+        data: currentInput,
+        type: STDIN,
+        userId,
+      });
+    }
   };
 
   handleRun = () => {
-    const { currentCode, dispatchRunCode } = this.props;
-    dispatchRunCode(currentCode);
+    const { currentCode, currentInput, dispatchRunCode } = this.props;
+    const job = {
+      data: currentCode,
+      input: currentInput,
+    };
+
+    dispatchRunCode(job);
   };
 
   renderTeacherButtons() {
@@ -139,9 +181,18 @@ class Header extends Component {
   }
 
   renderStudentButtons() {
-    const { t, currentCode, savedCode, feedback, view } = this.props;
+    const {
+      t,
+      currentCode,
+      currentInput,
+      savedCode,
+      savedInput,
+      feedback,
+      view,
+    } = this.props;
     const feedbackDisabled = !feedback;
-    const saveDisabled = currentCode === savedCode;
+    const saveDisabled =
+      currentCode === savedCode && currentInput === savedInput;
     const runDisabled = _.isEmpty(currentCode);
 
     const buttons = [
@@ -252,9 +303,14 @@ const mapStateToProps = ({
       return user === userId && type === FEEDBACK;
     }
   );
+  const stdinResource = appInstanceResources.content.find(({ user, type }) => {
+    return user === userId && type === STDIN;
+  });
+
   return {
     userId,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
+    stdinResourceId: stdinResource && (stdinResource.id || stdinResource._id),
     appInstanceId: context.appInstanceId,
     spaceId: context.spaceId,
     mode: context.mode,
@@ -263,6 +319,8 @@ const mapStateToProps = ({
     programmingLanguage: appInstance.content.settings.programmingLanguage,
     savedCode: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
+    savedInput: stdinResource && stdinResource.data,
+    currentInput: code.input,
   };
 };
 
@@ -270,6 +328,7 @@ const mapDispatchToProps = {
   dispatchPostAppInstanceResource: postAppInstanceResource,
   dispatchPatchAppInstanceResource: patchAppInstanceResource,
   dispatchRunCode: runCode,
+  dispatchSetInput: setInput,
 };
 
 const ConnectedComponent = connect(

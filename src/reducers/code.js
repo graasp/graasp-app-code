@@ -4,13 +4,18 @@ import {
   SET_FOOTER_CODE,
   PRINT_OUTPUT,
   CLEAR_OUTPUT,
+  SET_INPUT,
+  APPEND_INPUT,
+  REGISTER_WORKER,
 } from '../types';
 
 const INITIAL_STATE = {
   content: '',
   header: '',
   footer: '',
+  input: '',
   output: '',
+  worker: null,
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
@@ -39,6 +44,24 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         output: '',
+      };
+    case SET_INPUT:
+      return {
+        ...state,
+        input: payload,
+      };
+    case APPEND_INPUT:
+      return {
+        ...state,
+        input: state.input + payload,
+      };
+    case REGISTER_WORKER:
+      console.log('register worker');
+      console.log(payload);
+
+      return {
+        ...state,
+        worker: payload,
       };
     default:
       return state;
