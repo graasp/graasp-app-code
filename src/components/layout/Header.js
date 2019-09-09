@@ -8,6 +8,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
+import InputIcon from '@material-ui/icons/Input';
 import SaveIcon from '@material-ui/icons/Save';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VerticalSplitIcon from '@material-ui/icons/VerticalSplit';
@@ -32,6 +33,8 @@ import './Header.css';
 import {
   runCode,
   setInput,
+  openInputSettings,
+  closeInputSettings,
   patchAppInstanceResource,
   postAppInstanceResource,
 } from '../../actions';
@@ -43,6 +46,8 @@ class Header extends Component {
     dispatchPostAppInstanceResource: PropTypes.func.isRequired,
     dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
+    dispatchOpenInputSettings: PropTypes.func.isRequired,
+    dispatchCloseInputSettings: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       root: PropTypes.string,
       grow: PropTypes.string,
@@ -59,6 +64,7 @@ class Header extends Component {
     userId: PropTypes.string,
     view: PropTypes.string,
     feedback: PropTypes.string,
+    isInputDisplayed: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -86,7 +92,36 @@ class Header extends Component {
     },
   });
 
+  handleOpenInput = () => {
+    const {
+      isInputDisplayed,
+      dispatchOpenInputSettings,
+      dispatchCloseInputSettings,
+    } = this.props;
+
+    if (isInputDisplayed) {
+      dispatchCloseInputSettings();
+    } else {
+      dispatchOpenInputSettings();
+    }
+  };
+
   handleSave = () => {
+    const { currentCode, currentInput, savedCode, savedInput } = this.props;
+
+    // In local api server, consecutive callings of dispatchPatchAppInstanceResource often
+    // results in 'NetworkError when attempting to fetch resource'  (6/Sep/2019).
+
+    if (currentCode !== savedCode) {
+      this.handleSaveCode();
+    }
+
+    if (currentInput !== savedInput) {
+      this.handleSaveInput();
+    }
+  };
+
+  handleSaveCode = () => {
     const {
       dispatchPatchAppInstanceResource,
       dispatchPostAppInstanceResource,
@@ -108,12 +143,6 @@ class Header extends Component {
         userId,
       });
     }
-
-    // DIRTY HACK HERE
-    // In local api server, consecutive calling of dispatchPostAppInstanceResource often
-    // results in 'NetworkError when attempting to fetch resource'  (6/Sep/2019).
-    // this.handleSaveInput();
-    setTimeout(this.handleSaveInput, 300);
   };
 
   handleSaveInput = () => {
@@ -196,6 +225,13 @@ class Header extends Component {
     const runDisabled = _.isEmpty(currentCode);
 
     const buttons = [
+      <Tooltip title={t('Input')} key="input">
+        <div>
+          <IconButton onClick={this.handleOpenInput}>
+            <InputIcon nativeColor="#fff" />
+          </IconButton>
+        </div>
+      </Tooltip>,
       <Tooltip title={t('Save')} key="save">
         <div>
           <IconButton onClick={this.handleSave} disabled={saveDisabled}>
@@ -289,6 +325,7 @@ class Header extends Component {
 const mapStateToProps = ({
   context,
   code,
+  layout,
   appInstanceResources,
   appInstance,
 }) => {
@@ -321,6 +358,7 @@ const mapStateToProps = ({
     feedback: feedbackResource && feedbackResource.data,
     savedInput: stdinResource && stdinResource.data,
     currentInput: code.input,
+    isInputDisplayed: layout.settings.isInputDisplayed,
   };
 };
 
@@ -329,6 +367,8 @@ const mapDispatchToProps = {
   dispatchPatchAppInstanceResource: patchAppInstanceResource,
   dispatchRunCode: runCode,
   dispatchSetInput: setInput,
+  dispatchOpenInputSettings: openInputSettings,
+  dispatchCloseInputSettings: closeInputSettings,
 };
 
 const ConnectedComponent = connect(

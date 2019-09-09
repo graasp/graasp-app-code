@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
 import AceEditor from 'react-ace';
@@ -70,6 +71,7 @@ class StudentView extends Component {
     activity: PropTypes.bool,
     output: PropTypes.string,
     stdin: PropTypes.string,
+    isInputDisplayed: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -114,10 +116,10 @@ class StudentView extends Component {
   };
 
   renderInput() {
-    const { t, classes, appInstanceId, stdin } = this.props;
+    const { t, classes, appInstanceId, stdin, isInputDisplayed } = this.props;
 
     return (
-      <div>
+      <Collapse in={isInputDisplayed}>
         <Typography variant="subtitle2" id="stdin-caption">
           <div className={classes.helperText}>{t('input data')}</div>
         </Typography>
@@ -143,7 +145,7 @@ class StudentView extends Component {
             tabSize: 2,
           }}
         />
-      </div>
+      </Collapse>
     );
   }
 
@@ -183,7 +185,7 @@ class StudentView extends Component {
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources, code }) => {
+const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
   const { userId, offline, appInstanceId } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
@@ -208,6 +210,7 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
     feedback: feedbackResource && feedbackResource.data,
     stdin: stdinResource && stdinResource.data,
     output: code.output,
+    isInputDisplayed: layout.settings.isInputDisplayed,
   };
 };
 
