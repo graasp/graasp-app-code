@@ -9,5 +9,6 @@ export const CLEAR_OUTPUT = 'CLEAR_OUTPUT';
 
 export const SET_INPUT = 'SET_INPUT';
 export const APPEND_INPUT = 'APPEND_INPUT';
+export const SEND_INPUT = 'SEND_INPUT';
 
 export const REGISTER_WORKER = 'REGISTER_WORKER';

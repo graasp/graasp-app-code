@@ -7,7 +7,7 @@ import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
 import AceEditor from 'react-ace';
-import { setCode, printOutput, setInput, appendInput } from '../../../actions';
+import { setCode, printOutput, setInput, sendInput } from '../../../actions';
 import {
   FEEDBACK,
   INPUT,
@@ -58,7 +58,7 @@ class StudentView extends Component {
     t: PropTypes.func.isRequired,
     dispatchPrintOutput: PropTypes.func.isRequired,
     dispatchSetInput: PropTypes.func.isRequired,
-    dispatchAppendInput: PropTypes.func.isRequired,
+    dispatchSendInput: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
@@ -84,25 +84,25 @@ class StudentView extends Component {
   // this handler is called for each new input character
   // new line character is not received here
   handleTerminalInput = c => {
-    const { dispatchPrintOutput, dispatchAppendInput } = this.props;
+    const { dispatchPrintOutput, dispatchSendInput } = this.props;
 
     // echo back new character
     dispatchPrintOutput(c);
 
-    // send a new character to worker (or just buffering ?)
-    dispatchAppendInput(c);
+    // send a new character to worker
+    dispatchSendInput(c);
   };
 
   // this handler is called for each new line character
   handleTerminalStateChange = () => {
-    const { dispatchPrintOutput, dispatchAppendInput } = this.props;
+    const { dispatchPrintOutput, dispatchSendInput } = this.props;
     const c = '\n';
 
     // echo back new line character
     dispatchPrintOutput(c);
 
-    // send a new line to worker (or just send new line character ?)
-    dispatchAppendInput(c);
+    // send a new line to worker
+    dispatchSendInput(c);
   };
 
   onStdinLoad = () => {
@@ -217,7 +217,7 @@ const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
 const mapDispatchToProps = {
   dispatchSetCode: setCode,
   dispatchSetInput: setInput,
-  dispatchAppendInput: appendInput,
+  dispatchSendInput: sendInput,
   dispatchPrintOutput: printOutput,
 };
 

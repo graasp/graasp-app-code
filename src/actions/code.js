@@ -5,6 +5,7 @@ import {
   RUN_CODE_FAILED,
   SET_INPUT,
   APPEND_INPUT,
+  SEND_INPUT,
   PRINT_OUTPUT,
 } from '../types';
 import {
@@ -61,6 +62,23 @@ const appendInput = data => (dispatch, getState) => {
   }
 };
 
+const sendInput = data => (dispatch, getState) => {
+  const {
+    code: { worker },
+  } = getState();
+
+  dispatch({
+    type: APPEND_INPUT,
+    payload: '',
+  });
+
+  // send input to worker
+  if (worker) {
+    const job = { command: SEND_INPUT, data };
+    worker.postMessage(job);
+  }
+};
+
 const runCode = job => (dispatch, getState) => {
   const {
     appInstance: {
@@ -106,5 +124,6 @@ export {
   setFooterCode,
   setInput,
   appendInput,
+  sendInput,
   printOutput,
 };
