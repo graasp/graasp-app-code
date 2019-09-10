@@ -30,7 +30,6 @@ import {
   FEEDBACK_VIEW,
 } from '../../config/views';
 import './Header.css';
-<<<<<<< HEAD
 import {
   runCode,
   openInputSettings,
@@ -39,10 +38,10 @@ import {
   postAppInstanceResource,
 } from '../../actions';
 import { FEEDBACK, INPUT, STDIN } from '../../config/appInstanceResourceTypes';
-import { JAVASCRIPT } from '../../config/programmingLanguages';
-=======
-import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
->>>>>>> master
+import {
+  JAVASCRIPT,
+  DEFAULT_PROGRAMMING_LANGUAGE,
+} from '../../config/programmingLanguages';
 
 class Header extends Component {
   static propTypes = {

@@ -94,7 +94,6 @@ class Settings extends Component {
       defaultCode: PropTypes.string,
       footerCode: PropTypes.string,
     }).isRequired,
-    appInstanceId: PropTypes.string.isRequired,
     currentLanguage: PropTypes.string.isRequired,
     currentHeaderCode: PropTypes.string.isRequired,
     currentFooterCode: PropTypes.string.isRequired,

@@ -131,18 +131,15 @@ const runCode = job => (dispatch, getState) => {
   }
 };
 
-<<<<<<< HEAD
 export {
   setLanguage,
   runCode,
   setCode,
   setHeaderCode,
   setFooterCode,
+  setDefaultCode,
   setInput,
   appendInput,
   sendInput,
   printOutput,
 };
-=======
-export { runCode, setCode, setHeaderCode, setFooterCode, setDefaultCode };
->>>>>>> master

@@ -119,18 +119,18 @@ const mapStateToProps = ({
   });
 
   // initialize code to the default
-  let code = defaultCode;
+  let codeData = defaultCode;
 
   // if there already has been input, then override
   if (inputResource && inputResource.data) {
-    code = inputResource.data;
+    codeData = inputResource.data;
   }
 
   return {
     appInstanceId,
     programmingLanguage,
     orientation,
-    code,
+    code: codeData,
     currentInput: code.input,
   };
 };
