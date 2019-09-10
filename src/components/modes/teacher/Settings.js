@@ -21,9 +21,15 @@ import {
   patchAppInstance,
   setHeaderCode,
   setFooterCode,
+  setDefaultCode,
 } from '../../../actions';
 import Loader from '../../common/Loader';
-import { JAVASCRIPT, PYTHON } from '../../../config/programmingLanguages';
+import {
+  JAVASCRIPT,
+  PYTHON,
+  DEFAULT_PROGRAMMING_LANGUAGE,
+} from '../../../config/programmingLanguages';
+import { DEFAULT_ORIENTATION } from '../../../config/settings';
 
 function getModalStyle() {
   const top = 50;
@@ -75,17 +81,19 @@ class Settings extends Component {
     open: PropTypes.bool.isRequired,
     activity: PropTypes.bool.isRequired,
     settings: PropTypes.shape({
-      programmingLanguage: PropTypes.string.isRequired,
-      headerCode: PropTypes.string.isRequired,
-      footerCode: PropTypes.string.isRequired,
+      programmingLanguage: PropTypes.string,
+      headerCode: PropTypes.string,
+      defaultCode: PropTypes.string,
+      footerCode: PropTypes.string,
     }).isRequired,
-    appInstanceId: PropTypes.string.isRequired,
     currentHeaderCode: PropTypes.string.isRequired,
     currentFooterCode: PropTypes.string.isRequired,
+    currentDefaultCode: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     dispatchCloseSettings: PropTypes.func.isRequired,
     dispatchPatchAppInstance: PropTypes.func.isRequired,
     dispatchSetHeaderCode: PropTypes.func.isRequired,
+    dispatchSetDefaultCode: PropTypes.func.isRequired,
     dispatchSetFooterCode: PropTypes.func.isRequired,
     i18n: PropTypes.shape({
       defaultNS: PropTypes.string,
@@ -126,6 +134,21 @@ class Settings extends Component {
     dispatchSetHeaderCode(value);
   };
 
+  onDefaultCodeLoad = () => {
+    const {
+      dispatchSetDefaultCode,
+      currentDefaultCode,
+      settings: { defaultCode },
+    } = this.props;
+    const code = currentDefaultCode || defaultCode;
+    dispatchSetDefaultCode(code);
+  };
+
+  onDefaultCodeChange = value => {
+    const { dispatchSetDefaultCode } = this.props;
+    dispatchSetDefaultCode(value);
+  };
+
   onFooterCodeLoad = () => {
     const {
       dispatchSetFooterCode,
@@ -142,9 +165,14 @@ class Settings extends Component {
   };
 
   handleSaveCode = () => {
-    const { currentHeaderCode, currentFooterCode } = this.props;
+    const {
+      currentHeaderCode,
+      currentDefaultCode,
+      currentFooterCode,
+    } = this.props;
     const settings = {
       headerCode: currentHeaderCode,
+      defaultCode: currentDefaultCode,
       footerCode: currentFooterCode,
     };
 
@@ -174,7 +202,7 @@ class Settings extends Component {
           id: 'programmingLanguageSelect',
         }}
       >
-        <MenuItem value={JAVASCRIPT}>JavaScript (browser engine)</MenuItem>
+        <MenuItem value={JAVASCRIPT}>JavaScript (Browser Engine)</MenuItem>
         <MenuItem value={PYTHON}>Python (Python3 support via Pyodide)</MenuItem>
       </Select>
     );
@@ -188,6 +216,7 @@ class Settings extends Component {
           {selectControl}
         </FormControl>
         {this.renderHeaderCodeEditor()}
+        {this.renderDefaultCodeEditor()}
         {this.renderFooterCodeEditor()}
       </div>
     );
@@ -198,7 +227,6 @@ class Settings extends Component {
       t,
       classes,
       currentHeaderCode,
-      appInstanceId,
       settings: { programmingLanguage },
     } = this.props;
 
@@ -213,7 +241,7 @@ class Settings extends Component {
           )}
           mode={programmingLanguage}
           theme="xcode"
-          name={appInstanceId || Math.random()}
+          name={Math.random()}
           width="100%"
           height="120px"
           fontSize={14}
@@ -235,12 +263,50 @@ class Settings extends Component {
     );
   }
 
+  renderDefaultCodeEditor() {
+    const {
+      t,
+      classes,
+      currentDefaultCode,
+      settings: { programmingLanguage },
+    } = this.props;
+
+    return (
+      <div>
+        <Typography variant="subtitle2" id="modal-defaultcode-caption">
+          <div className={classes.helperText}>{t('default code')}</div>
+        </Typography>
+        <AceEditor
+          placeholder={t('// Write code to show to the student by default')}
+          mode={programmingLanguage}
+          theme="xcode"
+          name={Math.random()}
+          width="100%"
+          height="120px"
+          fontSize={14}
+          showPrintMargin
+          showGutter
+          highlightActiveLine
+          value={currentDefaultCode || ''}
+          onLoad={this.onDefaultCodeLoad}
+          onChange={this.onDefaultCodeChange}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </div>
+    );
+  }
+
   renderFooterCodeEditor() {
     const {
       t,
       classes,
       currentFooterCode,
-      appInstanceId,
       settings: { programmingLanguage },
     } = this.props;
 
@@ -255,7 +321,7 @@ class Settings extends Component {
           )}
           mode={programmingLanguage}
           theme="xcode"
-          name={appInstanceId || Math.random()}
+          name={Math.random()}
           width="100%"
           height="120px"
           fontSize={14}
@@ -278,14 +344,20 @@ class Settings extends Component {
   }
 
   renderButtons() {
-    const { t, classes, currentHeaderCode, currentFooterCode } = this.props;
     const {
-      settings: { headerCode, footerCode },
+      t,
+      classes,
+      currentHeaderCode,
+      currentFooterCode,
+      currentDefaultCode,
+      settings: { headerCode, footerCode, defaultCode },
     } = this.props;
 
     const headerCodeChanged = !(headerCode === currentHeaderCode);
     const footerCodeChanged = !(footerCode === currentFooterCode);
-    const saveDisabled = !headerCodeChanged && !footerCodeChanged;
+    const defaultCodeChanged = !(defaultCode === currentDefaultCode);
+    const saveDisabled =
+      !headerCodeChanged && !footerCodeChanged && !defaultCodeChanged;
 
     return (
       <Tooltip title={t('Save')} key="save" className={classes.right}>
@@ -338,17 +410,26 @@ class Settings extends Component {
 }
 
 const mapStateToProps = ({ code, layout, appInstance }) => {
+  const {
+    programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+    headerCode = '',
+    defaultCode = '',
+    footerCode = '',
+    orientation = DEFAULT_ORIENTATION,
+  } = appInstance.content.settings;
   return {
     open: layout.settings.open,
     settings: {
       // by default this is javascript
-      programmingLanguage: appInstance.content.settings.programmingLanguage,
-      headerCode: appInstance.content.settings.headerCode,
-      footerCode: appInstance.content.settings.footerCode,
-      orientation: appInstance.content.settings.orientation,
+      programmingLanguage,
+      headerCode,
+      defaultCode,
+      footerCode,
+      orientation,
     },
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,
+    currentDefaultCode: code.default,
     activity: Boolean(appInstance.activity.length),
   };
 };
@@ -357,6 +438,7 @@ const mapDispatchToProps = {
   dispatchCloseSettings: closeSettings,
   dispatchPatchAppInstance: patchAppInstance,
   dispatchSetHeaderCode: setHeaderCode,
+  dispatchSetDefaultCode: setDefaultCode,
   dispatchSetFooterCode: setFooterCode,
 };
 

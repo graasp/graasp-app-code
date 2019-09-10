@@ -19,6 +19,7 @@ import {
 } from '../../config/settings';
 import { DEFAULT_VIEW, DASHBOARD_VIEW } from '../../config/views';
 import './Header.css';
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
 
 class Header extends Component {
   static propTypes = {
@@ -128,10 +129,13 @@ class Header extends Component {
 }
 
 const mapStateToProps = ({ context, appInstance }) => {
+  const {
+    programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+  } = appInstance.content.settings;
   return {
     mode: context.mode,
     view: context.view,
-    programmingLanguage: appInstance.content.settings.programmingLanguage,
+    programmingLanguage,
   };
 };
 
