@@ -8,10 +8,12 @@ import {
   FLAG_GETTING_APP_INSTANCE,
 } from '../types';
 import { showErrorToast } from '../utils/toasts';
-import { JAVASCRIPT } from '../config/programmingLanguages';
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../config/programmingLanguages';
+import { DEFAULT_ORIENTATION } from '../config/settings';
 
 const DEFAULT_SETTINGS = {
-  programmingLanguage: JAVASCRIPT,
+  programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
+  orientation: DEFAULT_ORIENTATION,
 };
 
 const INITIAL_STATE = {

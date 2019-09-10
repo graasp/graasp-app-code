@@ -35,7 +35,7 @@ const styles = theme => ({
 });
 
 // eslint-disable-next-line react/prefer-stateless-function
-class StudentView extends Component {
+class FeedbackView extends Component {
   static propTypes = {
     classes: PropTypes.shape({
       main: PropTypes.string,
@@ -95,7 +95,7 @@ const mapStateToProps = ({ appInstanceResources, code }) => {
   };
 };
 
-const StyledComponent = withStyles(styles)(StudentView);
+const StyledComponent = withStyles(styles)(FeedbackView);
 
 const ConnectedComponent = connect(mapStateToProps)(StyledComponent);
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { FEEDBACK, INPUT } from '../../config/appInstanceResourceTypes';
 import { setCode } from '../../actions';
-import { JAVASCRIPT } from '../../config/programmingLanguages';
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
 
 class DiffEditor extends Component {
   static propTypes = {
@@ -20,7 +20,7 @@ class DiffEditor extends Component {
     code: '',
     feedback: '',
     appInstanceId: null,
-    programmingLanguage: JAVASCRIPT,
+    programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
   };
 
   constructor(props) {
@@ -73,9 +73,9 @@ const mapStateToProps = ({ appInstance, context, appInstanceResources }) => {
 
   return {
     appInstanceId,
+    programmingLanguage,
     code: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
-    programmingLanguage,
   };
 };
 
