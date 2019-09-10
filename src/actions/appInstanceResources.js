@@ -39,10 +39,11 @@ const flagDeletingAppInstanceResource = flag(
   FLAG_DELETING_APP_INSTANCE_RESOURCE
 );
 
-const getAppInstanceResources = async ({ type } = {}) => async (
-  dispatch,
-  getState
-) => {
+const getAppInstanceResources = async ({
+  userId,
+  sessionId,
+  type,
+} = {}) => async (dispatch, getState) => {
   dispatch(flagGettingAppInstanceResources(true));
   try {
     const {
@@ -51,8 +52,6 @@ const getAppInstanceResources = async ({ type } = {}) => async (
       offline,
       spaceId,
       subSpaceId,
-      userId,
-      sessionId,
     } = getApiContext(getState);
 
     // if offline send message to parent requesting resources

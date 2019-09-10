@@ -75,8 +75,6 @@ class Settings extends Component {
     open: PropTypes.bool.isRequired,
     activity: PropTypes.bool.isRequired,
     settings: PropTypes.shape({
-      headerVisible: PropTypes.bool.isRequired,
-      lang: PropTypes.string.isRequired,
       programmingLanguage: PropTypes.string.isRequired,
       headerCode: PropTypes.string.isRequired,
       footerCode: PropTypes.string.isRequired,
@@ -351,7 +349,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
     },
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,
-    activity: appInstance.activity.length,
+    activity: Boolean(appInstance.activity.length),
   };
 };
 

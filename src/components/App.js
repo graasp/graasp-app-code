@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import TeacherView from './modes/teacher/TeacherView';
 import StudentMode from './modes/student/StudentMode';
 import { getContext } from '../actions';
 import { DEFAULT_LANG, DEFAULT_MODE } from '../config/settings';
 import { getAppInstance } from '../actions/appInstance';
 import { DEFAULT_VIEW } from '../config/views';
+import TeacherMode from './modes/teacher/TeacherMode';
+import Loader from './common/Loader';
 
 export class App extends Component {
   static propTypes = {
@@ -63,14 +64,16 @@ export class App extends Component {
       case 'producer':
       case 'educator':
       case 'admin':
-        return <TeacherView />;
+        return <TeacherMode view={view} />;
 
       // by default go with the consumer (learner) mode
       case 'student':
       case 'consumer':
       case 'learner':
-      default:
         return <StudentMode view={view} />;
+
+      default:
+        return <Loader />;
     }
   }
 }
