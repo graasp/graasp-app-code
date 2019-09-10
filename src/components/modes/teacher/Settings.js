@@ -28,7 +28,7 @@ import Loader from '../../common/Loader';
 import {
   JAVASCRIPT,
   PYTHON,
-  DEFAULT_LANGUAGE,
+  DEFAULT_PROGRAMMING_LANGUAGE,
 } from '../../../config/programmingLanguages';
 
 function getModalStyle() {
@@ -215,7 +215,7 @@ class Settings extends Component {
     const selectControl = (
       <Select
         className={classes.formControl}
-        value={currentLanguage || DEFAULT_LANGUAGE}
+        value={currentLanguage || DEFAULT_PROGRAMMING_LANGUAGE}
         onChange={this.handleChangeProgrammingLanguage}
         inputProps={{
           name: 'programmingLanguage',

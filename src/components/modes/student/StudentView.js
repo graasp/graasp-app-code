@@ -14,8 +14,6 @@ import {
   INPUT,
   STDIN,
 } from '../../../config/appInstanceResourceTypes';
-import { setCode } from '../../../actions';
-import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
 import {
@@ -112,7 +110,6 @@ class StudentView extends Component {
   onStdinLoad = () => {
     const { dispatchSetInput, stdin } = this.props;
     dispatchSetInput(stdin || '');
-
   };
 
   onStdinChange = value => {
@@ -183,9 +180,9 @@ class StudentView extends Component {
         <Grid item xs={12}>
           <ReactTerminalStateless
             autoFocus={false}
-            acceptInput={true}
-            clickToFocus={true}
-              theme={{
+            acceptInput
+            clickToFocus
+            theme={{
               ...ReactThemes.hacker,
               spacing: '0',
               height: horizontalOrientation ? '50vh' : '100vh',
@@ -194,7 +191,7 @@ class StudentView extends Component {
             emulatorState={emulatorState}
             onInputChange={this.handleTerminalInput}
             onStateChange={this.handleTerminalStateChange}
-            />
+          />
         </Grid>
       </Grid>
     );
@@ -204,7 +201,7 @@ class StudentView extends Component {
 const mapStateToProps = ({
   context,
   appInstanceResources,
-  layout
+  layout,
   code,
   appInstance,
 }) => {

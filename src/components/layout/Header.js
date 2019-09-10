@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import InputIcon from '@material-ui/icons/Input';
 import SaveIcon from '@material-ui/icons/Save';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import VerticalSplitIcon from '@material-ui/icons/VerticalSplit';
-import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
+// import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import TableIcon from '@material-ui/icons/TableChart';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import CloudIcon from '@material-ui/icons/Cloud';
@@ -22,7 +24,11 @@ import {
   STUDENT_MODES,
   TEACHER_MODES,
 } from '../../config/settings';
-import { DEFAULT_VIEW, DASHBOARD_VIEW } from '../../config/views';
+import {
+  DEFAULT_VIEW,
+  DASHBOARD_VIEW,
+  FEEDBACK_VIEW,
+} from '../../config/views';
 import './Header.css';
 import {
   runCode,
@@ -51,16 +57,15 @@ class Header extends Component {
     mode: PropTypes.string,
     currentCode: PropTypes.string.isRequired,
     currentInput: PropTypes.string,
+    programmingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
     inputResourceId: PropTypes.string,
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
+    view: PropTypes.string,
     feedback: PropTypes.string,
     isInputDisplayed: PropTypes.bool.isRequired,
-    programmingLanguage: PropTypes.string.isRequired,
-    mode: PropTypes.string,
-    view: PropTypes.string,
   };
 
   static defaultProps = {
@@ -286,6 +291,8 @@ class Header extends Component {
         </Tooltip>
       );
     }
+  }
+
   renderLanguage() {
     const { t, programmingLanguage } = this.props;
 
@@ -369,10 +376,7 @@ const ConnectedComponent = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Header);
-  };
-};
 
-const ConnectedComponent = connect(mapStateToProps)(Header);
 const TranslatedComponent = withTranslation()(ConnectedComponent);
 
 export default withStyles(Header.styles)(TranslatedComponent);
