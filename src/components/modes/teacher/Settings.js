@@ -191,13 +191,16 @@ class Settings extends Component {
   handleSave = () => {
     const {
       currentLanguage,
-      settings: { programmingLanguage },
+      currentHeaderCode,
+      currentFooterCode,
     } = this.props;
+    const settings = {
+      programmingLanguage: currentLanguage,
+      headerCode: currentHeaderCode,
+      footerCode: currentFooterCode,
+    };
 
-    if (currentLanguage !== programmingLanguage) {
-      this.handleSaveLanguage();
-    }
-    this.handleSaveCode();
+    this.saveSettings(settings);
   };
 
   handleClose = () => {

@@ -32,7 +32,6 @@ import {
 import './Header.css';
 import {
   runCode,
-  setInput,
   openInputSettings,
   closeInputSettings,
   patchAppInstanceResource,
@@ -367,7 +366,6 @@ const mapDispatchToProps = {
   dispatchPostAppInstanceResource: postAppInstanceResource,
   dispatchPatchAppInstanceResource: patchAppInstanceResource,
   dispatchRunCode: runCode,
-  dispatchSetInput: setInput,
   dispatchOpenInputSettings: openInputSettings,
   dispatchCloseInputSettings: closeInputSettings,
 };

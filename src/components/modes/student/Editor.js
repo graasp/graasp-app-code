@@ -21,6 +21,7 @@ class Editor extends Component {
     dispatchSetCode: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
     code: PropTypes.string,
+    currentInput: PropTypes.string.isRequired,
     programmingLanguage: PropTypes.string,
     appInstanceId: PropTypes.string,
     orientation: PropTypes.oneOf([
@@ -48,8 +49,13 @@ class Editor extends Component {
 
   handleCommandEnter = editor => {
     const code = editor.getValue();
-    const { dispatchRunCode } = this.props;
-    dispatchRunCode(code);
+    const { currentInput, dispatchRunCode } = this.props;
+    const job = {
+      data: code,
+      input: currentInput,
+    };
+
+    dispatchRunCode(job);
   };
 
   render() {
@@ -96,7 +102,12 @@ class Editor extends Component {
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources, appInstance }) => {
+const mapStateToProps = ({
+  context,
+  appInstanceResources,
+  appInstance,
+  code,
+}) => {
   const { userId, appInstanceId } = context;
   const {
     content: {
@@ -111,6 +122,7 @@ const mapStateToProps = ({ context, appInstanceResources, appInstance }) => {
     programmingLanguage,
     orientation,
     code: inputResource && inputResource.data,
+    currentInput: code.input,
   };
 };
 

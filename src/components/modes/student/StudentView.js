@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
@@ -117,21 +116,24 @@ class StudentView extends Component {
     dispatchSetInput(value);
   };
 
-  renderInput() {
-    const { t, classes, appInstanceId, stdin, isInputDisplayed } = this.props;
+  renderInput(horizontalOrientation) {
+    const { t, appInstanceId, stdin, isInputDisplayed } = this.props;
+    const height = horizontalOrientation ? '50vh' : '100vh';
+    const width = horizontalOrientation ? '100vw' : '50vw';
+
+    if (!isInputDisplayed) {
+      return <div />;
+    }
 
     return (
       <Collapse in={isInputDisplayed}>
-        <Typography variant="subtitle2" id="stdin-caption">
-          <div className={classes.helperText}>{t('input data')}</div>
-        </Typography>
         <AceEditor
           placeholder={t('// Write input data here (ex. csv, json, xml, etc.)')}
           mode="csv"
           theme="xcode"
           name={appInstanceId || Math.random()}
-          width="100%"
-          height="120px"
+          width={width}
+          height={height}
           fontSize={14}
           showPrintMargin
           showGutter
@@ -152,7 +154,14 @@ class StudentView extends Component {
   }
 
   render() {
-    const { classes, ready, activity, output, orientation } = this.props;
+    const {
+      classes,
+      ready,
+      activity,
+      output,
+      orientation,
+      isInputDisplayed,
+    } = this.props;
 
     if (!ready || activity) {
       return <Loader />;
@@ -175,24 +184,30 @@ class StudentView extends Component {
       >
         <Grid item xs={12}>
           <Editor />
-          <div>{this.renderInput()}</div>
         </Grid>
-        <Grid item xs={12}>
-          <ReactTerminalStateless
-            autoFocus={false}
-            acceptInput
-            clickToFocus
-            theme={{
-              ...ReactThemes.hacker,
-              spacing: '0',
-              height: horizontalOrientation ? '50vh' : '100vh',
-              width: horizontalOrientation ? '100vw' : '50vw',
-            }}
-            emulatorState={emulatorState}
-            onInputChange={this.handleTerminalInput}
-            onStateChange={this.handleTerminalStateChange}
-          />
-        </Grid>
+        <Collapse in={isInputDisplayed}>
+          <Grid item xs={12}>
+            {this.renderInput(horizontalOrientation)}
+          </Grid>
+        </Collapse>
+        <Collapse in={!isInputDisplayed}>
+          <Grid item xs={12}>
+            <ReactTerminalStateless
+              autoFocus={false}
+              acceptInput
+              clickToFocus
+              theme={{
+                ...ReactThemes.hacker,
+                spacing: '0',
+                height: horizontalOrientation ? '50vh' : '100vh',
+                width: horizontalOrientation ? '100vw' : '50vw',
+              }}
+              emulatorState={emulatorState}
+              onInputChange={this.handleTerminalInput}
+              onStateChange={this.handleTerminalStateChange}
+            />
+          </Grid>
+        </Collapse>
       </Grid>
     );
   }
