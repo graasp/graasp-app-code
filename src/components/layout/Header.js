@@ -30,6 +30,7 @@ import {
   FEEDBACK_VIEW,
 } from '../../config/views';
 import './Header.css';
+<<<<<<< HEAD
 import {
   runCode,
   openInputSettings,
@@ -39,6 +40,9 @@ import {
 } from '../../actions';
 import { FEEDBACK, INPUT, STDIN } from '../../config/appInstanceResourceTypes';
 import { JAVASCRIPT } from '../../config/programmingLanguages';
+=======
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
+>>>>>>> master
 
 class Header extends Component {
   static propTypes = {
@@ -344,7 +348,9 @@ const mapStateToProps = ({
   const stdinResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === STDIN;
   });
-
+  const {
+    programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+  } = appInstance.content.settings;
   return {
     userId,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
@@ -353,12 +359,12 @@ const mapStateToProps = ({
     spaceId: context.spaceId,
     mode: context.mode,
     view: context.view,
-    programmingLanguage: appInstance.content.settings.programmingLanguage,
     savedCode: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
     savedInput: stdinResource && stdinResource.data,
     currentInput: code.input,
     isInputDisplayed: layout.settings.isInputDisplayed,
+    programmingLanguage,
   };
 };
 

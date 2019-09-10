@@ -2,6 +2,7 @@ import {
   SET_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
+  SET_DEFAULT_CODE,
   SET_FOOTER_CODE,
   PRINT_OUTPUT,
   CLEAR_OUTPUT,
@@ -14,6 +15,7 @@ const INITIAL_STATE = {
   language: '',
   content: '',
   header: '',
+  default: '',
   footer: '',
   input: '',
   output: '',
@@ -36,6 +38,11 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         header: payload,
+      };
+    case SET_DEFAULT_CODE:
+      return {
+        ...state,
+        default: payload,
       };
     case SET_FOOTER_CODE:
       return {

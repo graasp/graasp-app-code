@@ -49,7 +49,7 @@ class StudentButtons extends Component {
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
     feedback: PropTypes.string,
-    inputResourceId: PropTypes.string,
+    inputResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
     view: PropTypes.string,

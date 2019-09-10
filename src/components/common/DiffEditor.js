@@ -67,14 +67,22 @@ const mapStateToProps = ({ appInstance, context, appInstanceResources }) => {
   );
   const {
     content: {
-      settings: { programmingLanguage },
+      settings: { programmingLanguage, defaultCode },
     },
   } = appInstance;
+
+  // initialize code to the default
+  let code = defaultCode;
+
+  // if there already has been input, then override
+  if (inputResource && inputResource.data) {
+    code = inputResource.data;
+  }
 
   return {
     appInstanceId,
     programmingLanguage,
-    code: inputResource && inputResource.data,
+    code,
     feedback: feedbackResource && feedbackResource.data,
   };
 };

@@ -2,6 +2,7 @@ import {
   SET_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
+  SET_DEFAULT_CODE,
   SET_FOOTER_CODE,
   RUN_CODE_FAILED,
   SET_INPUT,
@@ -31,6 +32,12 @@ const setCode = data => dispatch =>
 const setHeaderCode = data => dispatch =>
   dispatch({
     type: SET_HEADER_CODE,
+    payload: data,
+  });
+
+const setDefaultCode = data => dispatch =>
+  dispatch({
+    type: SET_DEFAULT_CODE,
     payload: data,
   });
 
@@ -124,6 +131,7 @@ const runCode = job => (dispatch, getState) => {
   }
 };
 
+<<<<<<< HEAD
 export {
   setLanguage,
   runCode,
@@ -135,3 +143,6 @@ export {
   sendInput,
   printOutput,
 };
+=======
+export { runCode, setCode, setHeaderCode, setFooterCode, setDefaultCode };
+>>>>>>> master

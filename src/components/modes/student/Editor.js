@@ -111,17 +111,26 @@ const mapStateToProps = ({
   const { userId, appInstanceId } = context;
   const {
     content: {
-      settings: { programmingLanguage, orientation },
+      settings: { programmingLanguage, orientation, defaultCode },
     },
   } = appInstance;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
   });
+
+  // initialize code to the default
+  let code = defaultCode;
+
+  // if there already has been input, then override
+  if (inputResource && inputResource.data) {
+    code = inputResource.data;
+  }
+
   return {
     appInstanceId,
     programmingLanguage,
     orientation,
-    code: inputResource && inputResource.data,
+    code,
     currentInput: code.input,
   };
 };

@@ -14,25 +14,33 @@ class StudentMode extends Component {
     view: PropTypes.string,
     activity: PropTypes.number,
     dispatchGetAppInstanceResources: PropTypes.func.isRequired,
+    userId: PropTypes.string,
   };
 
   static defaultProps = {
     view: 'normal',
     appInstanceId: null,
     activity: 0,
+    userId: null,
   };
 
   constructor(props) {
     super(props);
+    const { userId } = props;
+
     // get the resources for this user
-    props.dispatchGetAppInstanceResources();
+    props.dispatchGetAppInstanceResources({ userId });
   }
 
   componentDidUpdate({ appInstanceId: prevAppInstanceId }) {
-    const { appInstanceId, dispatchGetAppInstanceResources } = this.props;
+    const {
+      appInstanceId,
+      dispatchGetAppInstanceResources,
+      userId,
+    } = this.props;
     // handle receiving the app instance id
     if (appInstanceId !== prevAppInstanceId) {
-      dispatchGetAppInstanceResources();
+      dispatchGetAppInstanceResources({ userId });
     }
   }
 
@@ -60,10 +68,14 @@ class StudentMode extends Component {
     }
   }
 }
-const mapStateToProps = ({ context, appInstanceResources }) => ({
-  appInstanceId: context.appInstanceId,
-  activity: appInstanceResources.activity.length,
-});
+const mapStateToProps = ({ context, appInstanceResources }) => {
+  const { userId, appInstanceId } = context;
+  return {
+    userId,
+    appInstanceId,
+    activity: appInstanceResources.activity.length,
+  };
+};
 
 const mapDispatchToProps = {
   dispatchGetAppInstanceResources: getAppInstanceResources,

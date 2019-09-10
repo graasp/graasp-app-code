@@ -1,6 +1,7 @@
 export const SET_LANGUAGE = 'SET_LANGUAGE';
 export const SET_CODE = 'SET_CODE';
 export const SET_HEADER_CODE = 'SET_HEADER_CODE';
+export const SET_DEFAULT_CODE = 'SET_DEFAULT_CODE';
 export const SET_FOOTER_CODE = 'SET_FOOTER_CODE';
 export const RUN_CODE = 'RUN_CODE';
 export const RUN_CODE_SUCCEEDED = 'RUN_CODE_SUCCEEDED';
