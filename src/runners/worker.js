@@ -6,6 +6,7 @@ onmessage = function (ev) {
 		case 'SET_INPUT':
 			__STDIN_FIFO__ = Array.from(data);
 			break;
+		case 'SEND_INPUT':
 		case 'APPEND_INPUT':
 			if (__STDIN_FIFO__) {
 				__STDIN_FIFO__.push(data);

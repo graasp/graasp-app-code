@@ -39,6 +39,7 @@ import {
   postAppInstanceResource,
 } from '../../actions';
 import { FEEDBACK, INPUT, STDIN } from '../../config/appInstanceResourceTypes';
+import { JAVASCRIPT } from '../../config/programmingLanguages';
 
 class Header extends Component {
   static propTypes = {
@@ -218,20 +219,15 @@ class Header extends Component {
       savedInput,
       feedback,
       view,
+      programmingLanguage,
     } = this.props;
     const feedbackDisabled = !feedback;
     const saveDisabled =
       currentCode === savedCode && currentInput === savedInput;
     const runDisabled = _.isEmpty(currentCode);
+    const showInput = programmingLanguage === JAVASCRIPT;
 
     const buttons = [
-      <Tooltip title={t('Input')} key="input">
-        <div>
-          <IconButton onClick={this.handleOpenInput}>
-            <InputIcon nativeColor="#fff" />
-          </IconButton>
-        </div>
-      </Tooltip>,
       <Tooltip title={t('Save')} key="save">
         <div>
           <IconButton onClick={this.handleSave} disabled={saveDisabled}>
@@ -247,6 +243,18 @@ class Header extends Component {
         </div>
       </Tooltip>,
     ];
+
+    if (showInput) {
+      buttons.unshift(
+        <Tooltip title={t('Input')} key="input">
+          <div>
+            <IconButton onClick={this.handleOpenInput}>
+              <InputIcon nativeColor="#fff" />
+            </IconButton>
+          </div>
+        </Tooltip>
+      );
+    }
 
     if (view === DEFAULT_VIEW) {
       buttons.unshift(

@@ -1,4 +1,5 @@
 import {
+  SET_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_FOOTER_CODE,
@@ -10,6 +11,7 @@ import {
 } from '../types';
 
 const INITIAL_STATE = {
+  language: '',
   content: '',
   header: '',
   footer: '',
@@ -20,6 +22,11 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, { type, payload }) => {
   switch (type) {
+    case SET_LANGUAGE:
+      return {
+        ...state,
+        language: payload,
+      };
     case SET_CODE:
       return {
         ...state,

@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
+import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
@@ -19,11 +20,16 @@ import AceEditor from 'react-ace';
 import {
   closeSettings,
   patchAppInstance,
+  setLanguage,
   setHeaderCode,
   setFooterCode,
 } from '../../../actions';
 import Loader from '../../common/Loader';
-import { JAVASCRIPT, PYTHON } from '../../../config/programmingLanguages';
+import {
+  JAVASCRIPT,
+  PYTHON,
+  DEFAULT_LANGUAGE,
+} from '../../../config/programmingLanguages';
 
 function getModalStyle() {
   const top = 50;
@@ -67,6 +73,12 @@ const styles = theme => ({
     color: 'rgba(0, 0, 0, 0.54)',
     marginTop: '8px',
   },
+  fab: {
+    margin: theme.spacing.unit * 0,
+    position: 'fixed',
+    bottom: theme.spacing.unit * 7,
+    right: theme.spacing.unit * 0,
+  },
 });
 
 class Settings extends Component {
@@ -82,11 +94,13 @@ class Settings extends Component {
       footerCode: PropTypes.string.isRequired,
     }).isRequired,
     appInstanceId: PropTypes.string.isRequired,
+    currentLanguage: PropTypes.string.isRequired,
     currentHeaderCode: PropTypes.string.isRequired,
     currentFooterCode: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     dispatchCloseSettings: PropTypes.func.isRequired,
     dispatchPatchAppInstance: PropTypes.func.isRequired,
+    dispatchSetLanguage: PropTypes.func.isRequired,
     dispatchSetHeaderCode: PropTypes.func.isRequired,
     dispatchSetFooterCode: PropTypes.func.isRequired,
     i18n: PropTypes.shape({
@@ -106,11 +120,21 @@ class Settings extends Component {
   };
 
   handleChangeProgrammingLanguage = ({ target }) => {
+    const { dispatchSetLanguage } = this.props;
     const { value } = target;
-    const settingsToChange = {
-      programmingLanguage: value,
-    };
-    this.saveSettings(settingsToChange);
+
+    dispatchSetLanguage(value);
+  };
+
+  onLanguageLoad = () => {
+    const {
+      dispatchSetLanguage,
+      currentLanguage,
+      settings: { programmingLanguage },
+    } = this.props;
+
+    const language = currentLanguage || programmingLanguage;
+    dispatchSetLanguage(language);
   };
 
   onHeaderCodeLoad = () => {
@@ -121,6 +145,9 @@ class Settings extends Component {
     } = this.props;
     const code = currentHeaderCode || headerCode;
     dispatchSetHeaderCode(code);
+
+    // dirty hack here
+    this.onLanguageLoad();
   };
 
   onHeaderCodeChange = value => {
@@ -143,6 +170,14 @@ class Settings extends Component {
     dispatchSetFooterCode(value);
   };
 
+  handleSaveLanguage = () => {
+    const { currentLanguage } = this.props;
+    const settingsToChange = {
+      programmingLanguage: currentLanguage,
+    };
+    this.saveSettings(settingsToChange);
+  };
+
   handleSaveCode = () => {
     const { currentHeaderCode, currentFooterCode } = this.props;
     const settings = {
@@ -153,14 +188,25 @@ class Settings extends Component {
     this.saveSettings(settings);
   };
 
+  handleSave = () => {
+    const {
+      currentLanguage,
+      settings: { programmingLanguage },
+    } = this.props;
+
+    if (currentLanguage !== programmingLanguage) {
+      this.handleSaveLanguage();
+    }
+    this.handleSaveCode();
+  };
+
   handleClose = () => {
     const { dispatchCloseSettings } = this.props;
     dispatchCloseSettings();
   };
 
   renderModalContent() {
-    const { t, settings, activity, classes } = this.props;
-    const { programmingLanguage } = settings;
+    const { t, activity, classes, currentLanguage } = this.props;
 
     if (activity) {
       return <Loader />;
@@ -169,7 +215,7 @@ class Settings extends Component {
     const selectControl = (
       <Select
         className={classes.formControl}
-        value={programmingLanguage}
+        value={currentLanguage || DEFAULT_LANGUAGE}
         onChange={this.handleChangeProgrammingLanguage}
         inputProps={{
           name: 'programmingLanguage',
@@ -191,6 +237,14 @@ class Settings extends Component {
         </FormControl>
         {this.renderHeaderCodeEditor()}
         {this.renderFooterCodeEditor()}
+        <Fab
+          color="primary"
+          aria-label={t('Close')}
+          className={classes.fab}
+          onClick={this.handleClose}
+        >
+          <CloseIcon />
+        </Fab>
       </div>
     );
   }
@@ -280,20 +334,28 @@ class Settings extends Component {
   }
 
   renderButtons() {
-    const { t, classes, currentHeaderCode, currentFooterCode } = this.props;
     const {
-      settings: { headerCode, footerCode },
+      t,
+      classes,
+      currentLanguage,
+      currentHeaderCode,
+      currentFooterCode,
+    } = this.props;
+    const {
+      settings: { programmingLanguage, headerCode, footerCode },
     } = this.props;
 
-    const headerCodeChanged = !(headerCode === currentHeaderCode);
-    const footerCodeChanged = !(footerCode === currentFooterCode);
-    const saveDisabled = !headerCodeChanged && !footerCodeChanged;
+    const languageChanged = programmingLanguage !== currentLanguage;
+    const headerCodeChanged = headerCode !== currentHeaderCode;
+    const footerCodeChanged = footerCode !== currentFooterCode;
+    const saveDisabled =
+      !languageChanged && !headerCodeChanged && !footerCodeChanged;
 
     return (
       <Tooltip title={t('Save')} key="save" className={classes.right}>
         <IconButton
           size="small"
-          onClick={this.handleSaveCode}
+          onClick={this.handleSave}
           disabled={saveDisabled}
         >
           <SaveIcon nativeColor="#fff" opacity={saveDisabled ? 0.5 : 1} />
@@ -316,14 +378,6 @@ class Settings extends Component {
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                onClick={this.handleClose}
-                aria-label="close"
-              >
-                <CloseIcon />
-              </IconButton>
               <Typography color="inherit" variant="h5" id="modal-title">
                 {t('Settings')}
               </Typography>
@@ -348,6 +402,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
       headerCode: appInstance.content.settings.headerCode,
       footerCode: appInstance.content.settings.footerCode,
     },
+    currentLanguage: code.language,
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,
     activity: appInstance.activity.length,
@@ -357,6 +412,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
 const mapDispatchToProps = {
   dispatchCloseSettings: closeSettings,
   dispatchPatchAppInstance: patchAppInstance,
+  dispatchSetLanguage: setLanguage,
   dispatchSetHeaderCode: setHeaderCode,
   dispatchSetFooterCode: setFooterCode,
 };
