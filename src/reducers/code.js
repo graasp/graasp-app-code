@@ -1,7 +1,15 @@
-import { SET_CODE, PRINT_OUTPUT, CLEAR_OUTPUT } from '../types';
+import {
+  SET_CODE,
+  SET_HEADER_CODE,
+  SET_FOOTER_CODE,
+  PRINT_OUTPUT,
+  CLEAR_OUTPUT,
+} from '../types';
 
 const INITIAL_STATE = {
   content: '',
+  header: '',
+  footer: '',
   output: '',
 };
 
@@ -11,6 +19,16 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         content: payload,
+      };
+    case SET_HEADER_CODE:
+      return {
+        ...state,
+        header: payload,
+      };
+    case SET_FOOTER_CODE:
+      return {
+        ...state,
+        footer: payload,
       };
     case PRINT_OUTPUT:
       return {

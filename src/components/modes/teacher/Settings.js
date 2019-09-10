@@ -2,17 +2,26 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import Toolbar from '@material-ui/core/Toolbar';
+import AppBar from '@material-ui/core/AppBar';
+import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
-import Modal from '@material-ui/core/Modal';
+import CloseIcon from '@material-ui/icons/Close';
+import Dialog from '@material-ui/core/Dialog';
 import FormControl from '@material-ui/core/FormControl';
 import { connect } from 'react-redux';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { withTranslation } from 'react-i18next';
-import { closeSettings, patchAppInstance } from '../../../actions';
+import AceEditor from 'react-ace';
+import {
+  closeSettings,
+  patchAppInstance,
+  setHeaderCode,
+  setFooterCode,
+} from '../../../actions';
 import Loader from '../../common/Loader';
 import { JAVASCRIPT, PYTHON } from '../../../config/programmingLanguages';
 
@@ -35,11 +44,28 @@ const styles = theme => ({
     padding: theme.spacing.unit * 4,
     outline: 'none',
   },
+  fullScreen: {
+    position: 'absolute',
+    // 64px is the height of the header
+    marginTop: '64px',
+    height: 'calc(100% - 64px)',
+    width: 'calc(100% - 32px)',
+    backgroundColor: theme.palette.background.paper,
+    outline: 'none',
+  },
   button: {
     margin: theme.spacing.unit,
   },
+  right: {
+    position: 'absolute',
+    right: theme.spacing.unit,
+  },
   formControl: {
     minWidth: 180,
+  },
+  helperText: {
+    color: 'rgba(0, 0, 0, 0.54)',
+    marginTop: '8px',
   },
 });
 
@@ -51,22 +77,21 @@ class Settings extends Component {
     settings: PropTypes.shape({
       headerVisible: PropTypes.bool.isRequired,
       lang: PropTypes.string.isRequired,
+      programmingLanguage: PropTypes.string.isRequired,
       headerCode: PropTypes.string.isRequired,
       footerCode: PropTypes.string.isRequired,
     }).isRequired,
+    appInstanceId: PropTypes.string.isRequired,
+    currentHeaderCode: PropTypes.string.isRequired,
+    currentFooterCode: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     dispatchCloseSettings: PropTypes.func.isRequired,
     dispatchPatchAppInstance: PropTypes.func.isRequired,
+    dispatchSetHeaderCode: PropTypes.func.isRequired,
+    dispatchSetFooterCode: PropTypes.func.isRequired,
     i18n: PropTypes.shape({
       defaultNS: PropTypes.string,
     }).isRequired,
-  };
-
-  state = {
-    headerCodeChanged: false,
-    footerCodeChanged: false,
-    headerCodeToSave: null,
-    footerCodeToSave: null,
   };
 
   saveSettings = settingsToChange => {
@@ -88,53 +113,44 @@ class Settings extends Component {
     this.saveSettings(settingsToChange);
   };
 
-  handleChangeHeaderCode = ({ target }) => {
+  onHeaderCodeLoad = () => {
     const {
+      dispatchSetHeaderCode,
+      currentHeaderCode,
       settings: { headerCode },
     } = this.props;
-    const { value } = target;
-    const headerCodeToSave = value;
-
-    const headerCodeChanged = !(headerCodeToSave === headerCode);
-    this.setState({ headerCodeToSave, headerCodeChanged });
+    const code = currentHeaderCode || headerCode;
+    dispatchSetHeaderCode(code);
   };
 
-  handleChangeFooterCode = ({ target }) => {
+  onHeaderCodeChange = value => {
+    const { dispatchSetHeaderCode } = this.props;
+    dispatchSetHeaderCode(value);
+  };
+
+  onFooterCodeLoad = () => {
     const {
+      dispatchSetFooterCode,
+      currentFooterCode,
       settings: { footerCode },
     } = this.props;
-    const { value } = target;
-    const footerCodeToSave = value;
+    const code = currentFooterCode || footerCode;
+    dispatchSetFooterCode(code);
+  };
 
-    const footerCodeChanged = !(footerCodeToSave === footerCode);
-    this.setState({ footerCodeToSave, footerCodeChanged });
+  onFooterCodeChange = value => {
+    const { dispatchSetFooterCode } = this.props;
+    dispatchSetFooterCode(value);
   };
 
   handleSaveCode = () => {
-    const {
-      headerCodeChanged,
-      footerCodeChanged,
-      headerCodeToSave,
-      footerCodeToSave,
-    } = this.state;
-    const {
-      settings: { headerCode, footerCode },
-    } = this.props;
-
-    const headerCodeValue = headerCodeChanged ? headerCodeToSave : headerCode;
-    const footerCodeValue = footerCodeChanged ? footerCodeToSave : footerCode;
-
+    const { currentHeaderCode, currentFooterCode } = this.props;
     const settings = {
-      headerCode: headerCodeValue,
-      footerCode: footerCodeValue,
+      headerCode: currentHeaderCode,
+      footerCode: currentFooterCode,
     };
 
     this.saveSettings(settings);
-
-    this.setState({
-      headerCodeChanged: false,
-      footerCodeChanged: false,
-    });
   };
 
   handleClose = () => {
@@ -144,7 +160,7 @@ class Settings extends Component {
 
   renderModalContent() {
     const { t, settings, activity, classes } = this.props;
-    const { programmingLanguage, headerCode, footerCode } = settings;
+    const { programmingLanguage } = settings;
 
     if (activity) {
       return <Loader />;
@@ -160,76 +176,129 @@ class Settings extends Component {
           id: 'programmingLanguageSelect',
         }}
       >
-        <MenuItem value={JAVASCRIPT}>JavaScript</MenuItem>
-        <MenuItem value={PYTHON}>Python</MenuItem>
+        <MenuItem value={JAVASCRIPT}>JavaScript (browser engine)</MenuItem>
+        <MenuItem value={PYTHON}>Python (Python3 support via Pyodide)</MenuItem>
       </Select>
     );
 
-    const headerCodeEditor = (
-      <TextField
-        className={classes.textField}
-        defaultValue={headerCode}
-        onChange={this.handleChangeHeaderCode}
-        inputProps={{
-          name: 'headerCode',
-          id: 'headerCodeEditor',
-        }}
-        multiline
-        margin="normal"
-        variant="outlined"
-        helperText="Write header code here (ex. import libraries, init console, etc.)"
-        label="header code"
-      />
+    return (
+      <div>
+        <FormControl>
+          <InputLabel htmlFor="programmingLanguageSelect">
+            {t('Programming Language')}
+          </InputLabel>
+          {selectControl}
+        </FormControl>
+        {this.renderHeaderCodeEditor()}
+        {this.renderFooterCodeEditor()}
+      </div>
     );
+  }
 
-    const footerCodeEditor = (
-      <TextField
-        className={classes.textField}
-        defaultValue={footerCode}
-        onChange={this.handleChangeFooterCode}
-        inputProps={{
-          name: 'footerCode',
-          id: 'footerCodeEditor',
-        }}
-        multiline
-        margin="normal"
-        variant="outlined"
-        helperText="Write footer code here (ex. display execution time, etc.)"
-        label="footer code"
-      />
-    );
+  renderHeaderCodeEditor() {
+    const {
+      t,
+      classes,
+      currentHeaderCode,
+      appInstanceId,
+      settings: { programmingLanguage },
+    } = this.props;
 
     return (
-      <FormControl>
-        <InputLabel htmlFor="programmingLanguageSelect">
-          {t('Programming Language')}
-        </InputLabel>
-        {selectControl}
+      <div>
+        <Typography variant="subtitle2" id="modal-headercode-caption">
+          <div className={classes.helperText}>{t('header code')}</div>
+        </Typography>
+        <AceEditor
+          placeholder={t(
+            '// Write header code here (ex. import libraries, init console, etc.)'
+          )}
+          mode={programmingLanguage}
+          theme="xcode"
+          name={appInstanceId || Math.random()}
+          width="100%"
+          height="120px"
+          fontSize={14}
+          showPrintMargin
+          showGutter
+          highlightActiveLine
+          value={currentHeaderCode || ''}
+          onLoad={this.onHeaderCodeLoad}
+          onChange={this.onHeaderCodeChange}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </div>
+    );
+  }
 
-        {headerCodeEditor}
-        {footerCodeEditor}
-        {this.renderButtons()}
-      </FormControl>
+  renderFooterCodeEditor() {
+    const {
+      t,
+      classes,
+      currentFooterCode,
+      appInstanceId,
+      settings: { programmingLanguage },
+    } = this.props;
+
+    return (
+      <div>
+        <Typography variant="subtitle2" id="modal-footercode-caption">
+          <div className={classes.helperText}>{t('footer code')}</div>
+        </Typography>
+        <AceEditor
+          placeholder={t(
+            '// Write footer code here (ex. display execution time, etc.)'
+          )}
+          mode={programmingLanguage}
+          theme="xcode"
+          name={appInstanceId || Math.random()}
+          width="100%"
+          height="120px"
+          fontSize={14}
+          showPrintMargin
+          showGutter
+          highlightActiveLine
+          value={currentFooterCode || ''}
+          onLoad={this.onFooterCodeLoad}
+          onChange={this.onFooterCodeChange}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </div>
     );
   }
 
   renderButtons() {
-    const { t, classes } = this.props;
-    const { headerCodeChanged, footerCodeChanged } = this.state;
+    const { t, classes, currentHeaderCode, currentFooterCode } = this.props;
+    const {
+      settings: { headerCode, footerCode },
+    } = this.props;
+
+    const headerCodeChanged = !(headerCode === currentHeaderCode);
+    const footerCodeChanged = !(footerCode === currentFooterCode);
     const saveDisabled = !headerCodeChanged && !footerCodeChanged;
 
     return (
-      <Button
-        variant="contained"
-        size="small"
-        className={classes.button}
-        onClick={this.handleSaveCode}
-        disabled={saveDisabled}
-        opacity={saveDisabled ? 0.5 : 1}
-      >
-        <SaveIcon />
-        {t('Save')}
-      </Button>
+      <Tooltip title={t('Save')} key="save" className={classes.right}>
+        <IconButton
+          size="small"
+          onClick={this.handleSaveCode}
+          disabled={saveDisabled}
+        >
+          <SaveIcon nativeColor="#fff" opacity={saveDisabled ? 0.5 : 1} />
+        </IconButton>
+      </Tooltip>
     );
   }
 
@@ -238,25 +307,39 @@ class Settings extends Component {
 
     return (
       <div>
-        <Modal
+        <Dialog
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
           open={open}
           onClose={this.handleClose}
+          fullScreen
         >
-          <div style={getModalStyle()} className={classes.paper}>
-            <Typography variant="h5" id="modal-title">
-              {t('Settings')}
-            </Typography>
+          <AppBar className={classes.appBar}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={this.handleClose}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography color="inherit" variant="h5" id="modal-title">
+                {t('Settings')}
+              </Typography>
+              {this.renderButtons()}
+            </Toolbar>
+          </AppBar>
+          <div style={getModalStyle()} className={classes.fullScreen}>
             {this.renderModalContent()}
           </div>
-        </Modal>
+        </Dialog>
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ layout, appInstance }) => {
+const mapStateToProps = ({ code, layout, appInstance }) => {
   return {
     open: layout.settings.open,
     settings: {
@@ -265,6 +348,8 @@ const mapStateToProps = ({ layout, appInstance }) => {
       headerCode: appInstance.content.settings.headerCode,
       footerCode: appInstance.content.settings.footerCode,
     },
+    currentHeaderCode: code.header,
+    currentFooterCode: code.footer,
     activity: appInstance.activity.length,
   };
 };
@@ -272,6 +357,8 @@ const mapStateToProps = ({ layout, appInstance }) => {
 const mapDispatchToProps = {
   dispatchCloseSettings: closeSettings,
   dispatchPatchAppInstance: patchAppInstance,
+  dispatchSetHeaderCode: setHeaderCode,
+  dispatchSetFooterCode: setFooterCode,
 };
 
 const ConnectedComponent = connect(

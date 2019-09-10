@@ -1,4 +1,9 @@
-import { SET_CODE, RUN_CODE_FAILED } from '../types';
+import {
+  SET_CODE,
+  SET_HEADER_CODE,
+  SET_FOOTER_CODE,
+  RUN_CODE_FAILED,
+} from '../types';
 import {
   runJavaScript,
   runJavaScriptWithHeaderAndFooter,
@@ -9,6 +14,18 @@ import { runPython } from '../runners/python';
 const setCode = data => dispatch =>
   dispatch({
     type: SET_CODE,
+    payload: data,
+  });
+
+const setHeaderCode = data => dispatch =>
+  dispatch({
+    type: SET_HEADER_CODE,
+    payload: data,
+  });
+
+const setFooterCode = data => dispatch =>
+  dispatch({
+    type: SET_FOOTER_CODE,
     payload: data,
   });
 
@@ -46,4 +63,4 @@ const runCode = data => (dispatch, getState) => {
   }
 };
 
-export { runCode, setCode };
+export { runCode, setCode, setHeaderCode, setFooterCode };
