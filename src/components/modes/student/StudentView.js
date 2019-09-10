@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
+import { Grid } from '@material-ui/core';
 import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
 import AceEditor from 'react-ace';
 import { setCode, printOutput, setInput, sendInput } from '../../../actions';
@@ -13,25 +14,23 @@ import {
   INPUT,
   STDIN,
 } from '../../../config/appInstanceResourceTypes';
+import { setCode } from '../../../actions';
+import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
-// import {
-//   DEFAULT_MAX_INPUT_LENGTH,
-//   DEFAULT_MAX_ROWS,
-// } from '../../../config/settings';
+import {
+  DEFAULT_ORIENTATION,
+  HORIZONTAL_ORIENTATION,
+  VERTICAL_ORIENTATION,
+} from '../../../config/settings';
 
 const Terminal = require('javascript-terminal');
 
 const styles = theme => ({
   main: {
     flex: 1,
-    // 64px is the height of the header
-    height: 'calc(100% - 64px)',
-  },
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    overflowX: 'hidden',
+    height: '100%',
+    width: '100%',
   },
   message: {
     padding: theme.spacing.unit,
@@ -72,6 +71,10 @@ class StudentView extends Component {
     output: PropTypes.string,
     stdin: PropTypes.string,
     isInputDisplayed: PropTypes.bool.isRequired,
+    orientation: PropTypes.oneOf([
+      VERTICAL_ORIENTATION,
+      HORIZONTAL_ORIENTATION,
+    ]),
   };
 
   static defaultProps = {
@@ -79,6 +82,7 @@ class StudentView extends Component {
     ready: false,
     output: '',
     stdin: '',
+    orientation: DEFAULT_ORIENTATION,
   };
 
   // this handler is called for each new input character
@@ -108,6 +112,7 @@ class StudentView extends Component {
   onStdinLoad = () => {
     const { dispatchSetInput, stdin } = this.props;
     dispatchSetInput(stdin || '');
+
   };
 
   onStdinChange = value => {
@@ -150,7 +155,7 @@ class StudentView extends Component {
   }
 
   render() {
-    const { classes, ready, activity, output } = this.props;
+    const { classes, ready, activity, output, orientation } = this.props;
 
     if (!ready || activity) {
       return <Loader />;
@@ -163,29 +168,46 @@ class StudentView extends Component {
       outputs: customOutputs,
     });
 
+    const horizontalOrientation = orientation === HORIZONTAL_ORIENTATION;
     return (
-      <div className={classes.main}>
-        <Editor />
-        <div>{this.renderInput()}</div>
-        <ReactTerminalStateless
-          theme={{
-            ...ReactThemes.hacker,
-            width: '100%',
-            height: '50%',
-            spacing: '0',
-          }}
-          emulatorState={emulatorState}
-          onInputChange={this.handleTerminalInput}
-          onStateChange={this.handleTerminalStateChange}
-          acceptInput="true"
-          clickToFocus="true"
-        />
-      </div>
+      <Grid
+        container
+        className={classes.main}
+        spacing={0}
+        direction={horizontalOrientation ? 'row' : 'column'}
+      >
+        <Grid item xs={12}>
+          <Editor />
+          <div>{this.renderInput()}</div>
+        </Grid>
+        <Grid item xs={12}>
+          <ReactTerminalStateless
+            autoFocus={false}
+            acceptInput={true}
+            clickToFocus={true}
+              theme={{
+              ...ReactThemes.hacker,
+              spacing: '0',
+              height: horizontalOrientation ? '50vh' : '100vh',
+              width: horizontalOrientation ? '100vw' : '50vw',
+            }}
+            emulatorState={emulatorState}
+            onInputChange={this.handleTerminalInput}
+            onStateChange={this.handleTerminalStateChange}
+            />
+        </Grid>
+      </Grid>
     );
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
+const mapStateToProps = ({
+  context,
+  appInstanceResources,
+  layout
+  code,
+  appInstance,
+}) => {
   const { userId, offline, appInstanceId } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
@@ -198,15 +220,20 @@ const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
   const stdinResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === STDIN;
   });
+  const {
+    content: {
+      settings: { orientation },
+    },
+  } = appInstance;
 
   return {
     userId,
     offline,
     appInstanceId,
+    orientation,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
-    code: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
     stdin: stdinResource && stdinResource.data,
     output: code.output,

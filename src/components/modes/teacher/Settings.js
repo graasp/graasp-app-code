@@ -401,6 +401,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
       programmingLanguage: appInstance.content.settings.programmingLanguage,
       headerCode: appInstance.content.settings.headerCode,
       footerCode: appInstance.content.settings.footerCode,
+      orientation: appInstance.content.settings.orientation,
     },
     currentLanguage: code.language,
     currentHeaderCode: code.header,

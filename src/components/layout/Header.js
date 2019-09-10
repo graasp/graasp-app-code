@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import InputIcon from '@material-ui/icons/Input';
@@ -24,11 +22,7 @@ import {
   STUDENT_MODES,
   TEACHER_MODES,
 } from '../../config/settings';
-import {
-  DEFAULT_VIEW,
-  DASHBOARD_VIEW,
-  FEEDBACK_VIEW,
-} from '../../config/views';
+import { DEFAULT_VIEW, DASHBOARD_VIEW } from '../../config/views';
 import './Header.css';
 import {
   runCode,
@@ -57,15 +51,16 @@ class Header extends Component {
     mode: PropTypes.string,
     currentCode: PropTypes.string.isRequired,
     currentInput: PropTypes.string,
-    programmingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
     inputResourceId: PropTypes.string,
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
-    view: PropTypes.string,
     feedback: PropTypes.string,
     isInputDisplayed: PropTypes.bool.isRequired,
+    programmingLanguage: PropTypes.string.isRequired,
+    mode: PropTypes.string,
+    view: PropTypes.string,
   };
 
   static defaultProps = {
@@ -90,6 +85,21 @@ class Header extends Component {
     logo: {
       height: '48px',
       marginRight: theme.spacing.unit * 2,
+    },
+    fab: {
+      margin: theme.spacing.unit,
+      position: 'fixed',
+      top: theme.spacing.unit * 1,
+      right: theme.spacing.unit * 1,
+    },
+    fab1: {
+      top: theme.spacing.unit * 2 + 40,
+    },
+    fab2: {
+      top: theme.spacing.unit * 3 + 2 * 40,
+    },
+    fab3: {
+      top: theme.spacing.unit * 4 + 3 * 40,
     },
   });
 
@@ -276,36 +286,6 @@ class Header extends Component {
         </Tooltip>
       );
     }
-
-    if (view === FEEDBACK_VIEW) {
-      buttons.unshift(
-        <Tooltip title={t('Show Editor')} key="editor">
-          <div>
-            <IconButton
-              href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
-            >
-              <ViewHeadlineIcon nativeColor="#fff" />
-            </IconButton>
-          </div>
-        </Tooltip>
-      );
-    }
-    return buttons;
-  }
-
-  renderButtons() {
-    const { mode } = this.props;
-
-    if (STUDENT_MODES.includes(mode)) {
-      return this.renderStudentButtons();
-    }
-    if (TEACHER_MODES.includes(mode)) {
-      // return this.renderTeacherButtons();
-      return null;
-    }
-    return null;
-  }
-
   renderLanguage() {
     const { t, programmingLanguage } = this.props;
 
@@ -313,20 +293,27 @@ class Header extends Component {
   }
 
   render() {
-    const { t, classes } = this.props;
-    return (
-      <header>
-        <AppBar position="static">
-          <Toolbar>
-            <Logo className={classes.logo} />
-            <Typography variant="h6" color="inherit" className={classes.grow}>
-              {t('Code') + this.renderLanguage()}
-            </Typography>
-            {this.renderButtons()}
-          </Toolbar>
-        </AppBar>
-      </header>
-    );
+    const { mode, t, classes } = this.props;
+
+    if (STUDENT_MODES.includes(mode)) {
+      return null;
+    }
+    if (TEACHER_MODES.includes(mode)) {
+      // return this.renderTeacherButtons();
+      return (
+        <header>
+          <AppBar position="static">
+            <Toolbar>
+              <Logo className={classes.logo} />
+              <Typography variant="h6" color="inherit" className={classes.grow}>
+                {t('Code') + this.renderLanguage()}
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </header>
+      );
+    }
+    return null;
   }
 }
 
@@ -360,7 +347,6 @@ const mapStateToProps = ({
     spaceId: context.spaceId,
     mode: context.mode,
     view: context.view,
-    currentCode: code.content,
     programmingLanguage: appInstance.content.settings.programmingLanguage,
     savedCode: inputResource && inputResource.data,
     feedback: feedbackResource && feedbackResource.data,
@@ -383,6 +369,10 @@ const ConnectedComponent = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Header);
+  };
+};
+
+const ConnectedComponent = connect(mapStateToProps)(Header);
 const TranslatedComponent = withTranslation()(ConnectedComponent);
 
 export default withStyles(Header.styles)(TranslatedComponent);

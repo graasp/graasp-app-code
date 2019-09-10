@@ -14,3 +14,8 @@ export const STUDENT_MODES = ['student', 'consumer', 'learner'];
 
 // we haven't decided what to call the teacher mode
 export const TEACHER_MODES = ['teacher', 'producer', 'educator', 'admin'];
+
+// orientations
+export const VERTICAL_ORIENTATION = 'VERTICAL_ORIENTATION';
+export const HORIZONTAL_ORIENTATION = 'HORIZONTAL_ORIENTATION';
+export const DEFAULT_ORIENTATION = VERTICAL_ORIENTATION;

@@ -6,6 +6,7 @@ import FeedbackView from './FeedbackView';
 import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
 import { getAppInstanceResources } from '../../../actions';
 import Loader from '../../common/Loader';
+import StudentButtons from './StudentButtons';
 
 class StudentMode extends Component {
   static propTypes = {
@@ -42,10 +43,20 @@ class StudentMode extends Component {
     }
     switch (view) {
       case FEEDBACK_VIEW:
-        return <FeedbackView />;
+        return (
+          <>
+            <StudentButtons />
+            <FeedbackView />
+          </>
+        );
       case DEFAULT_VIEW:
       default:
-        return <StudentView />;
+        return (
+          <>
+            <StudentButtons />
+            <StudentView />
+          </>
+        );
     }
   }
 }

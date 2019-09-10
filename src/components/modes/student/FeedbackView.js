@@ -12,8 +12,7 @@ const Terminal = require('javascript-terminal');
 const styles = theme => ({
   main: {
     flex: 1,
-    // 64px is the height of the header
-    height: 'calc(100% - 64px)',
+    height: '100%',
   },
   container: {
     display: 'flex',
@@ -36,7 +35,7 @@ const styles = theme => ({
 });
 
 // eslint-disable-next-line react/prefer-stateless-function
-class StudentView extends Component {
+class FeedbackView extends Component {
   static propTypes = {
     classes: PropTypes.shape({
       main: PropTypes.string,
@@ -74,6 +73,7 @@ class StudentView extends Component {
       <div className={classes.main}>
         <DiffEditor />
         <ReactTerminal
+          autoFocus={false}
           theme={{
             ...ReactThemes.hacker,
             width: '100%',
@@ -95,7 +95,7 @@ const mapStateToProps = ({ appInstanceResources, code }) => {
   };
 };
 
-const StyledComponent = withStyles(styles)(StudentView);
+const StyledComponent = withStyles(styles)(FeedbackView);
 
 const ConnectedComponent = connect(mapStateToProps)(StyledComponent);
 
