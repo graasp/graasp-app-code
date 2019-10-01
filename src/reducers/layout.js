@@ -8,7 +8,7 @@ import {
 const INITIAL_STATE = {
   settings: {
     open: false,
-    isInputDisplayed: false,
+    inputDisplayed: false,
   },
 };
 
@@ -35,7 +35,7 @@ export default (state = INITIAL_STATE, { type }) => {
         ...state,
         settings: {
           ...state.settings,
-          isInputDisplayed: true,
+          inputDisplayed: true,
         },
       };
     case CLOSE_INPUT_SETTINGS:
@@ -43,7 +43,7 @@ export default (state = INITIAL_STATE, { type }) => {
         ...state,
         settings: {
           ...state.settings,
-          isInputDisplayed: false,
+          inputDisplayed: false,
         },
       };
     default:

@@ -19,7 +19,7 @@ onmessage = function (ev) {
 			function print(val) {
 				postMessage({cmd: "print", data: val.toString()});
 			}
-			function println(val) {
+			function printLine(val) {
 				postMessage({cmd: "print", data: (val ? val.toString() : "") + "\\n"});
 			}
 			function clear() {
@@ -32,7 +32,7 @@ onmessage = function (ev) {
 				return val;
 			}
 
-			function readline(){
+			function readLine(){
 				const eol = '\\n';
 
 				if(!__STDIN_FIFO__) {

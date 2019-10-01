@@ -1,5 +1,5 @@
 import {
-  SET_LANGUAGE,
+  SET_PROGRAMMING_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_DEFAULT_CODE,
@@ -17,9 +17,9 @@ import {
 import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
 
-const setLanguage = data => dispatch =>
+const setProgrammingLanguage = data => dispatch =>
   dispatch({
-    type: SET_LANGUAGE,
+    type: SET_PROGRAMMING_LANGUAGE,
     payload: data,
   });
 
@@ -132,7 +132,7 @@ const runCode = job => (dispatch, getState) => {
 };
 
 export {
-  setLanguage,
+  setProgrammingLanguage,
   runCode,
   setCode,
   setHeaderCode,

@@ -67,7 +67,7 @@ class Header extends Component {
     userId: PropTypes.string,
     view: PropTypes.string,
     feedback: PropTypes.string,
-    isInputDisplayed: PropTypes.bool.isRequired,
+    inputDisplayed: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -112,12 +112,12 @@ class Header extends Component {
 
   handleOpenInput = () => {
     const {
-      isInputDisplayed,
+      inputDisplayed,
       dispatchOpenInputSettings,
       dispatchCloseInputSettings,
     } = this.props;
 
-    if (isInputDisplayed) {
+    if (inputDisplayed) {
       dispatchCloseInputSettings();
     } else {
       dispatchOpenInputSettings();
@@ -362,7 +362,7 @@ const mapStateToProps = ({
     feedback: feedbackResource && feedbackResource.data,
     savedInput: stdinResource && stdinResource.data,
     currentInput: code.input,
-    isInputDisplayed: layout.settings.isInputDisplayed,
+    inputDisplayed: layout.settings.inputDisplayed,
     programmingLanguage,
   };
 };

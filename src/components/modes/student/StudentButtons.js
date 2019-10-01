@@ -53,7 +53,7 @@ class StudentButtons extends Component {
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
     view: PropTypes.string,
-    isInputDisplayed: PropTypes.bool.isRequired,
+    inputDisplayed: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -158,14 +158,14 @@ class StudentButtons extends Component {
     dispatchRunCode(job);
   };
 
-  handleOpenInput = () => {
+  handleToggleInput = () => {
     const {
-      isInputDisplayed,
+      inputDisplayed,
       dispatchOpenInputSettings,
       dispatchCloseInputSettings,
     } = this.props;
 
-    if (isInputDisplayed) {
+    if (inputDisplayed) {
       dispatchCloseInputSettings();
     } else {
       dispatchOpenInputSettings();
@@ -188,6 +188,7 @@ class StudentButtons extends Component {
     const saveDisabled =
       currentCode === savedCode && currentInput === savedInput;
     const runDisabled = _.isEmpty(currentCode);
+    // input currently only works with javascript (2019/9/19)
     const showInput = programmingLanguage === JAVASCRIPT;
 
     const buttons = [
@@ -220,7 +221,7 @@ class StudentButtons extends Component {
     if (showInput) {
       buttons.unshift(
         <Fab
-          onClick={this.handleOpenInput}
+          onClick={this.handleToggleInput}
           disabled={!showInput}
           className={[classes.fab, classes.fab3]}
           key="input"
@@ -311,7 +312,7 @@ const mapStateToProps = ({
     currentInput: code.input,
     savedCode: inputResource && inputResource.data,
     savedInput: stdinResource && stdinResource.data,
-    isInputDisplayed: layout.settings.isInputDisplayed,
+    inputDisplayed: layout.settings.inputDisplayed,
   };
 };
 

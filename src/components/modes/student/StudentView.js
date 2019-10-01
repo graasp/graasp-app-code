@@ -19,6 +19,7 @@ import {
   DEFAULT_ORIENTATION,
   HORIZONTAL_ORIENTATION,
   VERTICAL_ORIENTATION,
+  HELPER_TEXT_COLOR,
 } from '../../../config/settings';
 
 const Terminal = require('javascript-terminal');
@@ -43,7 +44,7 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
   },
   helperText: {
-    color: 'rgba(0, 0, 0, 0.54)',
+    color: HELPER_TEXT_COLOR,
     marginTop: '8px',
   },
 });
@@ -67,7 +68,7 @@ class StudentView extends Component {
     activity: PropTypes.bool,
     output: PropTypes.string,
     stdin: PropTypes.string,
-    isInputDisplayed: PropTypes.bool.isRequired,
+    inputDisplayed: PropTypes.bool.isRequired,
     orientation: PropTypes.oneOf([
       VERTICAL_ORIENTATION,
       HORIZONTAL_ORIENTATION,
@@ -117,16 +118,16 @@ class StudentView extends Component {
   };
 
   renderInput(horizontalOrientation) {
-    const { t, appInstanceId, stdin, isInputDisplayed } = this.props;
+    const { t, appInstanceId, stdin, inputDisplayed } = this.props;
     const height = horizontalOrientation ? '50vh' : '100vh';
     const width = horizontalOrientation ? '100vw' : '50vw';
 
-    if (!isInputDisplayed) {
+    if (!inputDisplayed) {
       return <div />;
     }
 
     return (
-      <Collapse in={isInputDisplayed}>
+      <Collapse in={inputDisplayed}>
         <AceEditor
           placeholder={t('// Write input data here (ex. csv, json, xml, etc.)')}
           mode="csv"
@@ -160,7 +161,7 @@ class StudentView extends Component {
       activity,
       output,
       orientation,
-      isInputDisplayed,
+      inputDisplayed,
     } = this.props;
 
     if (!ready || activity) {
@@ -185,12 +186,12 @@ class StudentView extends Component {
         <Grid item xs={12}>
           <Editor />
         </Grid>
-        <Collapse in={isInputDisplayed}>
+        <Collapse in={inputDisplayed}>
           <Grid item xs={12}>
             {this.renderInput(horizontalOrientation)}
           </Grid>
         </Collapse>
-        <Collapse in={!isInputDisplayed}>
+        <Collapse in={!inputDisplayed}>
           <Grid item xs={12}>
             <ReactTerminalStateless
               autoFocus={false}
@@ -249,7 +250,7 @@ const mapStateToProps = ({
     feedback: feedbackResource && feedbackResource.data,
     stdin: stdinResource && stdinResource.data,
     output: code.output,
-    isInputDisplayed: layout.settings.isInputDisplayed,
+    inputDisplayed: layout.settings.inputDisplayed,
   };
 };
 

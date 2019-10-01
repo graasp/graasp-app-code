@@ -20,7 +20,7 @@ import AceEditor from 'react-ace';
 import {
   closeSettings,
   patchAppInstance,
-  setLanguage,
+  setProgrammingLanguage,
   setHeaderCode,
   setFooterCode,
   setDefaultCode,
@@ -31,7 +31,10 @@ import {
   PYTHON,
   DEFAULT_PROGRAMMING_LANGUAGE,
 } from '../../../config/programmingLanguages';
-import { DEFAULT_ORIENTATION } from '../../../config/settings';
+import {
+  DEFAULT_ORIENTATION,
+  HELPER_TEXT_COLOR,
+} from '../../../config/settings';
 
 function getModalStyle() {
   const top = 50;
@@ -72,7 +75,7 @@ const styles = theme => ({
     minWidth: 180,
   },
   helperText: {
-    color: 'rgba(0, 0, 0, 0.54)',
+    color: HELPER_TEXT_COLOR,
     marginTop: '8px',
   },
   fab: {
@@ -94,14 +97,14 @@ class Settings extends Component {
       defaultCode: PropTypes.string,
       footerCode: PropTypes.string,
     }).isRequired,
-    currentLanguage: PropTypes.string.isRequired,
+    currentProgrammingLanguage: PropTypes.string.isRequired,
     currentHeaderCode: PropTypes.string.isRequired,
     currentFooterCode: PropTypes.string.isRequired,
     currentDefaultCode: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     dispatchCloseSettings: PropTypes.func.isRequired,
     dispatchPatchAppInstance: PropTypes.func.isRequired,
-    dispatchSetLanguage: PropTypes.func.isRequired,
+    dispatchSetProgrammingLanguage: PropTypes.func.isRequired,
     dispatchSetHeaderCode: PropTypes.func.isRequired,
     dispatchSetDefaultCode: PropTypes.func.isRequired,
     dispatchSetFooterCode: PropTypes.func.isRequired,
@@ -122,21 +125,21 @@ class Settings extends Component {
   };
 
   handleChangeProgrammingLanguage = ({ target }) => {
-    const { dispatchSetLanguage } = this.props;
+    const { dispatchSetProgrammingLanguage } = this.props;
     const { value } = target;
 
-    dispatchSetLanguage(value);
+    dispatchSetProgrammingLanguage(value);
   };
 
-  onLanguageLoad = () => {
+  onProgrammingLanguageLoad = () => {
     const {
-      dispatchSetLanguage,
-      currentLanguage,
+      dispatchSetProgrammingLanguage,
+      currentProgrammingLanguage,
       settings: { programmingLanguage },
     } = this.props;
 
-    const language = currentLanguage || programmingLanguage;
-    dispatchSetLanguage(language);
+    const language = currentProgrammingLanguage || programmingLanguage;
+    dispatchSetProgrammingLanguage(language);
   };
 
   onHeaderCodeLoad = () => {
@@ -149,7 +152,7 @@ class Settings extends Component {
     dispatchSetHeaderCode(code);
 
     // dirty hack here
-    this.onLanguageLoad();
+    this.onProgrammingLanguageLoad();
   };
 
   onHeaderCodeChange = value => {
@@ -188,9 +191,9 @@ class Settings extends Component {
   };
 
   handleSaveLanguage = () => {
-    const { currentLanguage } = this.props;
+    const { currentProgrammingLanguage } = this.props;
     const settingsToChange = {
-      programmingLanguage: currentLanguage,
+      programmingLanguage: currentProgrammingLanguage,
     };
     this.saveSettings(settingsToChange);
   };
@@ -212,12 +215,12 @@ class Settings extends Component {
 
   handleSave = () => {
     const {
-      currentLanguage,
+      currentProgrammingLanguage,
       currentHeaderCode,
       currentFooterCode,
     } = this.props;
     const settings = {
-      programmingLanguage: currentLanguage,
+      programmingLanguage: currentProgrammingLanguage,
       headerCode: currentHeaderCode,
       footerCode: currentFooterCode,
     };
@@ -231,7 +234,7 @@ class Settings extends Component {
   };
 
   renderModalContent() {
-    const { t, activity, classes, currentLanguage } = this.props;
+    const { t, activity, classes, currentProgrammingLanguage } = this.props;
 
     if (activity) {
       return <Loader />;
@@ -240,7 +243,7 @@ class Settings extends Component {
     const selectControl = (
       <Select
         className={classes.formControl}
-        value={currentLanguage || DEFAULT_PROGRAMMING_LANGUAGE}
+        value={currentProgrammingLanguage || DEFAULT_PROGRAMMING_LANGUAGE}
         onChange={this.handleChangeProgrammingLanguage}
         inputProps={{
           name: 'programmingLanguage',
@@ -400,7 +403,7 @@ class Settings extends Component {
     const {
       t,
       classes,
-      currentLanguage,
+      currentProgrammingLanguage,
       currentHeaderCode,
       currentFooterCode,
       currentDefaultCode,
@@ -409,12 +412,13 @@ class Settings extends Component {
       settings: { programmingLanguage, headerCode, footerCode, defaultCode },
     } = this.props;
 
-    const languageChanged = programmingLanguage !== currentLanguage;
+    const programmingLanguageChanged =
+      programmingLanguage !== currentProgrammingLanguage;
     const headerCodeChanged = headerCode !== currentHeaderCode;
     const footerCodeChanged = footerCode !== currentFooterCode;
     const defaultCodeChanged = !(defaultCode === currentDefaultCode);
     const saveDisabled =
-      !languageChanged &&
+      !programmingLanguageChanged &&
       !headerCodeChanged &&
       !footerCodeChanged &&
       !defaultCodeChanged;
@@ -479,7 +483,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
       footerCode,
       orientation,
     },
-    currentLanguage: code.language,
+    currentProgrammingLanguage: code.language,
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,
     currentDefaultCode: code.default,
@@ -490,7 +494,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
 const mapDispatchToProps = {
   dispatchCloseSettings: closeSettings,
   dispatchPatchAppInstance: patchAppInstance,
-  dispatchSetLanguage: setLanguage,
+  dispatchSetProgrammingLanguage: setProgrammingLanguage,
   dispatchSetHeaderCode: setHeaderCode,
   dispatchSetDefaultCode: setDefaultCode,
   dispatchSetFooterCode: setFooterCode,

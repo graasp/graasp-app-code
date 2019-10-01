@@ -1,5 +1,5 @@
 import {
-  SET_LANGUAGE,
+  SET_PROGRAMMING_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_DEFAULT_CODE,
@@ -11,8 +11,10 @@ import {
   REGISTER_WORKER,
 } from '../types';
 
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../config/programmingLanguages';
+
 const INITIAL_STATE = {
-  language: '',
+  language: DEFAULT_PROGRAMMING_LANGUAGE,
   content: '',
   header: '',
   default: '',
@@ -24,7 +26,7 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, { type, payload }) => {
   switch (type) {
-    case SET_LANGUAGE:
+    case SET_PROGRAMMING_LANGUAGE:
       return {
         ...state,
         language: payload,

@@ -19,3 +19,6 @@ export const TEACHER_MODES = ['teacher', 'producer', 'educator', 'admin'];
 export const VERTICAL_ORIENTATION = 'VERTICAL_ORIENTATION';
 export const HORIZONTAL_ORIENTATION = 'HORIZONTAL_ORIENTATION';
 export const DEFAULT_ORIENTATION = VERTICAL_ORIENTATION;
+
+// text colors
+export const HELPER_TEXT_COLOR = 'rgba(0, 0, 0, 0.54)';
