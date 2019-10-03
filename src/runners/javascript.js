@@ -1,5 +1,11 @@
 // example sanitize function
-import { PRINT_OUTPUT, CLEAR_OUTPUT } from '../types';
+import {
+  PRINT_OUTPUT,
+  CLEAR_OUTPUT,
+  RUN_CODE,
+  SET_INPUT,
+  REGISTER_WORKER,
+} from '../types';
 import workerCode from './worker';
 import { CLEAR, PRINT } from '../config/commands';
 
@@ -41,26 +47,38 @@ function createWorker(dispatch) {
 // example run function
 const runJavaScript = (code = '', dispatch) => {
   const worker = createWorker(dispatch);
-  worker.postMessage(code);
+  const job = { command: RUN_CODE, data: code };
+  worker.postMessage(job);
 };
 
 // Header code is intended to be used for importing libraries, initialize screens, and so on.
 // Footer code is intended to be used for display runnning status, free resources, and so on.
-const runJavaScriptWithHeaderAndFooter = (
-  headerCode = '',
-  code = '',
-  footerCode = '',
-  dispatch
-) => {
+const runJavaScriptWithHeaderAndFooter = (config, dispatch) => {
+  const { headerCode, footerCode, input, data: code } = config;
   const worker = createWorker(dispatch);
+  dispatch({
+    type: REGISTER_WORKER,
+    payload: worker,
+  });
+
   if (headerCode) {
-    worker.postMessage(headerCode);
+    const job = { command: RUN_CODE, data: headerCode };
+    worker.postMessage(job);
   }
 
-  worker.postMessage(code);
+  if (input) {
+    const job = { command: SET_INPUT, data: input };
+    worker.postMessage(job);
+  }
+
+  if (code) {
+    const job = { command: RUN_CODE, data: code };
+    worker.postMessage(job);
+  }
 
   if (footerCode) {
-    worker.postMessage(footerCode);
+    const job = { command: RUN_CODE, data: footerCode };
+    worker.postMessage(job);
   }
 };
 export { sanitize, runJavaScript, runJavaScriptWithHeaderAndFooter };

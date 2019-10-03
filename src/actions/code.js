@@ -1,9 +1,14 @@
 import {
+  SET_PROGRAMMING_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_DEFAULT_CODE,
   SET_FOOTER_CODE,
   RUN_CODE_FAILED,
+  SET_INPUT,
+  APPEND_INPUT,
+  SEND_INPUT,
+  PRINT_OUTPUT,
 } from '../types';
 import {
   runJavaScript,
@@ -11,6 +16,12 @@ import {
 } from '../runners/javascript';
 import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
+
+const setProgrammingLanguage = data => dispatch =>
+  dispatch({
+    type: SET_PROGRAMMING_LANGUAGE,
+    payload: data,
+  });
 
 const setCode = data => dispatch =>
   dispatch({
@@ -36,7 +47,53 @@ const setFooterCode = data => dispatch =>
     payload: data,
   });
 
-const runCode = data => (dispatch, getState) => {
+const printOutput = data => dispatch =>
+  dispatch({
+    type: PRINT_OUTPUT,
+    payload: data,
+  });
+
+const setInput = data => dispatch =>
+  dispatch({
+    type: SET_INPUT,
+    payload: data,
+  });
+
+const appendInput = data => (dispatch, getState) => {
+  const {
+    code: { worker },
+  } = getState();
+
+  dispatch({
+    type: APPEND_INPUT,
+    payload: data,
+  });
+
+  // send input to worker
+  if (worker) {
+    const job = { command: APPEND_INPUT, data };
+    worker.postMessage(job);
+  }
+};
+
+const sendInput = data => (dispatch, getState) => {
+  const {
+    code: { worker },
+  } = getState();
+
+  dispatch({
+    type: APPEND_INPUT,
+    payload: '',
+  });
+
+  // send input to worker
+  if (worker) {
+    const job = { command: SEND_INPUT, data };
+    worker.postMessage(job);
+  }
+};
+
+const runCode = job => (dispatch, getState) => {
   const {
     appInstance: {
       content: {
@@ -44,18 +101,22 @@ const runCode = data => (dispatch, getState) => {
       },
     },
   } = getState();
+
+  const { data, input } = job;
+  const config = {
+    headerCode,
+    footerCode,
+    data,
+    input,
+  };
+
   try {
     switch (programmingLanguage) {
       case PYTHON:
         runPython(data, dispatch);
         break;
       case JAVASCRIPT:
-        runJavaScriptWithHeaderAndFooter(
-          headerCode,
-          data,
-          footerCode,
-          dispatch
-        );
+        runJavaScriptWithHeaderAndFooter(config, dispatch);
         break;
       default:
         runJavaScript(data, dispatch);
@@ -70,4 +131,15 @@ const runCode = data => (dispatch, getState) => {
   }
 };
 
-export { runCode, setCode, setHeaderCode, setFooterCode, setDefaultCode };
+export {
+  setProgrammingLanguage,
+  runCode,
+  setCode,
+  setHeaderCode,
+  setFooterCode,
+  setDefaultCode,
+  setInput,
+  appendInput,
+  sendInput,
+  printOutput,
+};

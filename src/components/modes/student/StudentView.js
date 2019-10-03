@@ -2,17 +2,24 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
+import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
-import ReactTerminal, { ReactThemes } from 'react-terminal-component';
-import { setCode } from '../../../actions';
-import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
+import { ReactTerminalStateless, ReactThemes } from 'react-terminal-component';
+import AceEditor from 'react-ace';
+import { setCode, printOutput, setInput, sendInput } from '../../../actions';
+import {
+  FEEDBACK,
+  INPUT,
+  STDIN,
+} from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
 import {
   DEFAULT_ORIENTATION,
   HORIZONTAL_ORIENTATION,
   VERTICAL_ORIENTATION,
+  HELPER_TEXT_COLOR,
 } from '../../../config/settings';
 
 const Terminal = require('javascript-terminal');
@@ -36,11 +43,19 @@ const styles = theme => ({
   button: {
     marginRight: theme.spacing.unit,
   },
+  helperText: {
+    color: HELPER_TEXT_COLOR,
+    marginTop: '8px',
+  },
 });
 
 // eslint-disable-next-line react/prefer-stateless-function
 class StudentView extends Component {
   static propTypes = {
+    t: PropTypes.func.isRequired,
+    dispatchPrintOutput: PropTypes.func.isRequired,
+    dispatchSetInput: PropTypes.func.isRequired,
+    dispatchSendInput: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
@@ -48,9 +63,12 @@ class StudentView extends Component {
       button: PropTypes.string,
       textField: PropTypes.string,
     }).isRequired,
+    appInstanceId: PropTypes.string.isRequired,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
     output: PropTypes.string,
+    stdin: PropTypes.string,
+    inputDisplayed: PropTypes.bool.isRequired,
     orientation: PropTypes.oneOf([
       VERTICAL_ORIENTATION,
       HORIZONTAL_ORIENTATION,
@@ -61,11 +79,90 @@ class StudentView extends Component {
     activity: false,
     ready: false,
     output: '',
+    stdin: '',
     orientation: DEFAULT_ORIENTATION,
   };
 
+  // this handler is called for each new input character
+  // new line character is not received here
+  handleTerminalInput = c => {
+    const { dispatchPrintOutput, dispatchSendInput } = this.props;
+
+    // echo back new character
+    dispatchPrintOutput(c);
+
+    // send a new character to worker
+    dispatchSendInput(c);
+  };
+
+  // this handler is called for each new line character
+  handleTerminalStateChange = () => {
+    const { dispatchPrintOutput, dispatchSendInput } = this.props;
+    const c = '\n';
+
+    // echo back new line character
+    dispatchPrintOutput(c);
+
+    // send a new line to worker
+    dispatchSendInput(c);
+  };
+
+  onStdinLoad = () => {
+    const { dispatchSetInput, stdin } = this.props;
+    dispatchSetInput(stdin || '');
+  };
+
+  onStdinChange = value => {
+    const { dispatchSetInput } = this.props;
+    dispatchSetInput(value);
+  };
+
+  renderInput(horizontalOrientation) {
+    const { t, appInstanceId, stdin, inputDisplayed } = this.props;
+    const height = horizontalOrientation ? '50vh' : '100vh';
+    const width = horizontalOrientation ? '100vw' : '50vw';
+
+    if (!inputDisplayed) {
+      return <div />;
+    }
+
+    return (
+      <Collapse in={inputDisplayed}>
+        <AceEditor
+          placeholder={t('// Write input data here (ex. csv, json, xml, etc.)')}
+          mode="csv"
+          theme="xcode"
+          name={appInstanceId || Math.random()}
+          width={width}
+          height={height}
+          fontSize={14}
+          showPrintMargin
+          showGutter
+          highlightActiveLine
+          value={stdin || ''}
+          onLoad={this.onStdinLoad}
+          onChange={this.onStdinChange}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </Collapse>
+    );
+  }
+
   render() {
-    const { classes, ready, activity, output, orientation } = this.props;
+    const {
+      classes,
+      ready,
+      activity,
+      output,
+      orientation,
+      inputDisplayed,
+    } = this.props;
 
     if (!ready || activity) {
       return <Loader />;
@@ -89,18 +186,29 @@ class StudentView extends Component {
         <Grid item xs={12}>
           <Editor />
         </Grid>
-        <Grid item xs={12}>
-          <ReactTerminal
-            autoFocus={false}
-            theme={{
-              ...ReactThemes.hacker,
-              spacing: '0',
-              height: horizontalOrientation ? '50vh' : '100vh',
-              width: horizontalOrientation ? '100vw' : '50vw',
-            }}
-            emulatorState={emulatorState}
-          />
-        </Grid>
+        <Collapse in={inputDisplayed}>
+          <Grid item xs={12}>
+            {this.renderInput(horizontalOrientation)}
+          </Grid>
+        </Collapse>
+        <Collapse in={!inputDisplayed}>
+          <Grid item xs={12}>
+            <ReactTerminalStateless
+              autoFocus={false}
+              acceptInput
+              clickToFocus
+              theme={{
+                ...ReactThemes.hacker,
+                spacing: '0',
+                height: horizontalOrientation ? '50vh' : '100vh',
+                width: horizontalOrientation ? '100vw' : '50vw',
+              }}
+              emulatorState={emulatorState}
+              onInputChange={this.handleTerminalInput}
+              onStateChange={this.handleTerminalStateChange}
+            />
+          </Grid>
+        </Collapse>
       </Grid>
     );
   }
@@ -109,6 +217,7 @@ class StudentView extends Component {
 const mapStateToProps = ({
   context,
   appInstanceResources,
+  layout,
   code,
   appInstance,
 }) => {
@@ -121,6 +230,9 @@ const mapStateToProps = ({
       return user === userId && type === FEEDBACK;
     }
   );
+  const stdinResource = appInstanceResources.content.find(({ user, type }) => {
+    return user === userId && type === STDIN;
+  });
   const {
     content: {
       settings: { orientation },
@@ -136,12 +248,17 @@ const mapStateToProps = ({
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
     feedback: feedbackResource && feedbackResource.data,
+    stdin: stdinResource && stdinResource.data,
     output: code.output,
+    inputDisplayed: layout.settings.inputDisplayed,
   };
 };
 
 const mapDispatchToProps = {
   dispatchSetCode: setCode,
+  dispatchSetInput: setInput,
+  dispatchSendInput: sendInput,
+  dispatchPrintOutput: printOutput,
 };
 
 const StyledComponent = withStyles(styles)(StudentView);

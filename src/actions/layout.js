@@ -1,4 +1,9 @@
-import { CLOSE_SETTINGS, OPEN_SETTINGS } from '../types';
+import {
+  CLOSE_SETTINGS,
+  OPEN_SETTINGS,
+  OPEN_INPUT_SETTINGS,
+  CLOSE_INPUT_SETTINGS,
+} from '../types';
 
 const openSettings = () => dispatch =>
   dispatch({
@@ -10,4 +15,14 @@ const closeSettings = () => dispatch =>
     type: CLOSE_SETTINGS,
   });
 
-export { openSettings, closeSettings };
+const openInputSettings = () => dispatch =>
+  dispatch({
+    type: OPEN_INPUT_SETTINGS,
+  });
+
+const closeInputSettings = () => dispatch =>
+  dispatch({
+    type: CLOSE_INPUT_SETTINGS,
+  });
+
+export { openSettings, closeSettings, openInputSettings, closeInputSettings };
