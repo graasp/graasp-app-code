@@ -63,8 +63,8 @@ onmessage = function (ev) {
 				return val;
 			}
 
-			const f = new Function("print", "println", "clear", "read", "readline", "readAll", data);
-			f(print, println, clear, read, readline, readAll);
+			const f = new Function("print", "printLine", "clear", "read", "readLine", "readAll", data);
+			f(print, printLine, clear, read, readLine, readAll);
 	}
 };
 `);
