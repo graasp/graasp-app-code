@@ -300,6 +300,7 @@ const mapStateToProps = ({
     offline,
     appInstanceId,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
+    stdinResourceId: stdinResource && (stdinResource.id || stdinResource._id),
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
     feedback: feedbackResource && feedbackResource.data,
