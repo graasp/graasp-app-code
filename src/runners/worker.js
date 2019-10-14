@@ -20,7 +20,7 @@ onmessage = function (ev) {
 				postMessage({cmd: "print", data: val.toString()});
 			}
 			function printLine(val) {
-				postMessage({cmd: "print", data: (val ? val.toString() : "") + "\\n"});
+				postMessage({cmd: "print", data: (val !== void 0 ? val.toString() : "") + "\\n"});
 			}
 			function clear() {
 				postMessage({cmd: "clear"});
