@@ -17,7 +17,7 @@ onmessage = function (ev) {
 		case 'RUN_CODE':
 		default:
 			function print(val) {
-				postMessage({cmd: "print", data: val.toString()});
+				postMessage({cmd: "print", data: String(value)});
 			}
 			function printLine(val) {
 				postMessage({cmd: "print", data: String(value) + "\\n"});
