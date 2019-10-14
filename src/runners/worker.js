@@ -17,10 +17,10 @@ onmessage = function (ev) {
 		case 'RUN_CODE':
 		default:
 			function print(val) {
-				postMessage({cmd: "print", data: String(value)});
+				postMessage({cmd: "print", data: String(val)});
 			}
 			function printLine(val) {
-				postMessage({cmd: "print", data: String(value) + "\\n"});
+				postMessage({cmd: "print", data: String(val) + "\\n"});
 			}
 			function clear() {
 				postMessage({cmd: "clear"});
