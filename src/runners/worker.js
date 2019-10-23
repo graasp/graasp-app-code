@@ -17,12 +17,12 @@ onmessage = function (ev) {
 		case 'RUN_CODE':
 		default:
 			function print(val) {
-				if(val !== void 0){
+				if (typeof val !== 'undefined') {
 					postMessage({cmd: "print", data: val+''});
 				}
 			}
 			function printLine(val) {
-				if(val !== void 0){
+				if (typeof val !== 'undefined') {
 					postMessage({cmd: "print", data: val+'' + "\\n"});
 				}
 			}
