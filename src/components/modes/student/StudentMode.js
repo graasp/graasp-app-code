@@ -15,6 +15,7 @@ class StudentMode extends Component {
     activity: PropTypes.number,
     dispatchGetAppInstanceResources: PropTypes.func.isRequired,
     userId: PropTypes.string,
+    fullscreen: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -45,7 +46,7 @@ class StudentMode extends Component {
   }
 
   render() {
-    const { view, activity } = this.props;
+    const { view, activity, fullscreen } = this.props;
     if (activity) {
       return <Loader />;
     }
@@ -54,7 +55,7 @@ class StudentMode extends Component {
         return (
           <>
             <StudentButtons />
-            <FeedbackView />
+            <FeedbackView fullscreen={fullscreen} />
           </>
         );
       case DEFAULT_VIEW:
@@ -62,7 +63,7 @@ class StudentMode extends Component {
         return (
           <>
             <StudentButtons />
-            <StudentView />
+            <StudentView fullscreen={fullscreen} />
           </>
         );
     }

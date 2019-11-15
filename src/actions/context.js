@@ -7,6 +7,7 @@ import {
 import { flag, receiveMessage } from './common';
 import { DEFAULT_API_HOST, DEFAULT_MODE } from '../config/settings';
 import { DEFAULT_VIEW } from '../config/views';
+import isInFrame from '../utils/isInFrame';
 
 // flags
 const flagGettingContext = flag(FLAG_GETTING_CONTEXT);
@@ -29,9 +30,13 @@ const getContext = () => dispatch => {
       userId = null,
       sessionId = null,
       offline = 'false',
+      dev = 'false',
     } = Qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
     const offlineBool = offline === 'true';
+    const devBool = dev === 'true';
+
+    const standalone = !devBool && !isInFrame();
 
     const context = {
       mode,
@@ -43,7 +48,9 @@ const getContext = () => dispatch => {
       sessionId,
       spaceId,
       subSpaceId,
+      standalone,
       offline: offlineBool,
+      dev: devBool,
     };
 
     // if offline, we need to set up the listeners here

@@ -9,7 +9,9 @@ import { setCode, runCode } from '../../../actions';
 import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../../config/programmingLanguages';
 import './Editor.css';
 import {
+  DEFAULT_FONT_SIZE,
   DEFAULT_ORIENTATION,
+  FULL_SCREEN_FONT_SIZE,
   HORIZONTAL_ORIENTATION,
   VERTICAL_ORIENTATION,
 } from '../../../config/settings';
@@ -20,6 +22,7 @@ class Editor extends Component {
   static propTypes = {
     dispatchSetCode: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
+    fullscreen: PropTypes.bool.isRequired,
     code: PropTypes.string,
     currentInput: PropTypes.string.isRequired,
     programmingLanguage: PropTypes.string,
@@ -36,6 +39,14 @@ class Editor extends Component {
     programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
     orientation: DEFAULT_ORIENTATION,
   };
+
+  componentDidUpdate(prevProps) {
+    const { code: prevCode } = prevProps;
+    const { code, dispatchSetCode } = this.props;
+    if (prevCode !== code) {
+      dispatchSetCode(code);
+    }
+  }
 
   onChange = code => {
     const { dispatchSetCode } = this.props;
@@ -65,6 +76,7 @@ class Editor extends Component {
       appInstanceId,
       programmingLanguage,
       orientation,
+      fullscreen,
     } = this.props;
     const horizontalOrientation = orientation === HORIZONTAL_ORIENTATION;
 
@@ -78,7 +90,7 @@ class Editor extends Component {
         width={horizontalOrientation ? '100vw' : '50vw'}
         onLoad={this.onLoad}
         onChange={this.onChange}
-        fontSize={14}
+        fontSize={fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE}
         showPrintMargin
         showGutter
         highlightActiveLine

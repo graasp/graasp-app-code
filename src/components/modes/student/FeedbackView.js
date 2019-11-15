@@ -6,6 +6,10 @@ import { connect } from 'react-redux';
 import ReactTerminal, { ReactThemes } from 'react-terminal-component';
 import Loader from '../../common/Loader';
 import DiffEditor from '../../common/DiffEditor';
+import {
+  DEFAULT_FONT_SIZE,
+  FULL_SCREEN_FONT_SIZE,
+} from '../../../config/settings';
 
 const Terminal = require('javascript-terminal');
 
@@ -44,6 +48,7 @@ class FeedbackView extends Component {
       button: PropTypes.string,
       textField: PropTypes.string,
     }).isRequired,
+    fullscreen: PropTypes.bool.isRequired,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
     output: PropTypes.string,
@@ -56,7 +61,7 @@ class FeedbackView extends Component {
   };
 
   render() {
-    const { classes, ready, activity, output } = this.props;
+    const { classes, ready, activity, output, fullscreen } = this.props;
 
     if (!ready || activity) {
       return <Loader />;
@@ -71,7 +76,7 @@ class FeedbackView extends Component {
 
     return (
       <div className={classes.main}>
-        <DiffEditor />
+        <DiffEditor fullscreen={fullscreen} />
         <ReactTerminal
           autoFocus={false}
           theme={{
@@ -79,6 +84,9 @@ class FeedbackView extends Component {
             width: '100%',
             height: '50%',
             spacing: '0',
+            fontSize: `${
+              fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE
+            }px`,
           }}
           emulatorState={emulatorState}
         />

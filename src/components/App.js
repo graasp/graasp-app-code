@@ -28,18 +28,31 @@ export class App extends Component {
     view: DEFAULT_VIEW,
   };
 
+  state = {
+    fullscreen: false,
+  };
+
   constructor(props) {
     super(props);
     // first thing to do is get the context
     props.dispatchGetContext();
     // then get the app instance
     props.dispatchGetAppInstance();
+    if (window.frameElement) {
+      this.state.fullscreen = Boolean(window.parent.document.fullscreenElement);
+    }
   }
 
   componentDidMount() {
     const { lang } = this.props;
     // set the language on first load
     this.handleChangeLang(lang);
+    if (window.frameElement) {
+      window.parent.document.addEventListener(
+        'fullscreenchange',
+        this.handleFullscreen
+      );
+    }
   }
 
   componentDidUpdate({ lang: prevLang }) {
@@ -50,6 +63,24 @@ export class App extends Component {
     }
   }
 
+  componentWillUnmount() {
+    if (window.frameElement) {
+      window.parent.document.removeEventListener(
+        'fullscreenchange',
+        this.handleFullscreen
+      );
+    }
+  }
+
+  handleFullscreen = () => {
+    if (window.frameElement) {
+      const fullscreen = Boolean(window.parent.document.fullscreenElement);
+      this.setState({
+        fullscreen,
+      });
+    }
+  };
+
   handleChangeLang = lang => {
     const { i18n } = this.props;
     i18n.changeLanguage(lang);
@@ -57,6 +88,7 @@ export class App extends Component {
 
   render() {
     const { mode, view } = this.props;
+    const { fullscreen } = this.state;
 
     switch (mode) {
       // show teacher view when in producer (educator) mode
@@ -70,7 +102,7 @@ export class App extends Component {
       case 'student':
       case 'consumer':
       case 'learner':
-        return <StudentMode view={view} />;
+        return <StudentMode view={view} fullscreen={fullscreen} />;
 
       default:
         return <Loader />;

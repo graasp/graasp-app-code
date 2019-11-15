@@ -6,6 +6,10 @@ import { withTranslation } from 'react-i18next';
 import { FEEDBACK, INPUT } from '../../config/appInstanceResourceTypes';
 import { setCode } from '../../actions';
 import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
+import {
+  DEFAULT_FONT_SIZE,
+  FULL_SCREEN_FONT_SIZE,
+} from '../../config/settings';
 
 class DiffEditor extends Component {
   static propTypes = {
@@ -14,6 +18,7 @@ class DiffEditor extends Component {
     feedback: PropTypes.string,
     programmingLanguage: PropTypes.string,
     appInstanceId: PropTypes.string,
+    fullscreen: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -35,10 +40,17 @@ class DiffEditor extends Component {
   };
 
   render() {
-    const { code, programmingLanguage, appInstanceId, feedback } = this.props;
+    const {
+      code,
+      programmingLanguage,
+      appInstanceId,
+      feedback,
+      fullscreen,
+    } = this.props;
     const options = {
       renderSideBySide: true,
       originalEditable: false,
+      fontSize: fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE,
     };
     return (
       <MonacoDiffEditor

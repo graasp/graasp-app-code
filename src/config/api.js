@@ -7,7 +7,7 @@ export const APP_INSTANCE_RESOURCES_ENDPOINT = '/app-instance-resources';
 export const SPACES_ENDPOINT = '/spaces';
 // users endpoint is currently used in conjunction with spaces endpoint
 // e.g. `${SPACES_ENDPOINT}/${spaceId}/${USERS_ENDPOINT}`
-export const USERS_ENDPOINT = 'light-users';
+export const USERS_ENDPOINT = 'users';
 
 // request defaults
 const DEFAULT_REQUEST = {

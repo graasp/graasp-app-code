@@ -42,7 +42,16 @@ const getApiContext = getState => {
     offline,
     subSpaceId,
     sessionId,
+    dev,
+    standalone,
   } = context;
+
+  if (standalone) {
+    return {
+      dev,
+      standalone,
+    };
+  }
 
   // these bits of context are needed when running online
   if (!offline) {
@@ -64,6 +73,7 @@ const getApiContext = getState => {
     offline,
     subSpaceId,
     sessionId,
+    dev,
   };
 };
 

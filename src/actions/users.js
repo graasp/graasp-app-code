@@ -15,7 +15,12 @@ const flagGettingUsers = flag(FLAG_GETTING_USERS);
 const getUsers = async () => async (dispatch, getState) => {
   dispatch(flagGettingUsers(true));
   try {
-    const { spaceId, apiHost } = getApiContext(getState);
+    const { spaceId, apiHost, standalone } = getApiContext(getState);
+
+    // if standalone, you cannot connect to api
+    if (standalone) {
+      return false;
+    }
 
     const url = `//${apiHost + SPACES_ENDPOINT}/${spaceId}/${USERS_ENDPOINT}`;
 

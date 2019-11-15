@@ -16,7 +16,9 @@ import {
 import Loader from '../../common/Loader';
 import Editor from './Editor';
 import {
+  DEFAULT_FONT_SIZE,
   DEFAULT_ORIENTATION,
+  FULL_SCREEN_FONT_SIZE,
   HORIZONTAL_ORIENTATION,
   VERTICAL_ORIENTATION,
   HELPER_TEXT_COLOR,
@@ -63,9 +65,10 @@ class StudentView extends Component {
       button: PropTypes.string,
       textField: PropTypes.string,
     }).isRequired,
-    appInstanceId: PropTypes.string.isRequired,
+    appInstanceId: PropTypes.string,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
+    standalone: PropTypes.bool.isRequired,
     output: PropTypes.string,
     stdin: PropTypes.string,
     inputDisplayed: PropTypes.bool.isRequired,
@@ -73,9 +76,11 @@ class StudentView extends Component {
       VERTICAL_ORIENTATION,
       HORIZONTAL_ORIENTATION,
     ]),
+    fullscreen: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
+    appInstanceId: null,
     activity: false,
     ready: false,
     output: '',
@@ -161,10 +166,12 @@ class StudentView extends Component {
       activity,
       output,
       orientation,
+      fullscreen,
       inputDisplayed,
+      standalone,
     } = this.props;
 
-    if (!ready || activity) {
+    if (!standalone && (!ready || activity)) {
       return <Loader />;
     }
 
@@ -184,7 +191,7 @@ class StudentView extends Component {
         direction={horizontalOrientation ? 'row' : 'column'}
       >
         <Grid item xs={12}>
-          <Editor />
+          <Editor fullscreen={fullscreen} />
         </Grid>
         <Collapse in={inputDisplayed}>
           <Grid item xs={12}>
@@ -202,6 +209,9 @@ class StudentView extends Component {
                 spacing: '0',
                 height: horizontalOrientation ? '50vh' : '100vh',
                 width: horizontalOrientation ? '100vw' : '50vw',
+                fontSize: `${
+                  fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE
+                }px`,
               }}
               emulatorState={emulatorState}
               onInputChange={this.handleTerminalInput}
@@ -221,7 +231,7 @@ const mapStateToProps = ({
   code,
   appInstance,
 }) => {
-  const { userId, offline, appInstanceId } = context;
+  const { userId, offline, appInstanceId, standalone } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
   });
@@ -244,6 +254,7 @@ const mapStateToProps = ({
     offline,
     appInstanceId,
     orientation,
+    standalone,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,

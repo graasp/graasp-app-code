@@ -52,7 +52,13 @@ const getAppInstanceResources = async ({
       offline,
       spaceId,
       subSpaceId,
+      standalone,
     } = getApiContext(getState);
+
+    // if standalone, you cannot connect to api
+    if (standalone) {
+      return false;
+    }
 
     // if offline send message to parent requesting resources
     if (offline) {
@@ -113,7 +119,13 @@ const postAppInstanceResource = async ({ data, userId, type } = {}) => async (
       offline,
       spaceId,
       subSpaceId,
-    } = await getApiContext(getState);
+      standalone,
+    } = getApiContext(getState);
+
+    // if standalone, you cannot connect to api
+    if (standalone) {
+      return false;
+    }
 
     // if offline send message to parent requesting to create a resource
     if (offline) {
@@ -179,7 +191,13 @@ const patchAppInstanceResource = async ({ id, data } = {}) => async (
       offline,
       spaceId,
       subSpaceId,
-    } = await getApiContext(getState);
+      standalone,
+    } = getApiContext(getState);
+
+    // if standalone, you cannot connect to api
+    if (standalone) {
+      return false;
+    }
 
     // if offline send message to parent requesting to patch resource
     if (offline) {
@@ -232,7 +250,12 @@ const patchAppInstanceResource = async ({ id, data } = {}) => async (
 const deleteAppInstanceResource = async id => async (dispatch, getState) => {
   dispatch(flagDeletingAppInstanceResource(true));
   try {
-    const { apiHost, offline } = await getApiContext(getState);
+    const { apiHost, offline, standalone } = getApiContext(getState);
+
+    // if standalone, you cannot connect to api
+    if (standalone) {
+      return false;
+    }
 
     // if offline send message to parent requesting to delete a resource
     if (offline) {
