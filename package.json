@@ -18,7 +18,7 @@
     "enzyme-adapter-react-16": "1.13.0",
     "i18next": "15.1.1",
     "javascript-terminal": "1.0.3",
-    "lodash": "4.17.11",
+    "lodash": "4.17.13",
     "monaco-editor": "0.17.1",
     "prop-types": "15.7.2",
     "qs": "6.7.0",
