@@ -15,6 +15,8 @@ const INITIAL_STATE = {
   spaceId: null,
   subSpaceId: null,
   standalone: false,
+  // this needs to be true in order to use the api locally
+  dev: false,
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
