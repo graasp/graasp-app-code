@@ -1,8 +1,9 @@
 import { PRINT_OUTPUT } from '../types';
 
-const runPython = (code = '', dispatch) => {
+const runPython = (config = {}, dispatch) => {
   if (window.pyodide) {
     const { pyodide } = window;
+    const { headerCode = '', footerCode = '', code = '' } = config;
     pyodide.runPython(`
       import io, sys
       sys.stdout = io.StringIO()
@@ -10,7 +11,9 @@ const runPython = (code = '', dispatch) => {
     `);
     let errMsg = '';
     try {
+      pyodide.runPython(headerCode);
       pyodide.runPython(code);
+      pyodide.runPython(footerCode);
     } catch (err) {
       errMsg = err.toString();
     }

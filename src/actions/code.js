@@ -104,16 +104,16 @@ const runCode = job => (dispatch, getState) => {
 
   const { data, input } = job;
   const config = {
+    code: data,
     headerCode,
     footerCode,
-    data,
     input,
   };
 
   try {
     switch (programmingLanguage) {
       case PYTHON:
-        runPython(data, dispatch);
+        runPython(config, dispatch);
         break;
       case JAVASCRIPT:
         runJavaScriptWithHeaderAndFooter(config, dispatch);

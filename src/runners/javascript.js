@@ -54,7 +54,7 @@ const runJavaScript = (code = '', dispatch) => {
 // Header code is intended to be used for importing libraries, initialize screens, and so on.
 // Footer code is intended to be used for display runnning status, free resources, and so on.
 const runJavaScriptWithHeaderAndFooter = (config, dispatch) => {
-  const { headerCode, footerCode, input, data: code } = config;
+  const { headerCode, footerCode, input, code } = config;
   const worker = createWorker(dispatch);
   dispatch({
     type: REGISTER_WORKER,
