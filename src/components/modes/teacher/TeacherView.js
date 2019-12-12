@@ -67,8 +67,7 @@ export class TeacherView extends Component {
     },
   });
 
-  constructor(props) {
-    super(props);
+  componentDidMount() {
     const { dispatchGetUsers } = this.props;
     dispatchGetUsers();
   }

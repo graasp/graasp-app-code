@@ -32,6 +32,7 @@ import {
   DEFAULT_PROGRAMMING_LANGUAGE,
 } from '../../../config/programmingLanguages';
 import {
+  DEFAULT_FONT_SIZE,
   DEFAULT_ORIENTATION,
   HELPER_TEXT_COLOR,
 } from '../../../config/settings';
@@ -79,10 +80,10 @@ const styles = theme => ({
     marginTop: '8px',
   },
   fab: {
-    margin: theme.spacing.unit * 0,
+    margin: theme.spacing.unit,
     position: 'fixed',
-    bottom: theme.spacing.unit * 6,
-    right: theme.spacing.unit * 0,
+    bottom: theme.spacing.unit * 2,
+    right: theme.spacing.unit * 2,
   },
 });
 
@@ -113,6 +114,19 @@ class Settings extends Component {
     }).isRequired,
   };
 
+  componentDidMount() {
+    const {
+      settings: { programmingLanguage },
+      currentProgrammingLanguage,
+      dispatchSetProgrammingLanguage,
+    } = this.props;
+
+    // ensure that programming language is set on mount
+    if (currentProgrammingLanguage !== programmingLanguage) {
+      dispatchSetProgrammingLanguage(programmingLanguage);
+    }
+  }
+
   saveSettings = settingsToChange => {
     const { settings, dispatchPatchAppInstance } = this.props;
     const newSettings = {
@@ -131,17 +145,6 @@ class Settings extends Component {
     dispatchSetProgrammingLanguage(value);
   };
 
-  onProgrammingLanguageLoad = () => {
-    const {
-      dispatchSetProgrammingLanguage,
-      currentProgrammingLanguage,
-      settings: { programmingLanguage },
-    } = this.props;
-
-    const language = currentProgrammingLanguage || programmingLanguage;
-    dispatchSetProgrammingLanguage(language);
-  };
-
   onHeaderCodeLoad = () => {
     const {
       dispatchSetHeaderCode,
@@ -150,9 +153,6 @@ class Settings extends Component {
     } = this.props;
     const code = currentHeaderCode || headerCode;
     dispatchSetHeaderCode(code);
-
-    // dirty hack here
-    this.onProgrammingLanguageLoad();
   };
 
   onHeaderCodeChange = value => {
@@ -190,7 +190,7 @@ class Settings extends Component {
     dispatchSetFooterCode(value);
   };
 
-  handleSaveLanguage = () => {
+  saveProgrammingLanguage = () => {
     const { currentProgrammingLanguage } = this.props;
     const settingsToChange = {
       programmingLanguage: currentProgrammingLanguage,
@@ -198,7 +198,7 @@ class Settings extends Component {
     this.saveSettings(settingsToChange);
   };
 
-  handleSaveCode = () => {
+  saveCode = () => {
     const {
       currentHeaderCode,
       currentDefaultCode,
@@ -214,12 +214,56 @@ class Settings extends Component {
   };
 
   handleSave = () => {
-    this.handleSaveCode();
+    const {
+      currentProgrammingLanguage: cpl,
+      settings: { programmingLanguage: pl },
+    } = this.props;
+    const programmingLanguageChanged = pl !== cpl;
+    this.saveCode();
+    if (programmingLanguageChanged) {
+      this.saveProgrammingLanguage();
+    }
   };
 
   handleClose = () => {
-    const { dispatchCloseSettings } = this.props;
+    const {
+      dispatchCloseSettings,
+      dispatchSetProgrammingLanguage,
+      dispatchSetHeaderCode,
+      dispatchSetDefaultCode,
+      dispatchSetFooterCode,
+      settings: { programmingLanguage, headerCode, footerCode, defaultCode },
+    } = this.props;
+    // discard changes before closing
+    dispatchSetProgrammingLanguage(programmingLanguage);
+    dispatchSetHeaderCode(headerCode);
+    dispatchSetDefaultCode(defaultCode);
+    dispatchSetFooterCode(footerCode);
     dispatchCloseSettings();
+  };
+
+  isSaveDisabled = () => {
+    const {
+      currentProgrammingLanguage,
+      currentHeaderCode,
+      currentFooterCode,
+      currentDefaultCode,
+    } = this.props;
+    const {
+      settings: { programmingLanguage, headerCode, footerCode, defaultCode },
+    } = this.props;
+
+    const programmingLanguageChanged =
+      programmingLanguage !== currentProgrammingLanguage;
+    const headerCodeChanged = headerCode !== currentHeaderCode;
+    const footerCodeChanged = footerCode !== currentFooterCode;
+    const defaultCodeChanged = !(defaultCode === currentDefaultCode);
+    return (
+      !programmingLanguageChanged &&
+      !headerCodeChanged &&
+      !footerCodeChanged &&
+      !defaultCodeChanged
+    );
   };
 
   renderModalContent() {
@@ -245,7 +289,7 @@ class Settings extends Component {
     );
 
     return (
-      <div>
+      <>
         <FormControl>
           <InputLabel htmlFor="programmingLanguageSelect">
             {t('Programming Language')}
@@ -255,15 +299,7 @@ class Settings extends Component {
         {this.renderHeaderCodeEditor()}
         {this.renderDefaultCodeEditor()}
         {this.renderFooterCodeEditor()}
-        <Fab
-          color="primary"
-          aria-label={t('Close')}
-          className={classes.fab}
-          onClick={this.handleClose}
-        >
-          <CloseIcon />
-        </Fab>
-      </div>
+      </>
     );
   }
 
@@ -272,8 +308,10 @@ class Settings extends Component {
       t,
       classes,
       currentHeaderCode,
-      settings: { programmingLanguage },
+      currentProgrammingLanguage,
     } = this.props;
+
+    const commentPrefix = currentProgrammingLanguage === PYTHON ? '#' : '//';
 
     return (
       <div>
@@ -281,15 +319,15 @@ class Settings extends Component {
           <div className={classes.helperText}>{t('header code')}</div>
         </Typography>
         <AceEditor
-          placeholder={t(
-            '// Write header code here (ex. import libraries, init console, etc.)'
-          )}
-          mode={programmingLanguage}
+          placeholder={`${commentPrefix} ${t(
+            'Write header code here (ex. import libraries, init console, etc.)'
+          )}`}
+          mode={currentProgrammingLanguage}
           theme="xcode"
           name={Math.random()}
           width="100%"
           height="120px"
-          fontSize={14}
+          fontSize={DEFAULT_FONT_SIZE}
           showPrintMargin
           showGutter
           highlightActiveLine
@@ -313,8 +351,10 @@ class Settings extends Component {
       t,
       classes,
       currentDefaultCode,
-      settings: { programmingLanguage },
+      currentProgrammingLanguage,
     } = this.props;
+
+    const commentPrefix = currentProgrammingLanguage === PYTHON ? '#' : '//';
 
     return (
       <div>
@@ -322,13 +362,15 @@ class Settings extends Component {
           <div className={classes.helperText}>{t('default code')}</div>
         </Typography>
         <AceEditor
-          placeholder={t('// Write code to show to the student by default')}
-          mode={programmingLanguage}
+          placeholder={`${commentPrefix} ${t(
+            'Write code to show to the student by default'
+          )}`}
+          mode={currentProgrammingLanguage}
           theme="xcode"
           name={Math.random()}
           width="100%"
           height="120px"
-          fontSize={14}
+          fontSize={DEFAULT_FONT_SIZE}
           showPrintMargin
           showGutter
           highlightActiveLine
@@ -352,8 +394,10 @@ class Settings extends Component {
       t,
       classes,
       currentFooterCode,
-      settings: { programmingLanguage },
+      currentProgrammingLanguage,
     } = this.props;
+
+    const commentPrefix = currentProgrammingLanguage === PYTHON ? '#' : '//';
 
     return (
       <div>
@@ -361,15 +405,15 @@ class Settings extends Component {
           <div className={classes.helperText}>{t('footer code')}</div>
         </Typography>
         <AceEditor
-          placeholder={t(
-            '// Write footer code here (ex. display execution time, etc.)'
-          )}
-          mode={programmingLanguage}
+          placeholder={`${commentPrefix} ${t(
+            'Write footer code here (ex. display execution time, etc.)'
+          )}`}
+          mode={currentProgrammingLanguage}
           theme="xcode"
           name={Math.random()}
           width="100%"
           height="120px"
-          fontSize={14}
+          fontSize={DEFAULT_FONT_SIZE}
           showPrintMargin
           showGutter
           highlightActiveLine
@@ -389,28 +433,9 @@ class Settings extends Component {
   }
 
   renderButtons() {
-    const {
-      t,
-      classes,
-      currentProgrammingLanguage,
-      currentHeaderCode,
-      currentFooterCode,
-      currentDefaultCode,
-    } = this.props;
-    const {
-      settings: { programmingLanguage, headerCode, footerCode, defaultCode },
-    } = this.props;
+    const { t, classes } = this.props;
 
-    const programmingLanguageChanged =
-      programmingLanguage !== currentProgrammingLanguage;
-    const headerCodeChanged = headerCode !== currentHeaderCode;
-    const footerCodeChanged = footerCode !== currentFooterCode;
-    const defaultCodeChanged = !(defaultCode === currentDefaultCode);
-    const saveDisabled =
-      !programmingLanguageChanged &&
-      !headerCodeChanged &&
-      !footerCodeChanged &&
-      !defaultCodeChanged;
+    const saveDisabled = this.isSaveDisabled();
 
     return (
       <Tooltip title={t('Save')} key="save" className={classes.right}>
@@ -448,6 +473,14 @@ class Settings extends Component {
           <div style={getModalStyle()} className={classes.fullScreen}>
             {this.renderModalContent()}
           </div>
+          <Fab
+            color="primary"
+            aria-label={t('Close')}
+            className={classes.fab}
+            onClick={this.handleClose}
+          >
+            <CloseIcon />
+          </Fab>
         </Dialog>
       </div>
     );
