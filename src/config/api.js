@@ -1,6 +1,9 @@
 // local api
 export const LOCAL_API_HOST = 'localhost:3636';
 
+// files upload api
+export const FILE_UPLOAD_ENDPOINT = 'https://graasp.eu/files';
+
 // endpoints
 export const APP_INSTANCES_ENDPOINT = '/app-instances';
 export const APP_INSTANCE_RESOURCES_ENDPOINT = '/app-instance-resources';

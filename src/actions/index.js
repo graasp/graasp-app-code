@@ -4,3 +4,4 @@ export * from './appInstance';
 export * from './users';
 export * from './code';
 export * from './layout';
+export * from './file';

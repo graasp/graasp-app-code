@@ -3,6 +3,8 @@ import {
   OPEN_SETTINGS,
   OPEN_INPUT_SETTINGS,
   CLOSE_INPUT_SETTINGS,
+  OPEN_FILE_SETTINGS,
+  CLOSE_FILE_SETTINGS,
 } from '../types';
 
 const openSettings = () => dispatch =>
@@ -25,4 +27,21 @@ const closeInputSettings = () => dispatch =>
     type: CLOSE_INPUT_SETTINGS,
   });
 
-export { openSettings, closeSettings, openInputSettings, closeInputSettings };
+const openFileSettings = () => dispatch =>
+  dispatch({
+    type: OPEN_FILE_SETTINGS,
+  });
+
+const closeFileSettings = () => dispatch =>
+  dispatch({
+    type: CLOSE_FILE_SETTINGS,
+  });
+
+export {
+  openSettings,
+  closeSettings,
+  openInputSettings,
+  closeInputSettings,
+  openFileSettings,
+  closeFileSettings,
+};

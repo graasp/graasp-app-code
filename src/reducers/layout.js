@@ -3,12 +3,17 @@ import {
   CLOSE_SETTINGS,
   OPEN_INPUT_SETTINGS,
   CLOSE_INPUT_SETTINGS,
+  OPEN_FILE_SETTINGS,
+  CLOSE_FILE_SETTINGS,
 } from '../types';
 
 const INITIAL_STATE = {
   settings: {
     open: false,
     inputDisplayed: false,
+  },
+  fileSettings: {
+    open: false,
   },
 };
 
@@ -44,6 +49,22 @@ export default (state = INITIAL_STATE, { type }) => {
         settings: {
           ...state.settings,
           inputDisplayed: false,
+        },
+      };
+    case OPEN_FILE_SETTINGS:
+      return {
+        ...state,
+        fileSettings: {
+          ...state.fileSettings,
+          open: true,
+        },
+      };
+    case CLOSE_FILE_SETTINGS:
+      return {
+        ...state,
+        fileSettings: {
+          ...state.fileSettings,
+          open: false,
         },
       };
     default:

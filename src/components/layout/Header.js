@@ -8,14 +8,15 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
-import InputIcon from '@material-ui/icons/Input';
-import SaveIcon from '@material-ui/icons/Save';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import VerticalSplitIcon from '@material-ui/icons/VerticalSplit';
-// import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
-import TableIcon from '@material-ui/icons/TableChart';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import CloudIcon from '@material-ui/icons/Cloud';
+import {
+  Input as InputIcon,
+  Save as SaveIcon,
+  PlayArrow as PlayArrowIcon,
+  InsertDriveFile as InsertDriveFileIcon,
+  Refresh as RefreshIcon,
+  TableChart as TableIcon,
+  VerticalSplit as VerticalSplitIcon,
+} from '@material-ui/icons';
 import { withTranslation } from 'react-i18next';
 import { addQueryParamsToUrl } from '../../utils/url';
 import { ReactComponent as Logo } from '../../resources/logo.svg';
@@ -24,11 +25,7 @@ import {
   STUDENT_MODES,
   TEACHER_MODES,
 } from '../../config/settings';
-import {
-  DEFAULT_VIEW,
-  DASHBOARD_VIEW,
-  FEEDBACK_VIEW,
-} from '../../config/views';
+import { DEFAULT_VIEW, FILES_VIEW, FEEDBACK_VIEW } from '../../config/views';
 import './Header.css';
 import {
   runCode,
@@ -36,6 +33,8 @@ import {
   closeInputSettings,
   patchAppInstanceResource,
   postAppInstanceResource,
+  getAppInstanceResources,
+  getUsers,
 } from '../../actions';
 import { FEEDBACK, INPUT, STDIN } from '../../config/appInstanceResourceTypes';
 import {
@@ -46,6 +45,8 @@ import {
 class Header extends Component {
   static propTypes = {
     t: PropTypes.func.isRequired,
+    dispatchGetUsers: PropTypes.func.isRequired,
+    dispatchGetAppInstanceResources: PropTypes.func.isRequired,
     dispatchPostAppInstanceResource: PropTypes.func.isRequired,
     dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
@@ -197,6 +198,12 @@ class Header extends Component {
     dispatchRunCode(job);
   };
 
+  handleRefresh = () => {
+    const { dispatchGetAppInstanceResources, dispatchGetUsers } = this.props;
+    dispatchGetAppInstanceResources();
+    dispatchGetUsers();
+  };
+
   renderTeacherButtons() {
     const { view } = this.props;
     const buttons = [
@@ -209,9 +216,9 @@ class Header extends Component {
       buttons.push(
         <IconButton
           key="dashboard"
-          href={`index.html${addQueryParamsToUrl({ view: DASHBOARD_VIEW })}`}
+          href={`index.html${addQueryParamsToUrl({ view: FILES_VIEW })}`}
         >
-          <CloudIcon nativeColor="#fff" />
+          <InsertDriveFileIcon nativeColor="#fff" />
         </IconButton>
       );
     } else {
@@ -308,7 +315,6 @@ class Header extends Component {
       return null;
     }
     if (TEACHER_MODES.includes(mode)) {
-      // return this.renderTeacherButtons();
       return (
         <header>
           <AppBar position="static">
@@ -317,6 +323,7 @@ class Header extends Component {
               <Typography variant="h6" color="inherit" className={classes.grow}>
                 {t('Code') + this.renderLanguage()}
               </Typography>
+              {this.renderTeacherButtons()}
             </Toolbar>
           </AppBar>
         </header>
@@ -373,6 +380,8 @@ const mapDispatchToProps = {
   dispatchRunCode: runCode,
   dispatchOpenInputSettings: openInputSettings,
   dispatchCloseInputSettings: closeInputSettings,
+  dispatchGetAppInstanceResources: getAppInstanceResources,
+  dispatchGetUsers: getUsers,
 };
 
 const ConnectedComponent = connect(

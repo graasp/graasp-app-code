@@ -11,6 +11,10 @@
   "dependencies": {
     "@material-ui/core": "3.9.3",
     "@material-ui/icons": "3.0.2",
+    "@uppy/core": "1.6.0",
+    "@uppy/drag-drop": "1.4.0",
+    "@uppy/react": "1.4.0",
+    "@uppy/xhr-upload": "1.4.0",
     "brace": "0.11.1",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.13.0",

@@ -25,3 +25,10 @@ export const DEFAULT_ORIENTATION = VERTICAL_ORIENTATION;
 
 // text colors
 export const HELPER_TEXT_COLOR = 'rgba(0, 0, 0, 0.54)';
+
+export const MAX_NUM_FILES = 10;
+// ten megabytes times 1024 kilobytes/megabyte * 1024 bytes/kilobyte
+export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+export const DEFAULT_VISIBILITY = 'private';
+export const PUBLIC_VISIBILITY = 'public';

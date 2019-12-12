@@ -3,9 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TeacherView from './TeacherView';
 import TeacherDashboard from './TeacherDashboard';
-import { DEFAULT_VIEW, DASHBOARD_VIEW } from '../../../config/views';
+import {
+  DEFAULT_VIEW,
+  DASHBOARD_VIEW,
+  FILES_VIEW,
+} from '../../../config/views';
 import { getAppInstanceResources } from '../../../actions';
 import Loader from '../../common/Loader';
+import TeacherFiles from './TeacherFiles';
 
 class TeacherMode extends Component {
   static propTypes = {
@@ -44,6 +49,8 @@ class TeacherMode extends Component {
     switch (view) {
       case DASHBOARD_VIEW:
         return <TeacherDashboard />;
+      case FILES_VIEW:
+        return <TeacherFiles />;
       case DEFAULT_VIEW:
       default:
         return <TeacherView />;
