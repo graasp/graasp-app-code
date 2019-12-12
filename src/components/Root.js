@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactGa from 'react-ga';
 import PropTypes from 'prop-types';
 import { I18nextProvider } from 'react-i18next';
 import {
@@ -14,6 +15,19 @@ import 'react-toastify/dist/ReactToastify.css';
 import Header from './layout/Header';
 import i18nConfig from '../config/i18n';
 import App from './App';
+import {
+  REACT_APP_GRAASP_APP_ID,
+  REACT_APP_GRAASP_DEVELOPER_ID,
+  REACT_APP_VERSION,
+  REACT_APP_GOOGLE_ANALYTICS_ID,
+} from '../config/env';
+
+ReactGa.initialize(REACT_APP_GOOGLE_ANALYTICS_ID);
+ReactGa.ga(
+  'send',
+  'pageview',
+  `/${REACT_APP_GRAASP_DEVELOPER_ID}/${REACT_APP_GRAASP_APP_ID}/${REACT_APP_VERSION}/`
+);
 
 const styles = {
   root: {
