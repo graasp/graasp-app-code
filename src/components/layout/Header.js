@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
 import {
-  Input as InputIcon,
-  Save as SaveIcon,
-  PlayArrow as PlayArrowIcon,
   InsertDriveFile as InsertDriveFileIcon,
   Refresh as RefreshIcon,
   TableChart as TableIcon,
-  VerticalSplit as VerticalSplitIcon,
 } from '@material-ui/icons';
 import { withTranslation } from 'react-i18next';
 import { addQueryParamsToUrl } from '../../utils/url';
@@ -25,7 +19,7 @@ import {
   STUDENT_MODES,
   TEACHER_MODES,
 } from '../../config/settings';
-import { DEFAULT_VIEW, FILES_VIEW, FEEDBACK_VIEW } from '../../config/views';
+import { DEFAULT_VIEW, FILES_VIEW } from '../../config/views';
 import './Header.css';
 import {
   runCode,
@@ -35,12 +29,10 @@ import {
   postAppInstanceResource,
   getAppInstanceResources,
   getUsers,
+  setProgrammingLanguage,
 } from '../../actions';
-import { FEEDBACK, INPUT, STDIN } from '../../config/appInstanceResourceTypes';
-import {
-  JAVASCRIPT,
-  DEFAULT_PROGRAMMING_LANGUAGE,
-} from '../../config/programmingLanguages';
+import { INPUT, STDIN } from '../../config/appInstanceResourceTypes';
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
 
 class Header extends Component {
   static propTypes = {
@@ -52,6 +44,7 @@ class Header extends Component {
     dispatchRunCode: PropTypes.func.isRequired,
     dispatchOpenInputSettings: PropTypes.func.isRequired,
     dispatchCloseInputSettings: PropTypes.func.isRequired,
+    dispatchSetProgrammingLanguage: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       root: PropTypes.string,
       grow: PropTypes.string,
@@ -61,13 +54,13 @@ class Header extends Component {
     currentCode: PropTypes.string.isRequired,
     currentInput: PropTypes.string,
     programmingLanguage: PropTypes.string.isRequired,
+    currentProgrammingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
-    inputResourceId: PropTypes.string,
+    inputResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
     view: PropTypes.string,
-    feedback: PropTypes.string,
     inputDisplayed: PropTypes.bool.isRequired,
   };
 
@@ -79,7 +72,6 @@ class Header extends Component {
     userId: null,
     inputResourceId: null,
     stdinResourceId: null,
-    feedback: null,
     currentInput: '',
   };
 
@@ -110,6 +102,34 @@ class Header extends Component {
       top: theme.spacing.unit * 4 + 3 * 40,
     },
   });
+
+  // here we synchronise between the language stored in the app
+  // instance's settings and the one set for the code environment
+  // noting that the calls to fetch the app instance have been
+  // done within the app component
+  componentDidMount() {
+    const {
+      currentProgrammingLanguage,
+      programmingLanguage,
+      dispatchSetProgrammingLanguage,
+    } = this.props;
+
+    if (currentProgrammingLanguage !== programmingLanguage) {
+      dispatchSetProgrammingLanguage(programmingLanguage);
+    }
+  }
+
+  componentDidUpdate() {
+    const {
+      currentProgrammingLanguage,
+      programmingLanguage,
+      dispatchSetProgrammingLanguage,
+    } = this.props;
+
+    if (currentProgrammingLanguage !== programmingLanguage) {
+      dispatchSetProgrammingLanguage(programmingLanguage);
+    }
+  }
 
   handleOpenInput = () => {
     const {
@@ -234,74 +254,6 @@ class Header extends Component {
     return buttons;
   }
 
-  renderStudentButtons() {
-    const {
-      t,
-      currentCode,
-      currentInput,
-      savedCode,
-      savedInput,
-      feedback,
-      view,
-      programmingLanguage,
-    } = this.props;
-    const feedbackDisabled = !feedback;
-    const saveDisabled =
-      currentCode === savedCode && currentInput === savedInput;
-    const runDisabled = _.isEmpty(currentCode);
-    const showInput = programmingLanguage === JAVASCRIPT;
-
-    const buttons = [
-      <Tooltip title={t('Save')} key="save">
-        <div>
-          <IconButton onClick={this.handleSave} disabled={saveDisabled}>
-            <SaveIcon nativeColor="#fff" opacity={saveDisabled ? 0.5 : 1} />
-          </IconButton>
-        </div>
-      </Tooltip>,
-      <Tooltip title={t('Run')} key="run">
-        <div>
-          <IconButton onClick={this.handleRun} disabled={runDisabled}>
-            <PlayArrowIcon nativeColor="#fff" opacity={runDisabled ? 0.5 : 1} />
-          </IconButton>
-        </div>
-      </Tooltip>,
-    ];
-
-    if (showInput) {
-      buttons.unshift(
-        <Tooltip title={t('Input')} key="input">
-          <div>
-            <IconButton onClick={this.handleOpenInput}>
-              <InputIcon nativeColor="#fff" />
-            </IconButton>
-          </div>
-        </Tooltip>
-      );
-    }
-
-    if (view === DEFAULT_VIEW) {
-      buttons.unshift(
-        <Tooltip title={t('Show Feedback')} key="feedback">
-          <div>
-            <IconButton
-              href={`index.html${addQueryParamsToUrl({ view: FEEDBACK_VIEW })}`}
-              disabled={feedbackDisabled}
-            >
-              <VerticalSplitIcon
-                nativeColor="#fff"
-                opacity={feedbackDisabled ? 0.5 : 1}
-                style={{
-                  transform: 'rotate(180deg)',
-                }}
-              />
-            </IconButton>
-          </div>
-        </Tooltip>
-      );
-    }
-  }
-
   renderLanguage() {
     const { t, programmingLanguage } = this.props;
 
@@ -346,11 +298,6 @@ const mapStateToProps = ({
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
   });
-  const feedbackResource = appInstanceResources.content.find(
-    ({ user, type }) => {
-      return user === userId && type === FEEDBACK;
-    }
-  );
   const stdinResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === STDIN;
   });
@@ -366,10 +313,10 @@ const mapStateToProps = ({
     mode: context.mode,
     view: context.view,
     savedCode: inputResource && inputResource.data,
-    feedback: feedbackResource && feedbackResource.data,
     savedInput: stdinResource && stdinResource.data,
     currentInput: code.input,
     inputDisplayed: layout.settings.inputDisplayed,
+    currentProgrammingLanguage: code.language,
     programmingLanguage,
   };
 };
@@ -382,6 +329,7 @@ const mapDispatchToProps = {
   dispatchCloseInputSettings: closeInputSettings,
   dispatchGetAppInstanceResources: getAppInstanceResources,
   dispatchGetUsers: getUsers,
+  dispatchSetProgrammingLanguage: setProgrammingLanguage,
 };
 
 const ConnectedComponent = connect(

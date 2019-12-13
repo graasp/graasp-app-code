@@ -9,6 +9,7 @@ import {
   SET_INPUT,
   APPEND_INPUT,
   REGISTER_WORKER_SUCCEEDED,
+  FLAG_RUNNING_CODE,
 } from '../types';
 
 import {
@@ -25,6 +26,7 @@ const INITIAL_STATE = {
   input: '',
   output: '',
   worker: null,
+  activity: [],
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
@@ -80,6 +82,14 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         worker: payload,
+      };
+    case FLAG_RUNNING_CODE:
+      return {
+        ...state,
+        // when true append to array, when false, pop from it
+        activity: payload
+          ? [...state.activity, payload]
+          : [...state.activity.slice(1)],
       };
     default:
       return state;

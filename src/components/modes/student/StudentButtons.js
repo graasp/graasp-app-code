@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import { withStyles } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import VerticalSplitIcon from '@material-ui/icons/VerticalSplit';
-import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
-import Fab from '@material-ui/core/Fab';
-import Tooltip from '@material-ui/core/Tooltip';
-import InputIcon from '@material-ui/icons/Input';
-import SaveIcon from '@material-ui/icons/Save';
+import { Fab, CircularProgress, Tooltip, withStyles } from '@material-ui/core';
+import {
+  Input as InputIcon,
+  Save as SaveIcon,
+  PlayArrow as PlayArrowIcon,
+  VerticalSplit as VerticalSplitIcon,
+  ViewHeadline as ViewHeadlineIcon,
+} from '@material-ui/icons';
 import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
 import { addQueryParamsToUrl } from '../../../utils/url';
 import {
@@ -54,6 +54,7 @@ class StudentButtons extends Component {
     userId: PropTypes.string,
     view: PropTypes.string,
     inputDisplayed: PropTypes.bool.isRequired,
+    codeActivity: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -183,6 +184,7 @@ class StudentButtons extends Component {
       view,
       classes,
       programmingLanguage,
+      codeActivity,
     } = this.props;
     const feedbackDisabled = !feedback;
     const saveDisabled =
@@ -204,19 +206,26 @@ class StudentButtons extends Component {
           <SaveIcon />
         </Tooltip>
       </Fab>,
-      <Fab
-        onClick={this.handleRun}
-        disabled={runDisabled}
-        className={[classes.fab]}
-        key="run"
-        color="primary"
-        size="small"
-      >
-        <Tooltip title={t('Run')}>
-          <PlayArrowIcon />
-        </Tooltip>
-      </Fab>,
     ];
+
+    if (codeActivity) {
+      buttons.push(<CircularProgress className={classes.fab} key="progress" />);
+    } else {
+      buttons.push(
+        <Fab
+          onClick={this.handleRun}
+          disabled={runDisabled}
+          className={[classes.fab]}
+          key="run"
+          color="primary"
+          size="small"
+        >
+          <Tooltip title={t('Run')}>
+            <PlayArrowIcon />
+          </Tooltip>
+        </Fab>
+      );
+    }
 
     if (showInput) {
       buttons.unshift(
@@ -314,6 +323,7 @@ const mapStateToProps = ({
     savedCode: inputResource && inputResource.data,
     savedInput: stdinResource && stdinResource.data,
     inputDisplayed: layout.settings.inputDisplayed,
+    codeActivity: Boolean(code.activity.length),
   };
 };
 

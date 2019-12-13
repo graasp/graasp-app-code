@@ -11,6 +11,7 @@ import {
   PRINT_OUTPUT,
   REGISTER_WORKER_SUCCEEDED,
   REGISTER_WORKER_FAILED,
+  FLAG_RUNNING_CODE,
 } from '../types';
 import {
   runJavaScript,
@@ -20,6 +21,9 @@ import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
 import pythonWorkerCode from '../workers/python';
 import PyWorker from '../vendor/PyWorker';
+import { flag } from './common';
+
+const flagRunningCode = flag(FLAG_RUNNING_CODE);
 
 const setProgrammingLanguage = data => dispatch =>
   dispatch({
@@ -105,7 +109,7 @@ const registerWorker = () => (dispatch, getState) => {
       },
     },
   } = getState();
-
+  console.log(programmingLanguage); // todo
   try {
     let worker;
     switch (programmingLanguage) {
@@ -117,7 +121,6 @@ const registerWorker = () => (dispatch, getState) => {
         worker.addCommand('alert', msg => {
           alert(msg);
         });
-        worker.preload();
         worker.onOutput = text => {
           dispatch({
             payload: text,
@@ -164,10 +167,21 @@ const runCode = job => (dispatch, getState) => {
     worker,
   };
 
+  // todo: improve
+  if (!worker) {
+    alert('Pyodide did not initialize correctly. Please refresh the page.');
+  }
+
   try {
+    dispatch(flagRunningCode(true));
+
+    // callback to execute after running code
+    const callback = () => {
+      dispatch(flagRunningCode(false));
+    };
     switch (programmingLanguage) {
       case PYTHON:
-        runPython(config, dispatch);
+        runPython(config, callback);
         break;
       case JAVASCRIPT:
         runJavaScriptWithHeaderAndFooter(config, dispatch);
@@ -176,6 +190,9 @@ const runCode = job => (dispatch, getState) => {
         runJavaScript(data, dispatch);
     }
   } catch (err) {
+    // todo abort worker execution
+    console.error(err);
+    dispatch(flagRunningCode(false));
     dispatch({
       type: RUN_CODE_FAILED,
       payload: err,
