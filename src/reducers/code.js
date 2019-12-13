@@ -8,10 +8,13 @@ import {
   CLEAR_OUTPUT,
   SET_INPUT,
   APPEND_INPUT,
-  REGISTER_WORKER,
+  REGISTER_WORKER_SUCCEEDED,
 } from '../types';
 
-import { DEFAULT_PROGRAMMING_LANGUAGE } from '../config/programmingLanguages';
+import {
+  DEFAULT_PROGRAMMING_LANGUAGE,
+  JAVASCRIPT,
+} from '../config/programmingLanguages';
 
 const INITIAL_STATE = {
   language: DEFAULT_PROGRAMMING_LANGUAGE,
@@ -54,7 +57,9 @@ export default (state = INITIAL_STATE, { type, payload }) => {
     case PRINT_OUTPUT:
       return {
         ...state,
-        output: state.output + payload,
+        // todo: make consistent
+        output:
+          state.language === JAVASCRIPT ? state.output + payload : payload,
       };
     case CLEAR_OUTPUT:
       return {
@@ -71,7 +76,7 @@ export default (state = INITIAL_STATE, { type, payload }) => {
         ...state,
         input: state.input + payload,
       };
-    case REGISTER_WORKER:
+    case REGISTER_WORKER_SUCCEEDED:
       return {
         ...state,
         worker: payload,

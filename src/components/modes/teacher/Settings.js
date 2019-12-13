@@ -320,7 +320,7 @@ class Settings extends Component {
         </Typography>
         <AceEditor
           placeholder={`${commentPrefix} ${t(
-            'Write header code here (ex. import libraries, init console, etc.)'
+            'write header code here (e.g. import libraries, init console)'
           )}`}
           mode={currentProgrammingLanguage}
           theme="xcode"
@@ -363,7 +363,7 @@ class Settings extends Component {
         </Typography>
         <AceEditor
           placeholder={`${commentPrefix} ${t(
-            'Write code to show to the student by default'
+            'write code to show to the student by default'
           )}`}
           mode={currentProgrammingLanguage}
           theme="xcode"
@@ -406,7 +406,7 @@ class Settings extends Component {
         </Typography>
         <AceEditor
           placeholder={`${commentPrefix} ${t(
-            'Write footer code here (ex. display execution time, etc.)'
+            'write footer code here (e.g. display execution time)'
           )}`}
           mode={currentProgrammingLanguage}
           theme="xcode"

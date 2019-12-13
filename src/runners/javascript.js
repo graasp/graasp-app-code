@@ -1,10 +1,9 @@
-// example sanitize function
 import {
   PRINT_OUTPUT,
   CLEAR_OUTPUT,
   RUN_CODE,
   SET_INPUT,
-  REGISTER_WORKER,
+  REGISTER_WORKER_SUCCEEDED,
 } from '../types';
 import workerCode from './worker';
 import { CLEAR, PRINT } from '../config/commands';
@@ -57,7 +56,7 @@ const runJavaScriptWithHeaderAndFooter = (config, dispatch) => {
   const { headerCode, footerCode, input, code } = config;
   const worker = createWorker(dispatch);
   dispatch({
-    type: REGISTER_WORKER,
+    type: REGISTER_WORKER_SUCCEEDED,
     payload: worker,
   });
 

@@ -6,7 +6,10 @@ import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core';
 import { INPUT } from '../../../config/appInstanceResourceTypes';
 import { setCode, runCode } from '../../../actions';
-import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../../config/programmingLanguages';
+import {
+  DEFAULT_PROGRAMMING_LANGUAGE,
+  PYTHON,
+} from '../../../config/programmingLanguages';
 import './Editor.css';
 import {
   DEFAULT_FONT_SIZE,
@@ -20,6 +23,7 @@ const styles = () => ({});
 
 class Editor extends Component {
   static propTypes = {
+    t: PropTypes.func.isRequired,
     dispatchSetCode: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
     fullscreen: PropTypes.bool.isRequired,
@@ -72,6 +76,7 @@ class Editor extends Component {
   render() {
     // eslint-disable-next-line react/prop-types
     const {
+      t,
       code,
       appInstanceId,
       programmingLanguage,
@@ -80,9 +85,10 @@ class Editor extends Component {
     } = this.props;
     const horizontalOrientation = orientation === HORIZONTAL_ORIENTATION;
 
+    const commentPrefix = programmingLanguage === PYTHON ? '#' : '//';
     return (
       <AceEditor
-        placeholder="function () { console.log('Placeholder Text'); }"
+        placeholder={`${commentPrefix} ${t('you code goes here')}`}
         mode={programmingLanguage}
         theme="xcode"
         name={appInstanceId || Math.random()}

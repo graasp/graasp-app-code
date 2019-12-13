@@ -9,6 +9,8 @@ import {
   APPEND_INPUT,
   SEND_INPUT,
   PRINT_OUTPUT,
+  REGISTER_WORKER_SUCCEEDED,
+  REGISTER_WORKER_FAILED,
 } from '../types';
 import {
   runJavaScript,
@@ -16,6 +18,8 @@ import {
 } from '../runners/javascript';
 import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
+import pythonWorkerCode from '../workers/python';
+import PyWorker from '../vendor/PyWorker';
 
 const setProgrammingLanguage = data => dispatch =>
   dispatch({
@@ -93,6 +97,54 @@ const sendInput = data => (dispatch, getState) => {
   }
 };
 
+const registerWorker = () => (dispatch, getState) => {
+  const {
+    appInstance: {
+      content: {
+        settings: { programmingLanguage },
+      },
+    },
+  } = getState();
+
+  try {
+    let worker;
+    switch (programmingLanguage) {
+      case PYTHON:
+        worker = new PyWorker(
+          `data://application/javascript,${pythonWorkerCode}`
+        );
+        worker.timeout = 60;
+        worker.addCommand('alert', msg => {
+          alert(msg);
+        });
+        worker.preload();
+        worker.onOutput = text => {
+          dispatch({
+            payload: text,
+            type: PRINT_OUTPUT,
+          });
+        };
+        worker.preload();
+        dispatch({
+          type: REGISTER_WORKER_SUCCEEDED,
+          payload: worker,
+        });
+        break;
+      case JAVASCRIPT:
+      default:
+      // do nothing
+    }
+  } catch (err) {
+    console.error(err);
+    dispatch({
+      type: REGISTER_WORKER_FAILED,
+      payload: err,
+    });
+  } finally {
+    // lower flag
+  }
+};
+
 const runCode = job => (dispatch, getState) => {
   const {
     appInstance: {
@@ -100,6 +152,7 @@ const runCode = job => (dispatch, getState) => {
         settings: { programmingLanguage, headerCode, footerCode },
       },
     },
+    code: { worker },
   } = getState();
 
   const { data, input } = job;
@@ -108,6 +161,7 @@ const runCode = job => (dispatch, getState) => {
     headerCode,
     footerCode,
     input,
+    worker,
   };
 
   try {
@@ -142,4 +196,5 @@ export {
   appendInput,
   sendInput,
   printOutput,
+  registerWorker,
 };

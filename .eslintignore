@@ -3,3 +3,4 @@ public
 coverage
 src/registerServiceWorker.js
 cypress/integration/examples
+src/vendor
