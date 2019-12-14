@@ -12,7 +12,6 @@ import pink from '@material-ui/core/colors/pink';
 import grey from '@material-ui/core/colors/grey';
 import orange from '@material-ui/core/colors/orange';
 import 'react-toastify/dist/ReactToastify.css';
-import Header from './layout/Header';
 import i18nConfig from '../config/i18n';
 import App from './App';
 import {
@@ -62,7 +61,6 @@ const Root = ({ classes }) => (
   <div className={classes.root}>
     <MuiThemeProvider theme={theme}>
       <I18nextProvider i18n={i18nConfig}>
-        <Header />
         <App />
         <ToastContainer />
       </I18nextProvider>

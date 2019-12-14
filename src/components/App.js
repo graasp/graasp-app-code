@@ -9,6 +9,7 @@ import { getAppInstance } from '../actions/appInstance';
 import { DEFAULT_VIEW } from '../config/views';
 import TeacherMode from './modes/teacher/TeacherMode';
 import Loader from './common/Loader';
+import Header from './layout/Header';
 
 export class App extends Component {
   static propTypes = {
@@ -96,7 +97,12 @@ export class App extends Component {
       case 'producer':
       case 'educator':
       case 'admin':
-        return <TeacherMode view={view} />;
+        return (
+          <>
+            <Header />
+            <TeacherMode view={view} />
+          </>
+        );
 
       // by default go with the consumer (learner) mode
       case 'student':

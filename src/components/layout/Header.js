@@ -20,7 +20,6 @@ import {
   TEACHER_MODES,
 } from '../../config/settings';
 import { DEFAULT_VIEW, FILES_VIEW } from '../../config/views';
-import './Header.css';
 import {
   runCode,
   openInputSettings,
