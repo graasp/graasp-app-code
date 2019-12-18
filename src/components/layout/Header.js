@@ -28,7 +28,6 @@ import {
   postAppInstanceResource,
   getAppInstanceResources,
   getUsers,
-  setProgrammingLanguage,
 } from '../../actions';
 import { INPUT, STDIN } from '../../config/appInstanceResourceTypes';
 import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
@@ -43,7 +42,6 @@ class Header extends Component {
     dispatchRunCode: PropTypes.func.isRequired,
     dispatchOpenInputSettings: PropTypes.func.isRequired,
     dispatchCloseInputSettings: PropTypes.func.isRequired,
-    dispatchSetProgrammingLanguage: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       root: PropTypes.string,
       grow: PropTypes.string,
@@ -53,7 +51,6 @@ class Header extends Component {
     currentCode: PropTypes.string.isRequired,
     currentInput: PropTypes.string,
     programmingLanguage: PropTypes.string.isRequired,
-    currentProgrammingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
     inputResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -101,34 +98,6 @@ class Header extends Component {
       top: theme.spacing.unit * 4 + 3 * 40,
     },
   });
-
-  // here we synchronise between the language stored in the app
-  // instance's settings and the one set for the code environment
-  // noting that the calls to fetch the app instance have been
-  // done within the app component
-  componentDidMount() {
-    const {
-      currentProgrammingLanguage,
-      programmingLanguage,
-      dispatchSetProgrammingLanguage,
-    } = this.props;
-
-    if (currentProgrammingLanguage !== programmingLanguage) {
-      dispatchSetProgrammingLanguage(programmingLanguage);
-    }
-  }
-
-  componentDidUpdate() {
-    const {
-      currentProgrammingLanguage,
-      programmingLanguage,
-      dispatchSetProgrammingLanguage,
-    } = this.props;
-
-    if (currentProgrammingLanguage !== programmingLanguage) {
-      dispatchSetProgrammingLanguage(programmingLanguage);
-    }
-  }
 
   handleOpenInput = () => {
     const {
@@ -315,7 +284,6 @@ const mapStateToProps = ({
     savedInput: stdinResource && stdinResource.data,
     currentInput: code.input,
     inputDisplayed: layout.settings.inputDisplayed,
-    currentProgrammingLanguage: code.language,
     programmingLanguage,
   };
 };
@@ -328,7 +296,6 @@ const mapDispatchToProps = {
   dispatchCloseInputSettings: closeInputSettings,
   dispatchGetAppInstanceResources: getAppInstanceResources,
   dispatchGetUsers: getUsers,
-  dispatchSetProgrammingLanguage: setProgrammingLanguage,
 };
 
 const ConnectedComponent = connect(

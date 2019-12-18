@@ -1,5 +1,4 @@
 import {
-  SET_PROGRAMMING_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_DEFAULT_CODE,
@@ -12,6 +11,7 @@ import {
   REGISTER_WORKER_SUCCEEDED,
   REGISTER_WORKER_FAILED,
   FLAG_RUNNING_CODE,
+  FLAG_REGISTERING_WORKER,
 } from '../types';
 import {
   runJavaScript,
@@ -24,12 +24,7 @@ import PyWorker from '../vendor/PyWorker';
 import { flag } from './common';
 
 const flagRunningCode = flag(FLAG_RUNNING_CODE);
-
-const setProgrammingLanguage = data => dispatch =>
-  dispatch({
-    type: SET_PROGRAMMING_LANGUAGE,
-    payload: data,
-  });
+const flagRegisteringWorker = flag(FLAG_REGISTERING_WORKER);
 
 const setCode = data => dispatch =>
   dispatch({
@@ -101,15 +96,9 @@ const sendInput = data => (dispatch, getState) => {
   }
 };
 
-const registerWorker = () => (dispatch, getState) => {
-  const {
-    appInstance: {
-      content: {
-        settings: { programmingLanguage },
-      },
-    },
-  } = getState();
-  console.log(programmingLanguage); // todo
+const registerWorker = programmingLanguage => dispatch => {
+  dispatch(flagRegisteringWorker(true));
+
   try {
     let worker;
     switch (programmingLanguage) {
@@ -132,10 +121,14 @@ const registerWorker = () => (dispatch, getState) => {
           type: REGISTER_WORKER_SUCCEEDED,
           payload: worker,
         });
+
+        // todo: do this in a callback
+        dispatch(flagRegisteringWorker(false));
         break;
       case JAVASCRIPT:
       default:
-      // do nothing
+        // todo: do this in a callback
+        dispatch(flagRegisteringWorker(false));
     }
   } catch (err) {
     console.error(err);
@@ -143,6 +136,7 @@ const registerWorker = () => (dispatch, getState) => {
       type: REGISTER_WORKER_FAILED,
       payload: err,
     });
+    dispatch(flagRegisteringWorker(false));
   } finally {
     // lower flag
   }
@@ -203,7 +197,6 @@ const runCode = job => (dispatch, getState) => {
 };
 
 export {
-  setProgrammingLanguage,
   runCode,
   setCode,
   setHeaderCode,

@@ -1,5 +1,4 @@
 import {
-  SET_PROGRAMMING_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_DEFAULT_CODE,
@@ -10,15 +9,12 @@ import {
   APPEND_INPUT,
   REGISTER_WORKER_SUCCEEDED,
   FLAG_RUNNING_CODE,
+  FLAG_REGISTERING_WORKER,
 } from '../types';
 
-import {
-  DEFAULT_PROGRAMMING_LANGUAGE,
-  JAVASCRIPT,
-} from '../config/programmingLanguages';
+import { JAVASCRIPT } from '../config/programmingLanguages';
 
 const INITIAL_STATE = {
-  language: DEFAULT_PROGRAMMING_LANGUAGE,
   content: '',
   header: '',
   default: '',
@@ -31,11 +27,6 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, { type, payload }) => {
   switch (type) {
-    case SET_PROGRAMMING_LANGUAGE:
-      return {
-        ...state,
-        language: payload,
-      };
     case SET_CODE:
       return {
         ...state,
@@ -83,6 +74,7 @@ export default (state = INITIAL_STATE, { type, payload }) => {
         ...state,
         worker: payload,
       };
+    case FLAG_REGISTERING_WORKER:
     case FLAG_RUNNING_CODE:
       return {
         ...state,
