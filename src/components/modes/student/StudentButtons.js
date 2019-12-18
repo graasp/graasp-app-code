@@ -22,8 +22,6 @@ import {
   postAppInstanceResource,
   runCode,
   setInput,
-  openInputSettings,
-  closeInputSettings,
 } from '../../../actions';
 
 class StudentButtons extends Component {
@@ -58,8 +56,6 @@ class StudentButtons extends Component {
     dispatchPostAppInstanceResource: PropTypes.func.isRequired,
     dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
-    dispatchOpenInputSettings: PropTypes.func.isRequired,
-    dispatchCloseInputSettings: PropTypes.func.isRequired,
     currentCode: PropTypes.string.isRequired,
     currentInput: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
@@ -69,7 +65,6 @@ class StudentButtons extends Component {
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
     view: PropTypes.string,
-    inputDisplayed: PropTypes.bool.isRequired,
     codeActivity: PropTypes.bool.isRequired,
   };
 
@@ -154,20 +149,6 @@ class StudentButtons extends Component {
     };
 
     dispatchRunCode(job);
-  };
-
-  handleToggleInput = () => {
-    const {
-      inputDisplayed,
-      dispatchOpenInputSettings,
-      dispatchCloseInputSettings,
-    } = this.props;
-
-    if (inputDisplayed) {
-      dispatchCloseInputSettings();
-    } else {
-      dispatchOpenInputSettings();
-    }
   };
 
   render() {
@@ -261,7 +242,7 @@ class StudentButtons extends Component {
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources, code, layout }) => {
+const mapStateToProps = ({ context, appInstanceResources, code }) => {
   const { userId, offline, appInstanceId } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
@@ -292,7 +273,6 @@ const mapStateToProps = ({ context, appInstanceResources, code, layout }) => {
     currentInput: code.input,
     savedCode: inputResource && inputResource.data,
     savedInput: stdinResource && stdinResource.data,
-    inputDisplayed: layout.settings.inputDisplayed,
     codeActivity: Boolean(code.activity.length),
   };
 };
@@ -302,8 +282,6 @@ const mapDispatchToProps = {
   dispatchPatchAppInstanceResource: patchAppInstanceResource,
   dispatchRunCode: runCode,
   dispatchSetInput: setInput,
-  dispatchOpenInputSettings: openInputSettings,
-  dispatchCloseInputSettings: closeInputSettings,
 };
 
 const StyledComponent = withStyles(StudentButtons.styles)(StudentButtons);

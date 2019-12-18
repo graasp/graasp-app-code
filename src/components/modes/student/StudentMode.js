@@ -7,6 +7,7 @@ import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
 import { getAppInstanceResources, registerWorker } from '../../../actions';
 import Loader from '../../common/Loader';
 import StudentButtons from './StudentButtons';
+import MaximizableView from '../../layout/MaximizableView';
 
 class StudentMode extends Component {
   static propTypes = {
@@ -36,7 +37,9 @@ class StudentMode extends Component {
     } = this.props;
 
     // get the resources for this user
-    dispatchGetAppInstanceResources({ userId });
+    if (userId) {
+      dispatchGetAppInstanceResources({ userId });
+    }
 
     // register the worker
     dispatchRegisterWorker(programmingLanguage);
@@ -57,7 +60,9 @@ class StudentMode extends Component {
 
     // handle receiving the app instance id
     if (appInstanceId !== prevAppInstanceId) {
-      dispatchGetAppInstanceResources({ userId });
+      if (userId) {
+        dispatchGetAppInstanceResources({ userId });
+      }
     }
 
     // handle changing programming language
@@ -82,10 +87,10 @@ class StudentMode extends Component {
       case DEFAULT_VIEW:
       default:
         return (
-          <>
+          <MaximizableView>
             <StudentButtons />
             <StudentView fullscreen={fullscreen} />
-          </>
+          </MaximizableView>
         );
     }
   }
