@@ -9,7 +9,7 @@ usage() {
 }
 
 # default build directory
-BUILD="dist/"
+BUILD="build/"
 
 # default version
 REACT_APP_VERSION="latest"
