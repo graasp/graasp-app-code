@@ -19,6 +19,25 @@ import { INPUT } from '../../../config/appInstanceResourceTypes';
 import Settings from './Settings';
 
 export class TeacherView extends Component {
+  static styles = theme => ({
+    root: {
+      width: '100%',
+      marginTop: theme.spacing.unit * 3,
+    },
+    main: {
+      textAlign: 'center',
+      margin: theme.spacing.unit,
+      padding: theme.spacing.unit,
+      overflowX: 'hidden',
+    },
+    fab: {
+      margin: theme.spacing.unit,
+      position: 'fixed',
+      bottom: theme.spacing.unit * 2,
+      right: theme.spacing.unit * 2,
+    },
+  });
+
   static propTypes = {
     classes: PropTypes.shape({
       root: PropTypes.string,
@@ -48,24 +67,9 @@ export class TeacherView extends Component {
     programmingLanguage: PropTypes.string.isRequired,
   };
 
-  static styles = theme => ({
-    root: {
-      width: '100%',
-      marginTop: theme.spacing.unit * 3,
-    },
-    main: {
-      textAlign: 'center',
-      margin: theme.spacing.unit,
-      padding: theme.spacing.unit,
-      overflowX: 'hidden',
-    },
-    fab: {
-      margin: theme.spacing.unit,
-      position: 'fixed',
-      bottom: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 2,
-    },
-  });
+  static defaultProps = {
+    appInstanceResources: [],
+  };
 
   componentDidMount() {
     const { dispatchGetUsers } = this.props;
@@ -109,10 +113,6 @@ export class TeacherView extends Component {
     );
   }
 }
-
-TeacherView.defaultProps = {
-  appInstanceResources: [],
-};
 
 // get the app instance resources that are saved in the redux store
 const mapStateToProps = ({ users, appInstance, appInstanceResources }) => {

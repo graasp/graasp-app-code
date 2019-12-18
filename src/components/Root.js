@@ -8,7 +8,6 @@ import {
   withStyles,
 } from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
-import pink from '@material-ui/core/colors/pink';
 import grey from '@material-ui/core/colors/grey';
 import orange from '@material-ui/core/colors/orange';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,7 +39,9 @@ const theme = createMuiTheme({
     primary: {
       main: '#5050d2',
     },
-    secondary: pink,
+    secondary: {
+      main: '#fff',
+    },
     default: grey,
     background: {
       paper: '#fff',

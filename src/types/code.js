@@ -8,6 +8,8 @@ export const RUN_CODE_FAILED = 'RUN_CODE_FAILED';
 export const PRINT_OUTPUT = 'PRINT_OUTPUT';
 export const CLEAR_OUTPUT = 'CLEAR_OUTPUT';
 export const APPEND_OUTPUT = 'APPEND_OUTPUT';
+export const APPEND_FIGURE = 'APPEND_FIGURE';
+export const CLEAR_FIGURES = 'CLEAR_FIGURES';
 
 export const SET_INPUT = 'SET_INPUT';
 export const APPEND_INPUT = 'APPEND_INPUT';

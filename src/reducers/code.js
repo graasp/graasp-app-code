@@ -11,6 +11,8 @@ import {
   FLAG_RUNNING_CODE,
   FLAG_REGISTERING_WORKER,
   APPEND_OUTPUT,
+  CLEAR_FIGURES,
+  APPEND_FIGURE,
 } from '../types';
 
 const INITIAL_STATE = {
@@ -21,6 +23,7 @@ const INITIAL_STATE = {
   input: '',
   output: '',
   worker: null,
+  figures: [],
   activity: [],
 };
 
@@ -55,6 +58,16 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         output: state.output + payload,
+      };
+    case APPEND_FIGURE:
+      return {
+        ...state,
+        figures: state.figures.concat(payload),
+      };
+    case CLEAR_FIGURES:
+      return {
+        ...state,
+        figures: [],
       };
     case CLEAR_OUTPUT:
       return {

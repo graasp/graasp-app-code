@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Fab, CircularProgress, Tooltip, withStyles } from '@material-ui/core';
 import {
-  Input as InputIcon,
   Save as SaveIcon,
   PlayArrow as PlayArrowIcon,
   VerticalSplit as VerticalSplitIcon,
@@ -26,9 +25,27 @@ import {
   openInputSettings,
   closeInputSettings,
 } from '../../../actions';
-import { JAVASCRIPT } from '../../../config/programmingLanguages';
 
 class StudentButtons extends Component {
+  static styles = theme => ({
+    fab: {
+      margin: theme.spacing.unit,
+      position: 'fixed',
+      zIndex: 1000,
+      top: theme.spacing.unit * 2,
+      right: theme.spacing.unit * 1,
+    },
+    fab1: {
+      top: theme.spacing.unit * 3 + 40,
+    },
+    fab2: {
+      top: theme.spacing.unit * 4 + 2 * 40,
+    },
+    fab3: {
+      top: theme.spacing.unit * 5 + 3 * 40,
+    },
+  });
+
   static propTypes = {
     classes: PropTypes.shape({
       fab: PropTypes.string,
@@ -45,7 +62,6 @@ class StudentButtons extends Component {
     dispatchCloseInputSettings: PropTypes.func.isRequired,
     currentCode: PropTypes.string.isRequired,
     currentInput: PropTypes.string.isRequired,
-    programmingLanguage: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
     feedback: PropTypes.string,
@@ -66,25 +82,6 @@ class StudentButtons extends Component {
     stdinResourceId: null,
     view: DEFAULT_VIEW,
   };
-
-  static styles = theme => ({
-    fab: {
-      margin: theme.spacing.unit,
-      position: 'fixed',
-      zIndex: 1000,
-      top: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 1,
-    },
-    fab1: {
-      top: theme.spacing.unit * 3 + 40,
-    },
-    fab2: {
-      top: theme.spacing.unit * 4 + 2 * 40,
-    },
-    fab3: {
-      top: theme.spacing.unit * 5 + 3 * 40,
-    },
-  });
 
   handleSave = () => {
     const { currentCode, currentInput, savedCode, savedInput } = this.props;
@@ -183,15 +180,12 @@ class StudentButtons extends Component {
       feedback,
       view,
       classes,
-      programmingLanguage,
       codeActivity,
     } = this.props;
     const feedbackDisabled = !feedback;
     const saveDisabled =
       currentCode === savedCode && currentInput === savedInput;
     const runDisabled = _.isEmpty(currentCode);
-    // input currently only works with javascript (2019/9/19)
-    const showInput = programmingLanguage === JAVASCRIPT;
 
     const buttons = [
       <Fab
@@ -222,23 +216,6 @@ class StudentButtons extends Component {
         >
           <Tooltip title={t('Run')}>
             <PlayArrowIcon />
-          </Tooltip>
-        </Fab>
-      );
-    }
-
-    if (showInput) {
-      buttons.unshift(
-        <Fab
-          onClick={this.handleToggleInput}
-          disabled={!showInput}
-          className={[classes.fab, classes.fab3]}
-          key="input"
-          color="primary"
-          size="small"
-        >
-          <Tooltip title={t('Input')}>
-            <InputIcon />
           </Tooltip>
         </Fab>
       );
@@ -284,13 +261,7 @@ class StudentButtons extends Component {
   }
 }
 
-const mapStateToProps = ({
-  context,
-  appInstanceResources,
-  appInstance,
-  code,
-  layout,
-}) => {
+const mapStateToProps = ({ context, appInstanceResources, code, layout }) => {
   const { userId, offline, appInstanceId } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
@@ -317,7 +288,6 @@ const mapStateToProps = ({
     spaceId: context.spaceId,
     mode: context.mode,
     view: context.view,
-    programmingLanguage: appInstance.content.settings.programmingLanguage,
     currentCode: code.content,
     currentInput: code.input,
     savedCode: inputResource && inputResource.data,

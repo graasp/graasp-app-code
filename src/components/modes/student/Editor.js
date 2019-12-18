@@ -13,10 +13,7 @@ import {
 import './Editor.css';
 import {
   DEFAULT_FONT_SIZE,
-  DEFAULT_ORIENTATION,
   FULL_SCREEN_FONT_SIZE,
-  HORIZONTAL_ORIENTATION,
-  VERTICAL_ORIENTATION,
 } from '../../../config/settings';
 
 const styles = () => ({});
@@ -31,17 +28,12 @@ class Editor extends Component {
     currentInput: PropTypes.string.isRequired,
     programmingLanguage: PropTypes.string,
     appInstanceId: PropTypes.string,
-    orientation: PropTypes.oneOf([
-      VERTICAL_ORIENTATION,
-      HORIZONTAL_ORIENTATION,
-    ]),
   };
 
   static defaultProps = {
     code: '',
     appInstanceId: null,
     programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
-    orientation: DEFAULT_ORIENTATION,
   };
 
   componentDidUpdate(prevProps) {
@@ -74,26 +66,23 @@ class Editor extends Component {
   };
 
   render() {
-    // eslint-disable-next-line react/prop-types
     const {
       t,
       code,
       appInstanceId,
       programmingLanguage,
-      orientation,
       fullscreen,
     } = this.props;
-    const horizontalOrientation = orientation === HORIZONTAL_ORIENTATION;
 
     const commentPrefix = programmingLanguage === PYTHON ? '#' : '//';
     return (
       <AceEditor
-        placeholder={`${commentPrefix} ${t('you code goes here')}`}
+        placeholder={`${commentPrefix} ${t('your code goes here')}`}
         mode={programmingLanguage}
         theme="xcode"
         name={appInstanceId || Math.random()}
-        height={horizontalOrientation ? '50vh' : '100vh'}
-        width={horizontalOrientation ? '100vw' : '50vw'}
+        height="100vh"
+        width="50vw"
         onLoad={this.onLoad}
         onChange={this.onChange}
         fontSize={fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE}
@@ -129,7 +118,7 @@ const mapStateToProps = ({
   const { userId, appInstanceId } = context;
   const {
     content: {
-      settings: { programmingLanguage, orientation, defaultCode },
+      settings: { programmingLanguage, defaultCode },
     },
   } = appInstance;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
@@ -147,7 +136,6 @@ const mapStateToProps = ({
   return {
     appInstanceId,
     programmingLanguage,
-    orientation,
     code: codeData,
     currentInput: code.input,
   };

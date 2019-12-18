@@ -16,17 +16,15 @@ import Loader from '../../common/Loader';
 import Editor from './Editor';
 import {
   DEFAULT_FONT_SIZE,
-  DEFAULT_ORIENTATION,
   FULL_SCREEN_FONT_SIZE,
-  HORIZONTAL_ORIENTATION,
-  VERTICAL_ORIENTATION,
 } from '../../../config/settings';
+import Figures from './Figures';
 
 const Terminal = require('javascript-terminal');
 
 const styles = theme => ({
   main: {
-    flex: 1,
+    flexGrow: 1,
     height: '100%',
     width: '100%',
   },
@@ -43,49 +41,48 @@ const styles = theme => ({
   button: {
     marginRight: theme.spacing.unit,
   },
+  figures: {
+    height: '50vh',
+    width: '50vw',
+    borderLeft: 'solid black 1px',
+    overflow: 'scroll',
+  },
 });
 
 // eslint-disable-next-line react/prefer-stateless-function
 class StudentView extends Component {
   static propTypes = {
-    t: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
       message: PropTypes.string,
       button: PropTypes.string,
       textField: PropTypes.string,
+      figures: PropTypes.string,
     }).isRequired,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
     standalone: PropTypes.bool.isRequired,
     output: PropTypes.string,
-    inputDisplayed: PropTypes.bool.isRequired,
-    orientation: PropTypes.oneOf([
-      VERTICAL_ORIENTATION,
-      HORIZONTAL_ORIENTATION,
-    ]),
     fullscreen: PropTypes.bool.isRequired,
+    figuresDisplayed: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
     activity: false,
     ready: false,
     output: '',
-    orientation: DEFAULT_ORIENTATION,
   };
 
   render() {
     const {
-      t,
       classes,
       ready,
       activity,
       output,
-      orientation,
       fullscreen,
-      inputDisplayed,
       standalone,
+      figuresDisplayed,
     } = this.props;
 
     if (!standalone && (!ready || activity)) {
@@ -100,52 +97,44 @@ class StudentView extends Component {
       // fs: customFileSystem,
     });
 
-    const horizontalOrientation = orientation === HORIZONTAL_ORIENTATION;
     return (
-      <Grid
-        container
-        className={classes.main}
-        spacing={0}
-        direction={horizontalOrientation ? 'row' : 'column'}
-      >
-        <Grid item xs={12}>
-          <Editor fullscreen={fullscreen} />
+      <div className={classes.main}>
+        <Grid container spacing={0}>
+          <Grid item xs={6}>
+            <Editor fullscreen={fullscreen} />
+          </Grid>
+          <Grid item container xs={6}>
+            <Grid item xs={12}>
+              <ReactTerminal
+                autoFocus={false}
+                clickToFocus
+                theme={{
+                  ...ReactThemes.hacker,
+                  spacing: '0',
+                  height: figuresDisplayed ? '50vh' : '100vh',
+                  width: '50vw',
+                  fontSize: `${
+                    fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE
+                  }px`,
+                }}
+                emulatorState={emulatorState}
+              />
+            </Grid>
+            <Collapse in={figuresDisplayed}>
+              <Grid item xs={12}>
+                <Grid container className={classes.figures} justify="center">
+                  <Figures />
+                </Grid>
+              </Grid>
+            </Collapse>
+          </Grid>
         </Grid>
-        <Collapse in={inputDisplayed}>
-          <Grid item xs={12}>
-            {t('Nothing Here Yet')}
-          </Grid>
-        </Collapse>
-        <Collapse in={!inputDisplayed}>
-          <Grid item xs={12}>
-            <ReactTerminal
-              autoFocus={false}
-              clickToFocus
-              theme={{
-                ...ReactThemes.hacker,
-                spacing: '0',
-                height: horizontalOrientation ? '50vh' : '100vh',
-                width: horizontalOrientation ? '100vw' : '50vw',
-                fontSize: `${
-                  fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE
-                }px`,
-              }}
-              emulatorState={emulatorState}
-            />
-          </Grid>
-        </Collapse>
-      </Grid>
+      </div>
     );
   }
 }
 
-const mapStateToProps = ({
-  context,
-  appInstanceResources,
-  layout,
-  code,
-  appInstance,
-}) => {
+const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
   const { userId, offline, standalone } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
@@ -159,16 +148,9 @@ const mapStateToProps = ({
     .filter(({ type }) => type === FILE)
     .map(({ data }) => data);
 
-  const {
-    content: {
-      settings: { orientation },
-    },
-  } = appInstance;
-
   return {
     userId,
     offline,
-    orientation,
     standalone,
     fileResources,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
@@ -177,6 +159,7 @@ const mapStateToProps = ({
     feedback: feedbackResource && feedbackResource.data,
     output: code.output,
     inputDisplayed: layout.settings.inputDisplayed,
+    figuresDisplayed: Boolean(code.figures.length),
   };
 };
 

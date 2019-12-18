@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
@@ -145,7 +145,7 @@ class Response extends Component {
       <TableCell>{iconComponent}</TableCell>,
     ];
     return (
-      <Fragment>
+      <>
         {data ? tableCells : iconComponent}
         <DiffDialog
           id={_id}
@@ -158,7 +158,7 @@ class Response extends Component {
           handleSubmit={this.handleSubmitFeedback}
           programmingLanguage={programmingLanguage}
         />
-      </Fragment>
+      </>
     );
   }
 

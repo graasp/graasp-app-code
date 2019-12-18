@@ -15,6 +15,7 @@ export class App extends Component {
   static propTypes = {
     i18n: PropTypes.shape({
       defaultNS: PropTypes.string,
+      changeLanguage: PropTypes.func,
     }).isRequired,
     dispatchGetContext: PropTypes.func.isRequired,
     dispatchGetAppInstance: PropTypes.func.isRequired,

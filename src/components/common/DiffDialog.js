@@ -55,15 +55,15 @@ class DiffDialog extends Component {
     }
   }
 
+  componentDidCatch(error, errorInfo) {
+    console.error(error, errorInfo);
+  }
+
   handleChangeFeedback = value => {
     this.setState({
       input: value,
     });
   };
-
-  componentDidCatch(error, errorInfo) {
-    console.error(error, errorInfo);
-  }
 
   render() {
     const {

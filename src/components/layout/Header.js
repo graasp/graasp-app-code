@@ -33,6 +33,34 @@ import { INPUT, STDIN } from '../../config/appInstanceResourceTypes';
 import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
 
 class Header extends Component {
+  static styles = theme => ({
+    root: {
+      flexGrow: 1,
+    },
+    grow: {
+      flexGrow: 1,
+    },
+    logo: {
+      height: '48px',
+      marginRight: theme.spacing.unit * 2,
+    },
+    fab: {
+      margin: theme.spacing.unit,
+      position: 'fixed',
+      top: theme.spacing.unit * 1,
+      right: theme.spacing.unit * 1,
+    },
+    fab1: {
+      top: theme.spacing.unit * 2 + 40,
+    },
+    fab2: {
+      top: theme.spacing.unit * 3 + 2 * 40,
+    },
+    fab3: {
+      top: theme.spacing.unit * 4 + 3 * 40,
+    },
+  });
+
   static propTypes = {
     t: PropTypes.func.isRequired,
     dispatchGetUsers: PropTypes.func.isRequired,
@@ -70,34 +98,6 @@ class Header extends Component {
     stdinResourceId: null,
     currentInput: '',
   };
-
-  static styles = theme => ({
-    root: {
-      flexGrow: 1,
-    },
-    grow: {
-      flexGrow: 1,
-    },
-    logo: {
-      height: '48px',
-      marginRight: theme.spacing.unit * 2,
-    },
-    fab: {
-      margin: theme.spacing.unit,
-      position: 'fixed',
-      top: theme.spacing.unit * 1,
-      right: theme.spacing.unit * 1,
-    },
-    fab1: {
-      top: theme.spacing.unit * 2 + 40,
-    },
-    fab2: {
-      top: theme.spacing.unit * 3 + 2 * 40,
-    },
-    fab3: {
-      top: theme.spacing.unit * 4 + 3 * 40,
-    },
-  });
 
   handleOpenInput = () => {
     const {
@@ -196,7 +196,7 @@ class Header extends Component {
     const { view } = this.props;
     const buttons = [
       <IconButton onClick={this.handleRefresh} key="refresh">
-        <RefreshIcon nativeColor="#fff" />
+        <RefreshIcon color="secondary" />
       </IconButton>,
     ];
 
@@ -206,7 +206,7 @@ class Header extends Component {
           key="dashboard"
           href={`index.html${addQueryParamsToUrl({ view: FILES_VIEW })}`}
         >
-          <InsertDriveFileIcon nativeColor="#fff" />
+          <InsertDriveFileIcon color="secondary" />
         </IconButton>
       );
     } else {
@@ -215,7 +215,7 @@ class Header extends Component {
           key="table"
           href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
         >
-          <TableIcon nativeColor="#fff" />
+          <TableIcon color="secondary" />
         </IconButton>
       );
     }

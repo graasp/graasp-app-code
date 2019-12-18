@@ -30,11 +30,7 @@ import {
   PYTHON,
   DEFAULT_PROGRAMMING_LANGUAGE,
 } from '../../../config/programmingLanguages';
-import {
-  DEFAULT_FONT_SIZE,
-  DEFAULT_ORIENTATION,
-  HELPER_TEXT_COLOR,
-} from '../../../config/settings';
+import { DEFAULT_FONT_SIZE, HELPER_TEXT_COLOR } from '../../../config/settings';
 
 function getModalStyle() {
   const top = 50;
@@ -88,7 +84,14 @@ const styles = theme => ({
 
 class Settings extends Component {
   static propTypes = {
-    classes: PropTypes.shape({}).isRequired,
+    classes: PropTypes.shape({
+      helperText: PropTypes.string,
+      formControl: PropTypes.string,
+      right: PropTypes.string,
+      appBar: PropTypes.string,
+      fullScreen: PropTypes.string,
+      fab: PropTypes.string,
+    }).isRequired,
     open: PropTypes.bool.isRequired,
     activity: PropTypes.bool.isRequired,
     settings: PropTypes.shape({
@@ -434,7 +437,7 @@ class Settings extends Component {
           onClick={this.handleSave}
           disabled={saveDisabled}
         >
-          <SaveIcon nativeColor="#fff" opacity={saveDisabled ? 0.5 : 1} />
+          <SaveIcon color="secondary" opacity={saveDisabled ? 0.5 : 1} />
         </IconButton>
       </Tooltip>
     );
@@ -483,7 +486,6 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
     headerCode = '',
     defaultCode = '',
     footerCode = '',
-    orientation = DEFAULT_ORIENTATION,
   } = appInstance.content.settings;
   return {
     open: layout.settings.open,
@@ -493,7 +495,6 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
       headerCode,
       defaultCode,
       footerCode,
-      orientation,
     },
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,

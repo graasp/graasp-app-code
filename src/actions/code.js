@@ -12,6 +12,7 @@ import {
   REGISTER_WORKER_FAILED,
   FLAG_RUNNING_CODE,
   FLAG_REGISTERING_WORKER,
+  APPEND_FIGURE,
 } from '../types';
 import { runJavaScript } from '../runners/javascript';
 import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
@@ -112,6 +113,14 @@ const registerWorker = programmingLanguage => dispatch => {
           dispatch({
             payload: text,
             type: PRINT_OUTPUT,
+          });
+        };
+
+        // handle figures
+        worker.onFigure = imageDataUrl => {
+          dispatch({
+            payload: imageDataUrl,
+            type: APPEND_FIGURE,
           });
         };
 
