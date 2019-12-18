@@ -110,20 +110,25 @@ const registerWorker = programmingLanguage => dispatch => {
         worker.addCommand('alert', msg => {
           alert(msg);
         });
+
         worker.onOutput = text => {
           dispatch({
             payload: text,
             type: PRINT_OUTPUT,
           });
         };
+
+        // when finished registering the callback removes the activity flag
+        worker.onTerminated = () => {
+          dispatch(flagRegisteringWorker(false));
+        };
         worker.preload();
+
         dispatch({
           type: REGISTER_WORKER_SUCCEEDED,
           payload: worker,
         });
 
-        // todo: do this in a callback
-        dispatch(flagRegisteringWorker(false));
         break;
       case JAVASCRIPT:
       default:
@@ -149,8 +154,13 @@ const runCode = job => (dispatch, getState) => {
         settings: { programmingLanguage, headerCode, footerCode },
       },
     },
-    code: { worker },
+    code: { worker, activity },
   } = getState();
+
+  // do not run if there is anything active currently
+  if (activity.length) {
+    return false;
+  }
 
   const { data, input } = job;
   const config = {
@@ -175,19 +185,19 @@ const runCode = job => (dispatch, getState) => {
     };
     switch (programmingLanguage) {
       case PYTHON:
-        runPython(config, callback);
-        break;
+        return runPython(config, callback);
+
       case JAVASCRIPT:
-        runJavaScriptWithHeaderAndFooter(config, dispatch);
-        break;
+        return runJavaScriptWithHeaderAndFooter(config, dispatch);
+
       default:
-        runJavaScript(data, dispatch);
+        return runJavaScript(data, dispatch);
     }
   } catch (err) {
     // todo abort worker execution
     console.error(err);
     dispatch(flagRunningCode(false));
-    dispatch({
+    return dispatch({
       type: RUN_CODE_FAILED,
       payload: err,
     });
