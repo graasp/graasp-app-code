@@ -10,6 +10,8 @@ import 'brace/theme/monokai';
 import 'brace/theme/xcode';
 import 'brace/theme/github';
 import 'brace/ext/language_tools';
+import 'brace/snippets/python';
+import 'brace/snippets/javascript';
 import Root from './components/Root';
 import configureStore from './store/configureStore';
 import './index.css';
