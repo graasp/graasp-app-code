@@ -13,10 +13,7 @@ import {
   FLAG_RUNNING_CODE,
   FLAG_REGISTERING_WORKER,
 } from '../types';
-import {
-  runJavaScript,
-  runJavaScriptWithHeaderAndFooter,
-} from '../runners/javascript';
+import { runJavaScript } from '../runners/javascript';
 import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
 import pythonWorkerCode from '../workers/python';
@@ -171,11 +168,6 @@ const runCode = job => (dispatch, getState) => {
     worker,
   };
 
-  // todo: improve
-  if (!worker) {
-    alert('Pyodide did not initialize correctly. Please refresh the page.');
-  }
-
   try {
     dispatch(flagRunningCode(true));
 
@@ -185,13 +177,18 @@ const runCode = job => (dispatch, getState) => {
     };
     switch (programmingLanguage) {
       case PYTHON:
+        // todo: improve
+        if (!worker) {
+          alert(
+            'Pyodide did not initialize correctly. Please refresh the page.'
+          );
+        }
         return runPython(config, callback);
 
       case JAVASCRIPT:
-        return runJavaScriptWithHeaderAndFooter(config, dispatch);
-
       default:
-        return runJavaScript(data, dispatch);
+        runJavaScript(config, dispatch);
+        return callback();
     }
   } catch (err) {
     // todo abort worker execution

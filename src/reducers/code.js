@@ -10,9 +10,8 @@ import {
   REGISTER_WORKER_SUCCEEDED,
   FLAG_RUNNING_CODE,
   FLAG_REGISTERING_WORKER,
+  APPEND_OUTPUT,
 } from '../types';
-
-import { JAVASCRIPT } from '../config/programmingLanguages';
 
 const INITIAL_STATE = {
   content: '',
@@ -50,9 +49,12 @@ export default (state = INITIAL_STATE, { type, payload }) => {
     case PRINT_OUTPUT:
       return {
         ...state,
-        // todo: make consistent
-        output:
-          state.language === JAVASCRIPT ? state.output + payload : payload,
+        output: payload,
+      };
+    case APPEND_OUTPUT:
+      return {
+        ...state,
+        output: state.output + payload,
       };
     case CLEAR_OUTPUT:
       return {

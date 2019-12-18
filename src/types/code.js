@@ -7,6 +7,7 @@ export const RUN_CODE_SUCCEEDED = 'RUN_CODE_SUCCEEDED';
 export const RUN_CODE_FAILED = 'RUN_CODE_FAILED';
 export const PRINT_OUTPUT = 'PRINT_OUTPUT';
 export const CLEAR_OUTPUT = 'CLEAR_OUTPUT';
+export const APPEND_OUTPUT = 'APPEND_OUTPUT';
 
 export const SET_INPUT = 'SET_INPUT';
 export const APPEND_INPUT = 'APPEND_INPUT';

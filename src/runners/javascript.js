@@ -1,9 +1,9 @@
 import {
-  PRINT_OUTPUT,
   CLEAR_OUTPUT,
   RUN_CODE,
   SET_INPUT,
   REGISTER_WORKER_SUCCEEDED,
+  APPEND_OUTPUT,
 } from '../types';
 import workerCode from './worker';
 import { CLEAR, PRINT } from '../config/commands';
@@ -28,7 +28,7 @@ function createWorker(dispatch) {
       case PRINT:
         dispatch({
           payload: ev.data.data,
-          type: PRINT_OUTPUT,
+          type: APPEND_OUTPUT,
         });
         break;
       case CLEAR:
@@ -43,16 +43,9 @@ function createWorker(dispatch) {
   return worker;
 }
 
-// example run function
-const runJavaScript = (code = '', dispatch) => {
-  const worker = createWorker(dispatch);
-  const job = { command: RUN_CODE, data: code };
-  worker.postMessage(job);
-};
-
 // Header code is intended to be used for importing libraries, initialize screens, and so on.
-// Footer code is intended to be used for display runnning status, free resources, and so on.
-const runJavaScriptWithHeaderAndFooter = (config, dispatch) => {
+// Footer code is intended to be used for display running status, free resources, and so on.
+const runJavaScript = (config, dispatch) => {
   const { headerCode, footerCode, input, code } = config;
   const worker = createWorker(dispatch);
   dispatch({
@@ -80,4 +73,4 @@ const runJavaScriptWithHeaderAndFooter = (config, dispatch) => {
     worker.postMessage(job);
   }
 };
-export { sanitize, runJavaScript, runJavaScriptWithHeaderAndFooter };
+export { sanitize, runJavaScript };
