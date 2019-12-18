@@ -9,6 +9,7 @@ import { getAppInstance } from '../actions/appInstance';
 import { DEFAULT_VIEW } from '../config/views';
 import TeacherMode from './modes/teacher/TeacherMode';
 import Loader from './common/Loader';
+import Header from './layout/Header';
 
 export class App extends Component {
   static propTypes = {
@@ -32,19 +33,20 @@ export class App extends Component {
     fullscreen: false,
   };
 
-  constructor(props) {
-    super(props);
-    // first thing to do is get the context
-    props.dispatchGetContext();
-    // then get the app instance
-    props.dispatchGetAppInstance();
-    if (window.frameElement) {
-      this.state.fullscreen = Boolean(window.parent.document.fullscreenElement);
-    }
-  }
-
   componentDidMount() {
-    const { lang } = this.props;
+    const { lang, dispatchGetContext, dispatchGetAppInstance } = this.props;
+
+    // first thing to do is get the context
+    dispatchGetContext();
+    // then get the app instance
+    dispatchGetAppInstance();
+
+    if (window.frameElement) {
+      this.setState({
+        fullscreen: Boolean(window.parent.document.fullscreenElement),
+      });
+    }
+
     // set the language on first load
     this.handleChangeLang(lang);
     if (window.frameElement) {
@@ -55,7 +57,8 @@ export class App extends Component {
     }
   }
 
-  componentDidUpdate({ lang: prevLang }) {
+  componentDidUpdate(prevProps) {
+    const { lang: prevLang } = prevProps;
     const { lang } = this.props;
     // handle a change of language
     if (lang !== prevLang) {
@@ -96,7 +99,12 @@ export class App extends Component {
       case 'producer':
       case 'educator':
       case 'admin':
-        return <TeacherMode view={view} />;
+        return (
+          <>
+            <Header />
+            <TeacherMode view={view} />
+          </>
+        );
 
       // by default go with the consumer (learner) mode
       case 'student':
@@ -110,12 +118,17 @@ export class App extends Component {
   }
 }
 
-const mapStateToProps = ({ context }) => ({
-  lang: context.lang,
-  mode: context.mode,
-  view: context.view,
-  appInstanceId: context.appInstanceId,
-});
+const mapStateToProps = ({ context, appInstance }) => {
+  const { programmingLanguage } = appInstance.content.settings;
+
+  return {
+    lang: context.lang,
+    mode: context.mode,
+    view: context.view,
+    appInstanceId: context.appInstanceId,
+    programmingLanguage,
+  };
+};
 
 const mapDispatchToProps = {
   dispatchGetContext: getContext,

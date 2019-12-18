@@ -6,13 +6,7 @@ import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
 import { ReactTerminal, ReactThemes } from 'react-terminal-component';
-import {
-  setCode,
-  printOutput,
-  setInput,
-  sendInput,
-  registerWorker,
-} from '../../../actions';
+import { setCode, printOutput, setInput, sendInput } from '../../../actions';
 import {
   FEEDBACK,
   FILE,
@@ -55,7 +49,6 @@ const styles = theme => ({
 class StudentView extends Component {
   static propTypes = {
     t: PropTypes.func.isRequired,
-    dispatchRegisterWorker: PropTypes.func.isRequired,
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
@@ -81,18 +74,6 @@ class StudentView extends Component {
     output: '',
     orientation: DEFAULT_ORIENTATION,
   };
-
-  componentDidMount() {
-    const { dispatchRegisterWorker } = this.props;
-    // const { fileResources, dispatchRegisterWorker } = this.props;
-    // console.log(fileResources);
-    // const customFileSystem = Terminal.FileSystem.create({
-    //   '/home': { },
-    //   '/home/README': {content: 'This is a text file', canModify: false},
-    //   '/home/nested/directory/file': {content: 'End of nested directory!'}
-    // });
-    dispatchRegisterWorker();
-  }
 
   render() {
     const {
@@ -204,7 +185,6 @@ const mapDispatchToProps = {
   dispatchSetInput: setInput,
   dispatchSendInput: sendInput,
   dispatchPrintOutput: printOutput,
-  dispatchRegisterWorker: registerWorker,
 };
 
 const StyledComponent = withStyles(styles)(StudentView);

@@ -1,5 +1,4 @@
 import {
-  SET_PROGRAMMING_LANGUAGE,
   SET_CODE,
   SET_HEADER_CODE,
   SET_DEFAULT_CODE,
@@ -9,15 +8,13 @@ import {
   SET_INPUT,
   APPEND_INPUT,
   REGISTER_WORKER_SUCCEEDED,
+  FLAG_RUNNING_CODE,
+  FLAG_REGISTERING_WORKER,
 } from '../types';
 
-import {
-  DEFAULT_PROGRAMMING_LANGUAGE,
-  JAVASCRIPT,
-} from '../config/programmingLanguages';
+import { JAVASCRIPT } from '../config/programmingLanguages';
 
 const INITIAL_STATE = {
-  language: DEFAULT_PROGRAMMING_LANGUAGE,
   content: '',
   header: '',
   default: '',
@@ -25,15 +22,11 @@ const INITIAL_STATE = {
   input: '',
   output: '',
   worker: null,
+  activity: [],
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
   switch (type) {
-    case SET_PROGRAMMING_LANGUAGE:
-      return {
-        ...state,
-        language: payload,
-      };
     case SET_CODE:
       return {
         ...state,
@@ -80,6 +73,15 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         worker: payload,
+      };
+    case FLAG_REGISTERING_WORKER:
+    case FLAG_RUNNING_CODE:
+      return {
+        ...state,
+        // when true append to array, when false, pop from it
+        activity: payload
+          ? [...state.activity, payload]
+          : [...state.activity.slice(1)],
       };
     default:
       return state;

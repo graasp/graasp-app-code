@@ -62,6 +62,8 @@ export default encodeURIComponent(`
       if (p.requestInput) {
         postMessage({cmd: "input", prompt: p.inputPrompt});
       }
+    } else {
+      postMessage({cmd: "done"});
     }
   }
   
@@ -73,7 +75,7 @@ export default encodeURIComponent(`
   }
   
   onmessage = (ev) => {
-    console.log(ev);
+    console.log(ev); // todo: remove
     let msg = JSON.parse(ev.data);
     switch (msg.cmd) {
     case "run":

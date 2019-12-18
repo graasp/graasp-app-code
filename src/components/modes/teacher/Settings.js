@@ -20,7 +20,6 @@ import AceEditor from 'react-ace';
 import {
   closeSettings,
   patchAppInstance,
-  setProgrammingLanguage,
   setHeaderCode,
   setFooterCode,
   setDefaultCode,
@@ -98,14 +97,12 @@ class Settings extends Component {
       defaultCode: PropTypes.string,
       footerCode: PropTypes.string,
     }).isRequired,
-    currentProgrammingLanguage: PropTypes.string.isRequired,
     currentHeaderCode: PropTypes.string.isRequired,
     currentFooterCode: PropTypes.string.isRequired,
     currentDefaultCode: PropTypes.string.isRequired,
     t: PropTypes.func.isRequired,
     dispatchCloseSettings: PropTypes.func.isRequired,
     dispatchPatchAppInstance: PropTypes.func.isRequired,
-    dispatchSetProgrammingLanguage: PropTypes.func.isRequired,
     dispatchSetHeaderCode: PropTypes.func.isRequired,
     dispatchSetDefaultCode: PropTypes.func.isRequired,
     dispatchSetFooterCode: PropTypes.func.isRequired,
@@ -114,17 +111,19 @@ class Settings extends Component {
     }).isRequired,
   };
 
+  state = {
+    selectedProgrammingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
+  };
+
   componentDidMount() {
     const {
       settings: { programmingLanguage },
-      currentProgrammingLanguage,
-      dispatchSetProgrammingLanguage,
     } = this.props;
 
-    // ensure that programming language is set on mount
-    if (currentProgrammingLanguage !== programmingLanguage) {
-      dispatchSetProgrammingLanguage(programmingLanguage);
-    }
+    // set programming language handled by state from redux
+    this.setState({
+      selectedProgrammingLanguage: programmingLanguage,
+    });
   }
 
   saveSettings = settingsToChange => {
@@ -139,10 +138,10 @@ class Settings extends Component {
   };
 
   handleChangeProgrammingLanguage = ({ target }) => {
-    const { dispatchSetProgrammingLanguage } = this.props;
     const { value } = target;
-
-    dispatchSetProgrammingLanguage(value);
+    this.setState({
+      selectedProgrammingLanguage: value,
+    });
   };
 
   onHeaderCodeLoad = () => {
@@ -191,9 +190,9 @@ class Settings extends Component {
   };
 
   saveProgrammingLanguage = () => {
-    const { currentProgrammingLanguage } = this.props;
+    const { selectedProgrammingLanguage } = this.state;
     const settingsToChange = {
-      programmingLanguage: currentProgrammingLanguage,
+      programmingLanguage: selectedProgrammingLanguage,
     };
     this.saveSettings(settingsToChange);
   };
@@ -214,11 +213,11 @@ class Settings extends Component {
   };
 
   handleSave = () => {
+    const { selectedProgrammingLanguage: spl } = this.state;
     const {
-      currentProgrammingLanguage: cpl,
       settings: { programmingLanguage: pl },
     } = this.props;
-    const programmingLanguageChanged = pl !== cpl;
+    const programmingLanguageChanged = pl !== spl;
     this.saveCode();
     if (programmingLanguageChanged) {
       this.saveProgrammingLanguage();
@@ -228,14 +227,12 @@ class Settings extends Component {
   handleClose = () => {
     const {
       dispatchCloseSettings,
-      dispatchSetProgrammingLanguage,
       dispatchSetHeaderCode,
       dispatchSetDefaultCode,
       dispatchSetFooterCode,
-      settings: { programmingLanguage, headerCode, footerCode, defaultCode },
+      settings: { headerCode, footerCode, defaultCode },
     } = this.props;
     // discard changes before closing
-    dispatchSetProgrammingLanguage(programmingLanguage);
     dispatchSetHeaderCode(headerCode);
     dispatchSetDefaultCode(defaultCode);
     dispatchSetFooterCode(footerCode);
@@ -243,18 +240,22 @@ class Settings extends Component {
   };
 
   isSaveDisabled = () => {
+    const { selectedProgrammingLanguage: spl } = this.state;
     const {
-      currentProgrammingLanguage,
       currentHeaderCode,
       currentFooterCode,
       currentDefaultCode,
     } = this.props;
     const {
-      settings: { programmingLanguage, headerCode, footerCode, defaultCode },
+      settings: {
+        programmingLanguage: pl,
+        headerCode,
+        footerCode,
+        defaultCode,
+      },
     } = this.props;
 
-    const programmingLanguageChanged =
-      programmingLanguage !== currentProgrammingLanguage;
+    const programmingLanguageChanged = pl !== spl;
     const headerCodeChanged = headerCode !== currentHeaderCode;
     const footerCodeChanged = footerCode !== currentFooterCode;
     const defaultCodeChanged = !(defaultCode === currentDefaultCode);
@@ -267,7 +268,8 @@ class Settings extends Component {
   };
 
   renderModalContent() {
-    const { t, activity, classes, currentProgrammingLanguage } = this.props;
+    const { selectedProgrammingLanguage } = this.state;
+    const { t, activity, classes } = this.props;
 
     if (activity) {
       return <Loader />;
@@ -276,7 +278,7 @@ class Settings extends Component {
     const selectControl = (
       <Select
         className={classes.formControl}
-        value={currentProgrammingLanguage || DEFAULT_PROGRAMMING_LANGUAGE}
+        value={selectedProgrammingLanguage}
         onChange={this.handleChangeProgrammingLanguage}
         inputProps={{
           name: 'programmingLanguage',
@@ -304,14 +306,10 @@ class Settings extends Component {
   }
 
   renderHeaderCodeEditor() {
-    const {
-      t,
-      classes,
-      currentHeaderCode,
-      currentProgrammingLanguage,
-    } = this.props;
+    const { selectedProgrammingLanguage } = this.state;
+    const { t, classes, currentHeaderCode } = this.props;
 
-    const commentPrefix = currentProgrammingLanguage === PYTHON ? '#' : '//';
+    const commentPrefix = selectedProgrammingLanguage === PYTHON ? '#' : '//';
 
     return (
       <div>
@@ -322,7 +320,7 @@ class Settings extends Component {
           placeholder={`${commentPrefix} ${t(
             'write header code here (e.g. import libraries, init console)'
           )}`}
-          mode={currentProgrammingLanguage}
+          mode={selectedProgrammingLanguage}
           theme="xcode"
           name={Math.random()}
           width="100%"
@@ -347,14 +345,10 @@ class Settings extends Component {
   }
 
   renderDefaultCodeEditor() {
-    const {
-      t,
-      classes,
-      currentDefaultCode,
-      currentProgrammingLanguage,
-    } = this.props;
+    const { selectedProgrammingLanguage } = this.state;
+    const { t, classes, currentDefaultCode } = this.props;
 
-    const commentPrefix = currentProgrammingLanguage === PYTHON ? '#' : '//';
+    const commentPrefix = selectedProgrammingLanguage === PYTHON ? '#' : '//';
 
     return (
       <div>
@@ -365,7 +359,7 @@ class Settings extends Component {
           placeholder={`${commentPrefix} ${t(
             'write code to show to the student by default'
           )}`}
-          mode={currentProgrammingLanguage}
+          mode={selectedProgrammingLanguage}
           theme="xcode"
           name={Math.random()}
           width="100%"
@@ -390,14 +384,10 @@ class Settings extends Component {
   }
 
   renderFooterCodeEditor() {
-    const {
-      t,
-      classes,
-      currentFooterCode,
-      currentProgrammingLanguage,
-    } = this.props;
+    const { selectedProgrammingLanguage } = this.state;
+    const { t, classes, currentFooterCode } = this.props;
 
-    const commentPrefix = currentProgrammingLanguage === PYTHON ? '#' : '//';
+    const commentPrefix = selectedProgrammingLanguage === PYTHON ? '#' : '//';
 
     return (
       <div>
@@ -408,7 +398,7 @@ class Settings extends Component {
           placeholder={`${commentPrefix} ${t(
             'write footer code here (e.g. display execution time)'
           )}`}
-          mode={currentProgrammingLanguage}
+          mode={selectedProgrammingLanguage}
           theme="xcode"
           name={Math.random()}
           width="100%"
@@ -505,7 +495,6 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
       footerCode,
       orientation,
     },
-    currentProgrammingLanguage: code.language,
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,
     currentDefaultCode: code.default,
@@ -516,7 +505,6 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
 const mapDispatchToProps = {
   dispatchCloseSettings: closeSettings,
   dispatchPatchAppInstance: patchAppInstance,
-  dispatchSetProgrammingLanguage: setProgrammingLanguage,
   dispatchSetHeaderCode: setHeaderCode,
   dispatchSetDefaultCode: setDefaultCode,
   dispatchSetFooterCode: setFooterCode,

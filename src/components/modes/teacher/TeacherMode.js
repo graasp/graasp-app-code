@@ -26,11 +26,15 @@ class TeacherMode extends Component {
     activity: false,
   };
 
-  constructor(props) {
-    super(props);
+  // here we synchronise between the language stored in the app
+  // instance's settings and the one set for the code environment
+  // noting that the calls to fetch the app instance have been
+  // done within the app component
+  componentDidMount() {
+    const { dispatchGetAppInstanceResources } = this.props;
 
     // get all of the resources
-    props.dispatchGetAppInstanceResources();
+    dispatchGetAppInstanceResources();
   }
 
   componentDidUpdate({ appInstanceId: prevAppInstanceId }) {
