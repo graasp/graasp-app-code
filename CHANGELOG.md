@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/graasp/graasp-app-code/compare/v0.1.0...v0.2.0) (2019-12-19)
+
+### Bug Fixes
+
+- allow students to get public files ([9dce09e](https://github.com/graasp/graasp-app-code/commit/9dce09e))
+- do not collapse full screen when saving ([17e2d7b](https://github.com/graasp/graasp-app-code/commit/17e2d7b)), closes [#30](https://github.com/graasp/graasp-app-code/issues/30)
+
+### Build System
+
+- update pyodide service dependency ([4698daa](https://github.com/graasp/graasp-app-code/commit/4698daa)), closes [#28](https://github.com/graasp/graasp-app-code/issues/28)
+
+### Features
+
+- allow students to read files ([425a5a3](https://github.com/graasp/graasp-app-code/commit/425a5a3)), closes [#31](https://github.com/graasp/graasp-app-code/issues/31)
+
 ## 0.1.0 (2019-12-18)
 
 ### Bug Fixes
