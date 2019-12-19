@@ -7,11 +7,7 @@ import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
 import { ReactTerminal, ReactThemes } from 'react-terminal-component';
 import { setCode, printOutput, setInput, sendInput } from '../../../actions';
-import {
-  FEEDBACK,
-  FILE,
-  INPUT,
-} from '../../../config/appInstanceResourceTypes';
+import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
 import {
@@ -66,6 +62,9 @@ class StudentView extends Component {
     output: PropTypes.string,
     fullscreen: PropTypes.bool.isRequired,
     figuresDisplayed: PropTypes.bool.isRequired,
+    // fs is an object of unpredictable shape
+    // eslint-disable-next-line react/forbid-prop-types
+    fs: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -83,6 +82,7 @@ class StudentView extends Component {
       fullscreen,
       standalone,
       figuresDisplayed,
+      fs,
     } = this.props;
 
     if (!standalone && (!ready || activity)) {
@@ -94,7 +94,7 @@ class StudentView extends Component {
     const customOutputs = Terminal.Outputs.create([textOutput]);
     const emulatorState = Terminal.EmulatorState.create({
       outputs: customOutputs,
-      // fs: customFileSystem,
+      fs: Terminal.FileSystem.create(fs),
     });
 
     return (
@@ -144,15 +144,11 @@ const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
       return user === userId && type === FEEDBACK;
     }
   );
-  const fileResources = appInstanceResources.content
-    .filter(({ type }) => type === FILE)
-    .map(({ data }) => data);
 
   return {
     userId,
     offline,
     standalone,
-    fileResources,
     inputResourceId: inputResource && (inputResource.id || inputResource._id),
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
@@ -160,6 +156,7 @@ const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
     output: code.output,
     inputDisplayed: layout.settings.inputDisplayed,
     figuresDisplayed: Boolean(code.figures.length),
+    fs: code.fs,
   };
 };
 

@@ -128,6 +128,7 @@ const registerWorker = programmingLanguage => dispatch => {
         worker.onTerminated = () => {
           dispatch(flagRegisteringWorker(false));
         };
+
         worker.preload();
 
         dispatch({
@@ -160,7 +161,7 @@ const runCode = job => (dispatch, getState) => {
         settings: { programmingLanguage, headerCode, footerCode },
       },
     },
-    code: { worker, activity },
+    code: { worker, activity, fs },
   } = getState();
 
   // do not run if there is anything active currently
@@ -175,6 +176,7 @@ const runCode = job => (dispatch, getState) => {
     footerCode,
     input,
     worker,
+    fs,
   };
 
   try {

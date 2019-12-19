@@ -13,6 +13,8 @@ import {
   APPEND_OUTPUT,
   CLEAR_FIGURES,
   APPEND_FIGURE,
+  GET_FILES_SUCCEEDED,
+  GET_FILE_SUCCEEDED,
 } from '../types';
 
 const INITIAL_STATE = {
@@ -25,6 +27,7 @@ const INITIAL_STATE = {
   worker: null,
   figures: [],
   activity: [],
+  fs: {},
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
@@ -88,6 +91,22 @@ export default (state = INITIAL_STATE, { type, payload }) => {
       return {
         ...state,
         worker: payload,
+      };
+    case GET_FILE_SUCCEEDED:
+      return {
+        ...state,
+        fs: {
+          ...state.fs,
+          payload,
+        },
+      };
+    case GET_FILES_SUCCEEDED:
+      return {
+        ...state,
+        fs: {
+          ...state.fs,
+          ...payload,
+        },
       };
     case FLAG_REGISTERING_WORKER:
     case FLAG_RUNNING_CODE:
