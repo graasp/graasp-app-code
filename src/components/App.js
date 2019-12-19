@@ -10,6 +10,7 @@ import { DEFAULT_VIEW } from '../config/views';
 import TeacherMode from './modes/teacher/TeacherMode';
 import Loader from './common/Loader';
 import Header from './layout/Header';
+import MaximizableView from './layout/MaximizableView';
 
 export class App extends Component {
   static propTypes = {
@@ -111,7 +112,11 @@ export class App extends Component {
       case 'student':
       case 'consumer':
       case 'learner':
-        return <StudentMode view={view} fullscreen={fullscreen} />;
+        return (
+          <MaximizableView>
+            <StudentMode view={view} fullscreen={fullscreen} />
+          </MaximizableView>
+        );
 
       default:
         return <Loader />;

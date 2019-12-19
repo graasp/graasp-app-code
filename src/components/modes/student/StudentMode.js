@@ -12,7 +12,6 @@ import {
 } from '../../../actions';
 import Loader from '../../common/Loader';
 import StudentButtons from './StudentButtons';
-import MaximizableView from '../../layout/MaximizableView';
 import { FILE } from '../../../config/appInstanceResourceTypes';
 
 class StudentMode extends Component {
@@ -114,10 +113,10 @@ class StudentMode extends Component {
       case DEFAULT_VIEW:
       default:
         return (
-          <MaximizableView>
+          <>
             <StudentButtons />
             <StudentView fullscreen={fullscreen} />
-          </MaximizableView>
+          </>
         );
     }
   }
