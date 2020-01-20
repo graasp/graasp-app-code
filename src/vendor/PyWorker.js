@@ -8,13 +8,15 @@ Test of pyodide, with
 	- file support
 	- runs asynchronously in a webworker, with timeout and interruption
 
-Author: Yves Piguet, EPFL, 2019
+Author: Yves Piguet, EPFL, 2019-2020
 
 Usage:
 
 let pyWorker = new PyWorker();
+pyWorker.onStatusChanged = (statusString) => { ... };
 pyWorker.onTerminated = () => { ... };
 pyWorker.onOutput = (text) => { ... };
+pyWorker.onInput = (prompt) => { ... };
 pyWorker.onFigure = (imageDataURL) => { ... }
 pyWorker.onTimeout = () => { ... };
 pyWorker.onDirtyFile = (path) => { ... };
@@ -39,10 +41,12 @@ class PyWorker {
 
     // callbacks
     this.onOutput = null;
+    this.onInput = null;
     this.onFigure = null;
     this.onTimeout = null;
     this.onDirtyFile = null;
     this.onFile = null;
+    this.onStatusChanged = null;
     this.onTerminated = null;
 
     // commands added by addCommand(name, (data) => { ... })
@@ -89,8 +93,14 @@ class PyWorker {
           this.isRunning = false;
           this.onInput && this.onInput(ev.data.prompt);
           break;
+        case 'status':
+          this.webworkerStatus = ev.data.status;
+          this.onStatusChanged && this.onStatusChanged(this.webworkerStatus);
+          break;
         case 'done':
           this.isRunning = false;
+          this.webworkerStatus = '';
+          this.onStatusChanged && this.onStatusChanged('');
           this.onTerminated && this.onTerminated();
           break;
         default:
@@ -116,6 +126,7 @@ class PyWorker {
       this.timeoutId = setTimeout(() => {
         if (this.isRunning) {
           this.stop();
+          this.onStatusChanged && this.onStatusChanged('');
           this.onTimeout && this.onTimeout();
         }
         this.timeoutId = -1;
