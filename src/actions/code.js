@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   SET_CODE,
   SET_HEADER_CODE,
@@ -122,6 +123,17 @@ const registerWorker = programmingLanguage => dispatch => {
             payload: imageDataUrl,
             type: APPEND_FIGURE,
           });
+        };
+
+        // handle dynamic user input
+        worker.onInput = label => {
+          // todo: use material-ui dialog
+          const res = prompt(label);
+          if (_.isNull(res)) {
+            worker.cancelInput();
+          } else {
+            worker.submitInput(res);
+          }
         };
 
         // when finished registering the callback removes the activity flag
