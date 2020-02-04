@@ -14,6 +14,8 @@ import { DEFAULT_ORIENTATION } from '../config/settings';
 const DEFAULT_SETTINGS = {
   programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
   orientation: DEFAULT_ORIENTATION,
+  headerCode: '',
+  footerCode: '',
 };
 
 const INITIAL_STATE = {

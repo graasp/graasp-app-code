@@ -4,7 +4,7 @@ const sanitize = code => {
 };
 
 const runPython = (config, callback) => {
-  const { headerCode, footerCode, code, worker, fs } = config;
+  const { headerCode = '', footerCode = '', code, worker, fs } = config;
 
   worker.onTerminated = callback;
 

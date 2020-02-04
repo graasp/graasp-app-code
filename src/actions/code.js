@@ -16,7 +16,11 @@ import {
   APPEND_FIGURE,
 } from '../types';
 import { runJavaScript } from '../runners/javascript';
-import { JAVASCRIPT, PYTHON } from '../config/programmingLanguages';
+import {
+  DEFAULT_PROGRAMMING_LANGUAGE,
+  JAVASCRIPT,
+  PYTHON,
+} from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
 import pythonWorkerCode from '../workers/python';
 import PyWorker from '../vendor/PyWorker';
@@ -170,7 +174,12 @@ const runCode = job => (dispatch, getState) => {
   const {
     appInstance: {
       content: {
-        settings: { programmingLanguage, headerCode, footerCode },
+        settings: {
+          // fallback to defaults
+          programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+          headerCode = '',
+          footerCode = '',
+        },
       },
     },
     code: { worker, activity, fs },
