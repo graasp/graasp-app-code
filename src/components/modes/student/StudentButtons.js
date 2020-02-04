@@ -7,11 +7,13 @@ import { Fab, CircularProgress, Tooltip, withStyles } from '@material-ui/core';
 import {
   Save as SaveIcon,
   PlayArrow as PlayArrowIcon,
-  VerticalSplit as VerticalSplitIcon,
-  ViewHeadline as ViewHeadlineIcon,
+  // todo: redo feedback view
+  // VerticalSplit as VerticalSplitIcon,
+  // ViewHeadline as ViewHeadlineIcon,
 } from '@material-ui/icons';
-import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
-import { addQueryParamsToUrl } from '../../../utils/url';
+// todo: redo feedback view
+// import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
+// import { addQueryParamsToUrl } from '../../../utils/url';
 import {
   FEEDBACK,
   INPUT,
@@ -60,22 +62,24 @@ class StudentButtons extends Component {
     currentInput: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     savedInput: PropTypes.string,
-    feedback: PropTypes.string,
     inputResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     stdinResourceId: PropTypes.string,
     userId: PropTypes.string,
-    view: PropTypes.string,
     codeActivity: PropTypes.bool.isRequired,
+    // todo: redo feedback view
+    // feedback: PropTypes.string,
+    // view: PropTypes.string,
   };
 
   static defaultProps = {
     savedCode: '',
     savedInput: '',
-    feedback: null,
     userId: null,
     inputResourceId: null,
     stdinResourceId: null,
-    view: DEFAULT_VIEW,
+    // todo: redo feedback view
+    // feedback: null,
+    // view: DEFAULT_VIEW,
   };
 
   handleSave = () => {
@@ -158,12 +162,16 @@ class StudentButtons extends Component {
       savedCode,
       currentInput,
       savedInput,
-      feedback,
-      view,
+      // todo: redo feedback view
+      // feedback,
+      // view,
       classes,
       codeActivity,
     } = this.props;
-    const feedbackDisabled = !feedback;
+
+    // todo: redo feedback view
+    // const feedbackDisabled = !feedback;
+
     const saveDisabled =
       currentCode === savedCode && currentInput === savedInput;
     const runDisabled = _.isEmpty(currentCode);
@@ -202,42 +210,43 @@ class StudentButtons extends Component {
       );
     }
 
-    if (view === DEFAULT_VIEW && !feedbackDisabled) {
-      buttons.unshift(
-        <Fab
-          href={`index.html${addQueryParamsToUrl({ view: FEEDBACK_VIEW })}`}
-          disabled={feedbackDisabled}
-          color="primary"
-          size="small"
-          key="feedback"
-          className={[classes.fab, classes.fab2]}
-        >
-          <Tooltip title={t('Show Feedback')}>
-            <VerticalSplitIcon
-              style={{
-                transform: 'rotate(180deg)',
-              }}
-            />
-          </Tooltip>
-        </Fab>
-      );
-    }
-
-    if (view === FEEDBACK_VIEW) {
-      buttons.unshift(
-        <Fab
-          href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
-          color="primary"
-          size="small"
-          key="editor"
-          className={[classes.fab, classes.fab2]}
-        >
-          <Tooltip title={t('Show Editor')}>
-            <ViewHeadlineIcon />
-          </Tooltip>
-        </Fab>
-      );
-    }
+    // todo: redo feedback view
+    // if (view === DEFAULT_VIEW && !feedbackDisabled) {
+    //   buttons.unshift(
+    //     <Fab
+    //       href={`index.html${addQueryParamsToUrl({ view: FEEDBACK_VIEW })}`}
+    //       disabled={feedbackDisabled}
+    //       color="primary"
+    //       size="small"
+    //       key="feedback"
+    //       className={[classes.fab, classes.fab2]}
+    //     >
+    //       <Tooltip title={t('Show Feedback')}>
+    //         <VerticalSplitIcon
+    //           style={{
+    //             transform: 'rotate(180deg)',
+    //           }}
+    //         />
+    //       </Tooltip>
+    //     </Fab>
+    //   );
+    // }
+    //
+    // if (view === FEEDBACK_VIEW) {
+    //   buttons.unshift(
+    //     <Fab
+    //       href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
+    //       color="primary"
+    //       size="small"
+    //       key="editor"
+    //       className={[classes.fab, classes.fab2]}
+    //     >
+    //       <Tooltip title={t('Show Editor')}>
+    //         <ViewHeadlineIcon />
+    //       </Tooltip>
+    //     </Fab>
+    //   );
+    // }
     return buttons;
   }
 }
