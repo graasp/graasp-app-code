@@ -5,5 +5,6 @@
   "/app-instance-resources\\?appInstanceId=:appInstanceId\\&userId=:userId": "/appInstanceResources?appInstance=:appInstanceId&user=:userId",
   "/app-instance-resources": "/appInstanceResources",
   "/app-instance-resources/:id": "/appInstanceResources/:id",
-  "/spaces/:spaceId/light-users": "/spaces/:spaceId/lightUsers"
+  "/spaces/:spaceId/light-users": "/spaces/:spaceId/lightUsers",
+  "/actions": "/actions"
 }

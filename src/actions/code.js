@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import ReactGa from 'react-ga';
 import {
   SET_CODE,
   SET_HEADER_CODE,
@@ -14,6 +15,9 @@ import {
   FLAG_RUNNING_CODE,
   FLAG_REGISTERING_WORKER,
   APPEND_FIGURE,
+  RESET_NUM_UNEXECUTED_CHANGES,
+  COUNT_CHANGE,
+  RESET_NUM_UNSAVED_CHANGES,
 } from '../types';
 import { runJavaScript } from '../runners/javascript';
 import {
@@ -25,9 +29,31 @@ import { runPython } from '../runners/python';
 import pythonWorkerCode from '../workers/python';
 import PyWorker from '../vendor/PyWorker';
 import { flag } from './common';
+import { postAction } from './action';
+import { EXECUTED, SAVED } from '../config/verbs';
+import { INPUT } from '../config/appInstanceResourceTypes';
+import {
+  patchAppInstanceResource,
+  postAppInstanceResource,
+} from './appInstanceResources';
 
 const flagRunningCode = flag(FLAG_RUNNING_CODE);
 const flagRegisteringWorker = flag(FLAG_REGISTERING_WORKER);
+
+const resetNumUnexecutedChanges = () => dispatch =>
+  dispatch({
+    type: RESET_NUM_UNEXECUTED_CHANGES,
+  });
+
+const resetNumUnsavedChanges = () => dispatch =>
+  dispatch({
+    type: RESET_NUM_UNSAVED_CHANGES,
+  });
+
+const countChange = () => dispatch =>
+  dispatch({
+    type: COUNT_CHANGE,
+  });
 
 const setCode = data => dispatch =>
   dispatch({
@@ -182,7 +208,7 @@ const runCode = job => (dispatch, getState) => {
         },
       },
     },
-    code: { worker, activity, fs },
+    code: { worker, activity, fs, numUnexecutedChanges },
   } = getState();
 
   // do not run if there is anything active currently
@@ -231,8 +257,95 @@ const runCode = job => (dispatch, getState) => {
       payload: err,
     });
   } finally {
-    // lower flag
+    // fire and forget action
+    dispatch(
+      postAction({
+        verb: EXECUTED,
+        data: {
+          programmingLanguage,
+          // number of unexecuted changes executed here
+          numExecutedChanges: numUnexecutedChanges,
+          code: data,
+          headerCode: headerCode || undefined,
+          footerCode: footerCode || undefined,
+        },
+      })
+    );
+
+    ReactGa.event({
+      category: 'code',
+      action: 'run',
+      value: numUnexecutedChanges,
+    });
+
+    // reset counter
+    dispatch(resetNumUnexecutedChanges());
   }
+};
+
+// this helper allows us to call post or patch app instance resource
+// selectively and access the redux state without binding it to
+// components that need to dispatch a save code action
+const saveCode = ({ currentCode }) => (dispatch, getState) => {
+  const {
+    appInstance: {
+      content: {
+        settings: {
+          // fallback to defaults
+          programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+        },
+      },
+    },
+    appInstanceResources,
+    code: { numUnsavedChanges },
+    context: { userId },
+  } = getState();
+
+  // if there is a resource id already, update, otherwise create
+  const inputResource = appInstanceResources.content.find(({ user, type }) => {
+    return user === userId && type === INPUT;
+  });
+  const inputResourceId =
+    inputResource && (inputResource.id || inputResource._id);
+  if (inputResourceId) {
+    // Note: (06/Sep/2019)
+    // in local api server, consecutive callings of patchAppInstanceResource
+    // often result in 'NetworkError when attempting to fetch resource'
+    dispatch(
+      patchAppInstanceResource({
+        data: currentCode,
+        id: inputResourceId,
+      })
+    );
+  } else {
+    dispatch(
+      postAppInstanceResource({
+        data: currentCode,
+        type: INPUT,
+        userId,
+      })
+    );
+  }
+  dispatch(
+    postAction({
+      verb: SAVED,
+      data: {
+        // number of unsaved changes saved here
+        numSavedChanges: numUnsavedChanges,
+        programmingLanguage,
+        code: currentCode,
+      },
+    })
+  );
+
+  ReactGa.event({
+    category: 'code',
+    action: 'save',
+    value: numUnsavedChanges,
+  });
+
+  // reset counter
+  dispatch(resetNumUnsavedChanges());
 };
 
 export {
@@ -246,4 +359,7 @@ export {
   sendInput,
   printOutput,
   registerWorker,
+  resetNumUnexecutedChanges,
+  countChange,
+  saveCode,
 };

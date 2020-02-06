@@ -1,4 +1,5 @@
 import Qs from 'qs';
+import ReactGa from 'react-ga';
 import {
   FLAG_GETTING_CONTEXT,
   GET_CONTEXT_FAILED,
@@ -57,6 +58,9 @@ const getContext = () => dispatch => {
     if (offlineBool) {
       window.addEventListener('message', receiveMessage(dispatch));
     }
+
+    // track user anonymously across app instances in the same space
+    ReactGa.set({ userId });
 
     dispatch({
       type: GET_CONTEXT_SUCCEEDED,

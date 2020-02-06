@@ -21,6 +21,10 @@ import {
 } from '../config/env';
 
 ReactGa.initialize(REACT_APP_GOOGLE_ANALYTICS_ID);
+ReactGa.set({
+  appId: REACT_APP_GRAASP_APP_ID,
+  appVersion: REACT_APP_VERSION,
+});
 ReactGa.ga(
   'send',
   'pageview',

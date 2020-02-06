@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core';
 import { INPUT } from '../../../config/appInstanceResourceTypes';
-import { setCode, runCode } from '../../../actions';
+import { setCode, runCode, countChange } from '../../../actions';
 import {
   DEFAULT_PROGRAMMING_LANGUAGE,
   PYTHON,
@@ -23,6 +23,7 @@ class Editor extends Component {
     t: PropTypes.func.isRequired,
     dispatchSetCode: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
+    dispatchCountChange: PropTypes.func.isRequired,
     fullscreen: PropTypes.bool.isRequired,
     code: PropTypes.string,
     currentInput: PropTypes.string.isRequired,
@@ -45,8 +46,10 @@ class Editor extends Component {
   }
 
   onChange = code => {
-    const { dispatchSetCode } = this.props;
+    const { dispatchSetCode, dispatchCountChange } = this.props;
     dispatchSetCode(code);
+    // used to track how many unsaved and unexecuted changes there are
+    dispatchCountChange();
   };
 
   onLoad = () => {
@@ -144,6 +147,7 @@ const mapStateToProps = ({
 const mapDispatchToProps = {
   dispatchSetCode: setCode,
   dispatchRunCode: runCode,
+  dispatchCountChange: countChange,
 };
 
 const StyledComponent = withStyles(styles)(Editor);

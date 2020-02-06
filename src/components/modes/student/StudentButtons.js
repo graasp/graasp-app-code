@@ -14,17 +14,8 @@ import {
 // todo: redo feedback view
 // import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
 // import { addQueryParamsToUrl } from '../../../utils/url';
-import {
-  FEEDBACK,
-  INPUT,
-  STDIN,
-} from '../../../config/appInstanceResourceTypes';
-import {
-  patchAppInstanceResource,
-  postAppInstanceResource,
-  runCode,
-  setInput,
-} from '../../../actions';
+import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
+import { runCode, saveCode } from '../../../actions';
 
 class StudentButtons extends Component {
   static styles = theme => ({
@@ -55,16 +46,10 @@ class StudentButtons extends Component {
       fab4: PropTypes.string,
     }).isRequired,
     t: PropTypes.func.isRequired,
-    dispatchPostAppInstanceResource: PropTypes.func.isRequired,
-    dispatchPatchAppInstanceResource: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
+    dispatchSaveCode: PropTypes.func.isRequired,
     currentCode: PropTypes.string.isRequired,
-    currentInput: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
-    savedInput: PropTypes.string,
-    inputResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    stdinResourceId: PropTypes.string,
-    userId: PropTypes.string,
     codeActivity: PropTypes.bool.isRequired,
     // todo: redo feedback view
     // feedback: PropTypes.string,
@@ -73,84 +58,28 @@ class StudentButtons extends Component {
 
   static defaultProps = {
     savedCode: '',
-    savedInput: '',
-    userId: null,
-    inputResourceId: null,
-    stdinResourceId: null,
     // todo: redo feedback view
     // feedback: null,
     // view: DEFAULT_VIEW,
   };
 
   handleSave = () => {
-    const { currentCode, currentInput, savedCode, savedInput } = this.props;
-
-    // In local api server, consecutive callings of dispatchPatchAppInstanceResource often
-    // results in 'NetworkError when attempting to fetch resource'  (6/Sep/2019).
+    const { currentCode, savedCode } = this.props;
 
     if (currentCode !== savedCode) {
       this.handleSaveCode();
     }
-
-    if (currentInput !== savedInput) {
-      this.handleSaveInput();
-    }
   };
 
   handleSaveCode = () => {
-    const {
-      dispatchPatchAppInstanceResource,
-      dispatchPostAppInstanceResource,
-      inputResourceId,
-      userId,
-      currentCode,
-    } = this.props;
+    const { dispatchSaveCode, currentCode } = this.props;
 
-    // if there is a resource id already, update, otherwise create
-    if (inputResourceId) {
-      dispatchPatchAppInstanceResource({
-        data: currentCode,
-        id: inputResourceId,
-      });
-    } else {
-      dispatchPostAppInstanceResource({
-        data: currentCode,
-        type: INPUT,
-        userId,
-      });
-    }
-  };
-
-  handleSaveInput = () => {
-    const {
-      dispatchPatchAppInstanceResource,
-      dispatchPostAppInstanceResource,
-      stdinResourceId,
-      userId,
-      currentInput,
-    } = this.props;
-
-    // if there is a resource id already, update, otherwise create
-    if (stdinResourceId) {
-      dispatchPatchAppInstanceResource({
-        data: currentInput,
-        id: stdinResourceId,
-      });
-    } else {
-      dispatchPostAppInstanceResource({
-        data: currentInput,
-        type: STDIN,
-        userId,
-      });
-    }
+    dispatchSaveCode({ currentCode });
   };
 
   handleRun = () => {
-    const { currentInput, currentCode, dispatchRunCode } = this.props;
-    const job = {
-      data: currentCode,
-      input: currentInput,
-    };
+    const { currentCode, dispatchRunCode } = this.props;
+    const job = { data: currentCode };
 
     dispatchRunCode(job);
   };
@@ -160,8 +89,6 @@ class StudentButtons extends Component {
       t,
       currentCode,
       savedCode,
-      currentInput,
-      savedInput,
       // todo: redo feedback view
       // feedback,
       // view,
@@ -172,8 +99,7 @@ class StudentButtons extends Component {
     // todo: redo feedback view
     // const feedbackDisabled = !feedback;
 
-    const saveDisabled =
-      currentCode === savedCode && currentInput === savedInput;
+    const saveDisabled = currentCode === savedCode;
     const runDisabled = _.isEmpty(currentCode);
 
     const buttons = [
@@ -256,9 +182,6 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
   });
-  const stdinResource = appInstanceResources.content.find(({ user, type }) => {
-    return user === userId && type === STDIN;
-  });
   const feedbackResource = appInstanceResources.content.find(
     ({ user, type }) => {
       return user === userId && type === FEEDBACK;
@@ -266,31 +189,20 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
   );
 
   return {
-    userId,
     offline,
     appInstanceId,
-    inputResourceId: inputResource && (inputResource.id || inputResource._id),
-    stdinResourceId: stdinResource && (stdinResource.id || stdinResource._id),
-    activity: Boolean(appInstanceResources.activity.length),
-    ready: appInstanceResources.ready,
     feedback: feedbackResource && feedbackResource.data,
-    output: code.output,
-    spaceId: context.spaceId,
     mode: context.mode,
     view: context.view,
     currentCode: code.content,
-    currentInput: code.input,
     savedCode: inputResource && inputResource.data,
-    savedInput: stdinResource && stdinResource.data,
     codeActivity: Boolean(code.activity.length),
   };
 };
 
 const mapDispatchToProps = {
-  dispatchPostAppInstanceResource: postAppInstanceResource,
-  dispatchPatchAppInstanceResource: patchAppInstanceResource,
   dispatchRunCode: runCode,
-  dispatchSetInput: setInput,
+  dispatchSaveCode: saveCode,
 };
 
 const StyledComponent = withStyles(StudentButtons.styles)(StudentButtons);

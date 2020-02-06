@@ -5,3 +5,4 @@ export * from './appInstance';
 export * from './layout';
 export * from './code';
 export * from './file';
+export * from './action';

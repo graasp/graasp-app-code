@@ -1,6 +1,7 @@
 // adapted from http://bit.ly/2S8Aifs
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import {
   Fullscreen as FullscreenIcon,
@@ -8,6 +9,8 @@ import {
 } from '@material-ui/icons';
 import Fab from '@material-ui/core/Fab';
 import useFullscreenStatus from '../../hooks/useFullscreenStatus';
+import { postAction } from '../../actions/action';
+import { MAXIMIZED, MINIMIZED } from '../../config/verbs';
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -24,6 +27,7 @@ function MaximizableView({ children }) {
   let setIsFullscreen;
 
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   try {
     [isFullscreen, setIsFullscreen] = useFullscreenStatus(maximizableElement);
@@ -35,6 +39,21 @@ function MaximizableView({ children }) {
 
   const handleExitFullscreen = () => document.exitFullscreen();
 
+  const handleClick = () => {
+    if (isFullscreen) {
+      handleExitFullscreen().then();
+    } else {
+      setIsFullscreen();
+    }
+
+    // fire action and forget
+    dispatch(
+      postAction({
+        verb: isFullscreen ? MINIMIZED : MAXIMIZED,
+      })
+    );
+  };
+
   return (
     <div
       ref={maximizableElement}
@@ -44,7 +63,7 @@ function MaximizableView({ children }) {
       <Fab
         color="primary"
         className={classes.fab}
-        onClick={isFullscreen ? handleExitFullscreen : setIsFullscreen}
+        onClick={handleClick}
         size="small"
       >
         {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}

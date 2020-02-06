@@ -15,6 +15,9 @@ import {
   APPEND_FIGURE,
   GET_FILES_SUCCEEDED,
   GET_FILE_SUCCEEDED,
+  RESET_NUM_UNEXECUTED_CHANGES,
+  COUNT_CHANGE,
+  RESET_NUM_UNSAVED_CHANGES,
 } from '../types';
 
 const INITIAL_STATE = {
@@ -28,14 +31,32 @@ const INITIAL_STATE = {
   figures: [],
   activity: [],
   fs: {},
+  numUnexecutedChanges: 0,
+  numUnsavedChanges: 0,
 };
 
 export default (state = INITIAL_STATE, { type, payload }) => {
   switch (type) {
+    case RESET_NUM_UNSAVED_CHANGES:
+      return {
+        ...state,
+        numUnsavedChanges: 0,
+      };
+    case RESET_NUM_UNEXECUTED_CHANGES:
+      return {
+        ...state,
+        numUnexecutedChanges: 0,
+      };
     case SET_CODE:
       return {
         ...state,
         content: payload,
+      };
+    case COUNT_CHANGE:
+      return {
+        ...state,
+        numUnexecutedChanges: state.numUnexecutedChanges + 1,
+        numUnsavedChanges: state.numUnsavedChanges + 1,
       };
     case SET_HEADER_CODE:
       return {
