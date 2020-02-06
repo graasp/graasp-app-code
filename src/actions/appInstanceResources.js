@@ -46,8 +46,11 @@ const getAppInstanceResources = async ({
   type,
   // include public resources by default
   includePublic = true,
+  useFlag = true,
 } = {}) => async (dispatch, getState) => {
-  dispatch(flagGettingAppInstanceResources(true));
+  if (useFlag) {
+    dispatch(flagGettingAppInstanceResources(true));
+  }
   try {
     const {
       appInstanceId,
@@ -107,7 +110,9 @@ const getAppInstanceResources = async ({
       payload: err,
     });
   } finally {
-    dispatch(flagGettingAppInstanceResources(false));
+    if (useFlag) {
+      dispatch(flagGettingAppInstanceResources(false));
+    }
   }
 };
 
@@ -116,8 +121,11 @@ const postAppInstanceResource = async ({
   userId,
   type,
   visibility = DEFAULT_VISIBILITY,
+  useFlag = true,
 } = {}) => async (dispatch, getState) => {
-  dispatch(flagPostingAppInstanceResource(true));
+  if (useFlag) {
+    dispatch(flagPostingAppInstanceResource(true));
+  }
   try {
     const {
       appInstanceId,
@@ -183,15 +191,20 @@ const postAppInstanceResource = async ({
       payload: err,
     });
   } finally {
-    dispatch(flagPostingAppInstanceResource(false));
+    if (useFlag) {
+      dispatch(flagPostingAppInstanceResource(false));
+    }
   }
 };
 
-const patchAppInstanceResource = async ({ id, data } = {}) => async (
-  dispatch,
-  getState
-) => {
-  dispatch(flagPatchingAppInstanceResource(true));
+const patchAppInstanceResource = async ({
+  id,
+  data,
+  useFlag = true,
+} = {}) => async (dispatch, getState) => {
+  if (useFlag) {
+    dispatch(flagPatchingAppInstanceResource(true));
+  }
   try {
     const {
       appInstanceId,
@@ -251,12 +264,19 @@ const patchAppInstanceResource = async ({ id, data } = {}) => async (
       payload: err,
     });
   } finally {
-    dispatch(flagPatchingAppInstanceResource(false));
+    if (useFlag) {
+      dispatch(flagPatchingAppInstanceResource(false));
+    }
   }
 };
 
-const deleteAppInstanceResource = async id => async (dispatch, getState) => {
-  dispatch(flagDeletingAppInstanceResource(true));
+const deleteAppInstanceResource = async ({ id, useFlag = true }) => async (
+  dispatch,
+  getState
+) => {
+  if (useFlag) {
+    dispatch(flagDeletingAppInstanceResource(true));
+  }
   try {
     const { apiHost, offline, standalone } = getApiContext(getState);
 
@@ -293,7 +313,9 @@ const deleteAppInstanceResource = async id => async (dispatch, getState) => {
       payload: err,
     });
   } finally {
-    dispatch(flagDeletingAppInstanceResource(false));
+    if (useFlag) {
+      dispatch(flagDeletingAppInstanceResource(false));
+    }
   }
 };
 

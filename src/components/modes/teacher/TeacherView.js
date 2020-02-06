@@ -10,7 +10,6 @@ import './TeacherView.css';
 import {
   patchAppInstanceResource,
   postAppInstanceResource,
-  deleteAppInstanceResource,
   getUsers,
   openSettings,
 } from '../../../actions';
@@ -134,7 +133,6 @@ const mapDispatchToProps = {
   dispatchGetUsers: getUsers,
   dispatchPostAppInstanceResource: postAppInstanceResource,
   dispatchPatchAppInstanceResource: patchAppInstanceResource,
-  dispatchDeleteAppInstanceResource: deleteAppInstanceResource,
   dispatchOpenSettings: openSettings,
 };
 

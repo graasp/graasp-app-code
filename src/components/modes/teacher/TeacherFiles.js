@@ -104,7 +104,7 @@ export class TeacherView extends Component {
       dispatchDeleteFile,
     } = this.props;
     try {
-      await dispatchDeleteAppInstanceResource(id);
+      await dispatchDeleteAppInstanceResource({ id });
       await dispatchDeleteFile(uri);
     } catch (e) {
       // do something

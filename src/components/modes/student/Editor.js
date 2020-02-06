@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core';
 import { INPUT } from '../../../config/appInstanceResourceTypes';
-import { setCode, runCode, countChange } from '../../../actions';
+import { setCode, runCode, countChange, saveCode } from '../../../actions';
 import {
   DEFAULT_PROGRAMMING_LANGUAGE,
   PYTHON,
@@ -24,9 +24,9 @@ class Editor extends Component {
     dispatchSetCode: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
     dispatchCountChange: PropTypes.func.isRequired,
+    dispatchSaveCode: PropTypes.func.isRequired,
     fullscreen: PropTypes.bool.isRequired,
     code: PropTypes.string,
-    currentInput: PropTypes.string.isRequired,
     programmingLanguage: PropTypes.string,
     appInstanceId: PropTypes.string,
   };
@@ -59,13 +59,15 @@ class Editor extends Component {
 
   handleCommandEnter = editor => {
     const code = editor.getValue();
-    const { currentInput, dispatchRunCode } = this.props;
-    const job = {
-      data: code,
-      input: currentInput,
-    };
-
+    const { dispatchRunCode } = this.props;
+    const job = { data: code };
     dispatchRunCode(job);
+  };
+
+  handleCommandSave = editor => {
+    const code = editor.getValue();
+    const { dispatchSaveCode } = this.props;
+    dispatchSaveCode({ currentCode: code });
   };
 
   render() {
@@ -98,6 +100,11 @@ class Editor extends Component {
             bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' },
             exec: this.handleCommandEnter,
           },
+          {
+            name: 'save',
+            bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+            exec: this.handleCommandSave,
+          },
         ]}
         value={code || ''}
         setOptions={{
@@ -112,12 +119,7 @@ class Editor extends Component {
   }
 }
 
-const mapStateToProps = ({
-  context,
-  appInstanceResources,
-  appInstance,
-  code,
-}) => {
+const mapStateToProps = ({ context, appInstanceResources, appInstance }) => {
   const { userId, appInstanceId } = context;
   const {
     content: {
@@ -140,7 +142,6 @@ const mapStateToProps = ({
     appInstanceId,
     programmingLanguage,
     code: codeData,
-    currentInput: code.input,
   };
 };
 
@@ -148,6 +149,7 @@ const mapDispatchToProps = {
   dispatchSetCode: setCode,
   dispatchRunCode: runCode,
   dispatchCountChange: countChange,
+  dispatchSaveCode: saveCode,
 };
 
 const StyledComponent = withStyles(styles)(Editor);

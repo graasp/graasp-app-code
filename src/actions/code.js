@@ -217,6 +217,12 @@ const runCode = job => (dispatch, getState) => {
   }
 
   const { data, input } = job;
+
+  // do not run if code is empty
+  if (_.isEmpty(data)) {
+    return false;
+  }
+
   const config = {
     code: data,
     headerCode,
@@ -307,6 +313,14 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
   });
   const inputResourceId =
     inputResource && (inputResource.id || inputResource._id);
+
+  const savedCode = inputResource && inputResource.data;
+
+  // do not save if current code is the same as saved code
+  if (currentCode === savedCode) {
+    return false;
+  }
+
   if (inputResourceId) {
     // Note: (06/Sep/2019)
     // in local api server, consecutive callings of patchAppInstanceResource
@@ -315,6 +329,7 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
       patchAppInstanceResource({
         data: currentCode,
         id: inputResourceId,
+        useFlag: false,
       })
     );
   } else {
@@ -322,6 +337,7 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
       postAppInstanceResource({
         data: currentCode,
         type: INPUT,
+        useFlag: false,
         userId,
       })
     );
@@ -346,6 +362,8 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
 
   // reset counter
   dispatch(resetNumUnsavedChanges());
+
+  return true;
 };
 
 export {

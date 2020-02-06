@@ -68,9 +68,9 @@ class Response extends Component {
       dispatchDeleteAppInstanceResource,
       feedbackResource,
     } = this.props;
-    dispatchDeleteAppInstanceResource(_id);
+    dispatchDeleteAppInstanceResource({ id: _id });
     if (!_.isEmpty(feedbackResource)) {
-      dispatchDeleteAppInstanceResource(feedbackResource._id);
+      dispatchDeleteAppInstanceResource({ id: feedbackResource._id });
     }
     this.handleToggleConfirmDialog(false)();
   };
@@ -96,7 +96,7 @@ class Response extends Component {
     // this means that the teacher left the diff untouched
     if (feedback === '') {
       if (!_.isEmpty(feedbackResource)) {
-        dispatchDeleteAppInstanceResource(feedbackResource._id);
+        dispatchDeleteAppInstanceResource({ id: feedbackResource._id });
       }
       return this.handleToggleFeedbackDialog(false)();
     }

@@ -93,9 +93,7 @@ class FormDialog extends Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color="secondary">
-              {cancelText}
-            </Button>
+            <Button onClick={handleClose}>{cancelText}</Button>
             <Button onClick={() => handleSubmit(input)} color="primary">
               {submitText}
             </Button>
