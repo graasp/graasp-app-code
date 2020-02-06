@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/graasp/graasp-app-code/compare/v0.2.0...v0.3.0) (2020-02-06)
+
+### Bug Fixes
+
+- default header and footer code to empty string ([f2e1775](https://github.com/graasp/graasp-app-code/commit/f2e1775)), closes [#33](https://github.com/graasp/graasp-app-code/issues/33)
+
+### Build System
+
+- update to @graasp/pyodide v0.1.0 ([a917784](https://github.com/graasp/graasp-app-code/commit/a917784))
+
+### Features
+
+- allow saving with keyboard shortcut ([d5b449f](https://github.com/graasp/graasp-app-code/commit/d5b449f)), closes [#36](https://github.com/graasp/graasp-app-code/issues/36)
+- support dynamic user input ([14ea5f3](https://github.com/graasp/graasp-app-code/commit/14ea5f3))
+- track actions when learning analytics are enabled ([65f3b8e](https://github.com/graasp/graasp-app-code/commit/65f3b8e)), closes [#35](https://github.com/graasp/graasp-app-code/issues/35)
+
 ## [0.2.0](https://github.com/graasp/graasp-app-code/compare/v0.1.0...v0.2.0) (2019-12-19)
 
 ### Bug Fixes
