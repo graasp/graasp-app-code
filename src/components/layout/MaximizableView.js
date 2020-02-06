@@ -1,6 +1,7 @@
 // adapted from http://bit.ly/2S8Aifs
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactGa from 'react-ga';
 import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import {
@@ -52,6 +53,11 @@ function MaximizableView({ children }) {
         verb: isFullscreen ? MINIMIZED : MAXIMIZED,
       })
     );
+
+    ReactGa.event({
+      category: 'code',
+      action: isFullscreen ? MINIMIZED : MAXIMIZED,
+    });
   };
 
   return (

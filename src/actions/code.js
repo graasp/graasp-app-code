@@ -280,7 +280,7 @@ const runCode = job => (dispatch, getState) => {
 
     ReactGa.event({
       category: 'code',
-      action: 'run',
+      action: EXECUTED,
       value: numUnexecutedChanges,
     });
 
@@ -356,7 +356,7 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
 
   ReactGa.event({
     category: 'code',
-    action: 'save',
+    action: SAVED,
     value: numUnsavedChanges,
   });
 
