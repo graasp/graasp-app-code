@@ -29,30 +29,30 @@ import { FILE } from '../../../config/appInstanceResourceTypes';
 export class TeacherView extends Component {
   static styles = theme => ({
     root: {
-      marginTop: theme.spacing.unit * 3,
+      marginTop: theme.spacing(3),
       overflowX: 'auto',
     },
     main: {
       textAlign: 'center',
-      padding: theme.spacing.unit,
+      padding: theme.spacing(),
     },
     button: {
-      marginTop: theme.spacing.unit * 3,
+      marginTop: theme.spacing(3),
     },
     table: {
       minWidth: 700,
     },
     message: {
-      padding: theme.spacing.unit,
+      padding: theme.spacing(),
       backgroundColor: theme.status.danger.background[500],
       color: theme.status.danger.color,
-      marginBottom: theme.spacing.unit * 2,
+      marginBottom: theme.spacing(2),
     },
     fab: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(),
       position: 'fixed',
-      bottom: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 2,
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
     },
     teacherView: {
       marginBottom: '100px',

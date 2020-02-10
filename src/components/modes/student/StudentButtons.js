@@ -20,20 +20,20 @@ import { runCode, saveCode } from '../../../actions';
 class StudentButtons extends Component {
   static styles = theme => ({
     fab: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(),
       position: 'fixed',
       zIndex: 1000,
-      top: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 1,
+      top: theme.spacing(2),
+      right: theme.spacing(),
     },
     fab1: {
-      top: theme.spacing.unit * 3 + 40,
+      top: theme.spacing(3) + 40,
     },
     fab2: {
-      top: theme.spacing.unit * 4 + 2 * 40,
+      top: theme.spacing(4) + 2 * 40,
     },
     fab3: {
-      top: theme.spacing.unit * 5 + 3 * 40,
+      top: theme.spacing(5) + 3 * 40,
     },
   });
 

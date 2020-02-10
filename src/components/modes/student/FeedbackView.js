@@ -24,17 +24,17 @@ const styles = theme => ({
     overflowX: 'hidden',
   },
   message: {
-    padding: theme.spacing.unit,
+    padding: theme.spacing(),
     backgroundColor: theme.status.danger.background[500],
     color: theme.status.danger.color,
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing(2),
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
   },
   button: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(),
   },
 });
 

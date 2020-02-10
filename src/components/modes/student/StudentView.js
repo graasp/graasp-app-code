@@ -5,18 +5,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
-import { ReactTerminal, ReactThemes } from 'react-terminal-component';
 import { setCode, printOutput, setInput, sendInput } from '../../../actions';
 import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
-import {
-  DEFAULT_FONT_SIZE,
-  FULL_SCREEN_FONT_SIZE,
-} from '../../../config/settings';
 import Figures from './Figures';
-
-const Terminal = require('javascript-terminal');
+import Terminal from '../../common/Terminal';
 
 const styles = theme => ({
   main: {
@@ -25,17 +19,17 @@ const styles = theme => ({
     width: '100%',
   },
   message: {
-    padding: theme.spacing.unit,
+    padding: theme.spacing(),
     backgroundColor: theme.status.danger.background[500],
     color: theme.status.danger.color,
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing(2),
   },
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
   },
   button: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(),
   },
   figures: {
     height: '50vh',
@@ -59,18 +53,13 @@ class StudentView extends Component {
     ready: PropTypes.bool,
     activity: PropTypes.bool,
     standalone: PropTypes.bool.isRequired,
-    output: PropTypes.string,
     fullscreen: PropTypes.bool.isRequired,
     figuresDisplayed: PropTypes.bool.isRequired,
-    // fs is an object of unpredictable shape
-    // eslint-disable-next-line react/forbid-prop-types
-    fs: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
     activity: false,
     ready: false,
-    output: '',
   };
 
   render() {
@@ -78,24 +67,14 @@ class StudentView extends Component {
       classes,
       ready,
       activity,
-      output,
       fullscreen,
       standalone,
       figuresDisplayed,
-      fs,
     } = this.props;
 
     if (!standalone && (!ready || activity)) {
       return <Loader />;
     }
-
-    // prepare output for printing in the terminal
-    const textOutput = Terminal.OutputFactory.makeTextOutput(output);
-    const customOutputs = Terminal.Outputs.create([textOutput]);
-    const emulatorState = Terminal.EmulatorState.create({
-      outputs: customOutputs,
-      fs: Terminal.FileSystem.create(fs),
-    });
 
     return (
       <div className={classes.main}>
@@ -105,20 +84,7 @@ class StudentView extends Component {
           </Grid>
           <Grid item container xs={6}>
             <Grid item xs={12}>
-              <ReactTerminal
-                autoFocus={false}
-                clickToFocus
-                theme={{
-                  ...ReactThemes.hacker,
-                  spacing: '0',
-                  height: figuresDisplayed ? '50vh' : '100vh',
-                  width: '50vw',
-                  fontSize: `${
-                    fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE
-                  }px`,
-                }}
-                emulatorState={emulatorState}
-              />
+              <Terminal fullscreen={fullscreen} />
             </Grid>
             <Collapse in={figuresDisplayed}>
               <Grid item xs={12}>
@@ -153,10 +119,8 @@ const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
     activity: Boolean(appInstanceResources.activity.length),
     ready: appInstanceResources.ready,
     feedback: feedbackResource && feedbackResource.data,
-    output: code.output,
     inputDisplayed: layout.settings.inputDisplayed,
     figuresDisplayed: Boolean(code.figures.length),
-    fs: code.fs,
   };
 };
 

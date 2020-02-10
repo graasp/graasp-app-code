@@ -45,10 +45,10 @@ function getModalStyle() {
 const styles = theme => ({
   paper: {
     position: 'absolute',
-    width: theme.spacing.unit * 50,
+    width: theme.spacing(50),
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
-    padding: theme.spacing.unit * 4,
+    padding: theme.spacing(4),
     outline: 'none',
   },
   fullScreen: {
@@ -61,11 +61,11 @@ const styles = theme => ({
     outline: 'none',
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(),
   },
   right: {
     position: 'absolute',
-    right: theme.spacing.unit,
+    right: theme.spacing(),
   },
   formControl: {
     minWidth: 180,
@@ -75,10 +75,10 @@ const styles = theme => ({
     marginTop: '8px',
   },
   fab: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(),
     position: 'fixed',
-    bottom: theme.spacing.unit * 2,
-    right: theme.spacing.unit * 2,
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
   },
 });
 

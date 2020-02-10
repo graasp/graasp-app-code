@@ -8,7 +8,7 @@ const styles = theme => ({
   root: {
     textAlign: 'center',
     flex: 1,
-    margin: theme.spacing.unit * 4,
+    margin: theme.spacing(4),
   },
 });
 

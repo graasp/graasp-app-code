@@ -42,22 +42,22 @@ class Header extends Component {
     },
     logo: {
       height: '48px',
-      marginRight: theme.spacing.unit * 2,
+      marginRight: theme.spacing(2),
     },
     fab: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(),
       position: 'fixed',
-      top: theme.spacing.unit * 1,
-      right: theme.spacing.unit * 1,
+      top: theme.spacing(),
+      right: theme.spacing(),
     },
     fab1: {
-      top: theme.spacing.unit * 2 + 40,
+      top: theme.spacing(2) + 40,
     },
     fab2: {
-      top: theme.spacing.unit * 3 + 2 * 40,
+      top: theme.spacing(3) + 2 * 40,
     },
     fab3: {
-      top: theme.spacing.unit * 4 + 3 * 40,
+      top: theme.spacing(4) + 3 * 40,
     },
   });
 

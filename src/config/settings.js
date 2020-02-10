@@ -3,8 +3,18 @@ import { LOCAL_API_HOST } from './api';
 export const DEFAULT_LANG = 'en';
 export const DEFAULT_MODE = 'student';
 export const DEFAULT_VIEW = 'normal';
-export const DEFAULT_API_HOST =
-  window.parent.location.hostname === 'localhost' ? LOCAL_API_HOST : null;
+
+let defaultApiHost;
+try {
+  defaultApiHost =
+    window.parent.location.hostname === 'localhost' ? LOCAL_API_HOST : null;
+} catch {
+  // for testing
+  defaultApiHost = LOCAL_API_HOST;
+}
+
+const DEFAULT_API_HOST = defaultApiHost;
+
 // matches page view
 export const DEFAULT_FONT_SIZE = 18;
 export const FULL_SCREEN_FONT_SIZE = 24;
@@ -32,3 +42,5 @@ export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export const DEFAULT_VISIBILITY = 'private';
 export const PUBLIC_VISIBILITY = 'public';
+
+export { DEFAULT_API_HOST };

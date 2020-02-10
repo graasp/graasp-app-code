@@ -21,19 +21,19 @@ export class TeacherView extends Component {
   static styles = theme => ({
     root: {
       width: '100%',
-      marginTop: theme.spacing.unit * 3,
+      marginTop: theme.spacing(3),
     },
     main: {
       textAlign: 'center',
-      margin: theme.spacing.unit,
-      padding: theme.spacing.unit,
+      margin: theme.spacing(),
+      padding: theme.spacing(),
       overflowX: 'hidden',
     },
     fab: {
-      margin: theme.spacing.unit,
+      margin: theme.spacing(),
       position: 'fixed',
-      bottom: theme.spacing.unit * 2,
-      right: theme.spacing.unit * 2,
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
     },
   });
 
