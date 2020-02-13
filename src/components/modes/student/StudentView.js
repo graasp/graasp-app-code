@@ -5,12 +5,19 @@ import { withStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
 import { connect } from 'react-redux';
 import { Grid } from '@material-ui/core';
-import { setCode, printOutput, setInput, sendInput } from '../../../actions';
+import {
+  setCode,
+  printOutput,
+  setInput,
+  sendInput,
+  closeInputPrompt,
+} from '../../../actions';
 import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import Loader from '../../common/Loader';
 import Editor from './Editor';
 import Figures from './Figures';
 import Terminal from '../../common/Terminal';
+import FormDialog from '../../common/FormDialog';
 
 const styles = theme => ({
   main: {
@@ -54,7 +61,14 @@ class StudentView extends Component {
     activity: PropTypes.bool,
     standalone: PropTypes.bool.isRequired,
     fullscreen: PropTypes.bool.isRequired,
+    inputPromptOpen: PropTypes.bool.isRequired,
+    inputPromptText: PropTypes.string.isRequired,
     figuresDisplayed: PropTypes.bool.isRequired,
+    dispatchCloseInputPrompt: PropTypes.func.isRequired,
+    worker: PropTypes.shape({
+      submitInput: PropTypes.func,
+      cancelInput: PropTypes.func,
+    }).isRequired,
   };
 
   static defaultProps = {
@@ -70,6 +84,10 @@ class StudentView extends Component {
       fullscreen,
       standalone,
       figuresDisplayed,
+      inputPromptOpen,
+      inputPromptText,
+      worker,
+      dispatchCloseInputPrompt,
     } = this.props;
 
     if (!standalone && (!ready || activity)) {
@@ -95,6 +113,19 @@ class StudentView extends Component {
             </Collapse>
           </Grid>
         </Grid>
+        <FormDialog
+          handleCancel={() => {
+            worker.cancelInput();
+            dispatchCloseInputPrompt();
+          }}
+          label="Input"
+          text={inputPromptText}
+          open={inputPromptOpen}
+          handleSubmit={res => {
+            worker.submitInput(res);
+            dispatchCloseInputPrompt();
+          }}
+        />
       </div>
     );
   }
@@ -121,6 +152,9 @@ const mapStateToProps = ({ context, appInstanceResources, layout, code }) => {
     feedback: feedbackResource && feedbackResource.data,
     inputDisplayed: layout.settings.inputDisplayed,
     figuresDisplayed: Boolean(code.figures.length),
+    inputPromptOpen: layout.inputPrompt.open,
+    inputPromptText: layout.inputPrompt.text,
+    worker: code.worker,
   };
 };
 
@@ -129,6 +163,7 @@ const mapDispatchToProps = {
   dispatchSetInput: setInput,
   dispatchSendInput: sendInput,
   dispatchPrintOutput: printOutput,
+  dispatchCloseInputPrompt: closeInputPrompt,
 };
 
 const StyledComponent = withStyles(styles)(StudentView);

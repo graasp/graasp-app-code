@@ -5,7 +5,23 @@ import {
   CLOSE_INPUT_SETTINGS,
   OPEN_FILE_SETTINGS,
   CLOSE_FILE_SETTINGS,
+  OPEN_INPUT_PROMPT,
+  CLOSE_INPUT_PROMPT,
 } from '../types';
+
+const openInputPrompt = ({ text }) => dispatch => {
+  return dispatch({
+    type: OPEN_INPUT_PROMPT,
+    payload: {
+      text,
+    },
+  });
+};
+
+const closeInputPrompt = () => dispatch =>
+  dispatch({
+    type: CLOSE_INPUT_PROMPT,
+  });
 
 const openSettings = () => dispatch =>
   dispatch({
@@ -44,4 +60,6 @@ export {
   closeInputSettings,
   openFileSettings,
   closeFileSettings,
+  openInputPrompt,
+  closeInputPrompt,
 };

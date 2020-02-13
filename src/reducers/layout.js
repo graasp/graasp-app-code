@@ -5,6 +5,8 @@ import {
   CLOSE_INPUT_SETTINGS,
   OPEN_FILE_SETTINGS,
   CLOSE_FILE_SETTINGS,
+  OPEN_INPUT_PROMPT,
+  CLOSE_INPUT_PROMPT,
 } from '../types';
 
 const INITIAL_STATE = {
@@ -15,10 +17,30 @@ const INITIAL_STATE = {
   fileSettings: {
     open: false,
   },
+  inputPrompt: {
+    open: false,
+    text: '',
+  },
 };
 
-export default (state = INITIAL_STATE, { type }) => {
+export default (state = INITIAL_STATE, { type, payload }) => {
   switch (type) {
+    case OPEN_INPUT_PROMPT:
+      return {
+        ...state,
+        inputPrompt: {
+          open: true,
+          ...payload,
+        },
+      };
+    case CLOSE_INPUT_PROMPT:
+      return {
+        ...state,
+        inputPrompt: {
+          text: '',
+          open: false,
+        },
+      };
     case OPEN_SETTINGS:
       return {
         ...state,

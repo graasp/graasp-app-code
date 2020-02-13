@@ -36,6 +36,7 @@ import {
   patchAppInstanceResource,
   postAppInstanceResource,
 } from './appInstanceResources';
+import { openInputPrompt } from './layout';
 
 const flagRunningCode = flag(FLAG_RUNNING_CODE);
 const flagRegisteringWorker = flag(FLAG_REGISTERING_WORKER);
@@ -156,14 +157,9 @@ const registerWorker = programmingLanguage => dispatch => {
         };
 
         // handle dynamic user input
-        worker.onInput = label => {
-          // todo: use material-ui dialog
-          const res = prompt(label);
-          if (_.isNull(res)) {
-            worker.cancelInput();
-          } else {
-            worker.submitInput(res);
-          }
+        worker.onInput = text => {
+          const payload = { text };
+          dispatch(openInputPrompt(payload));
         };
 
         // when finished registering the callback removes the activity flag
