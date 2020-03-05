@@ -25,11 +25,13 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <base href="%REACT_APP_BASE%" />
+    <!-- @TODO switch base depending on offline -->
+    <!-- <base href="%REACT_APP_BASE%" /> -->
     <title>Code</title>
     <script>
       // required to use the api
-      document.domain = '%REACT_APP_GRAASP_DOMAIN%';
+      // @TODO switch domain depending on offline
+      // document.domain = '%REACT_APP_GRAASP_DOMAIN%';
 
       // sets a minimum height when embedded
       if (window.frameElement) {
