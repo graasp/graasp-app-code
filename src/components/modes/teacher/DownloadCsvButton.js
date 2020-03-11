@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CSVLink } from 'react-csv';
+import { CSVLink as CsvLink } from 'react-csv';
 import { connect } from 'react-redux';
 import DownloadIcon from '@material-ui/icons/CloudDownload';
 import { withTranslation } from 'react-i18next';
 
-const DownloadCSVButton = ({ appInstanceResources, users, t }) => {
+const DownloadCsvButton = ({ appInstanceResources, users, t }) => {
   if (!appInstanceResources.length || !users.length) {
     return null;
   }
@@ -17,13 +17,13 @@ const DownloadCSVButton = ({ appInstanceResources, users, t }) => {
   });
 
   return (
-    <CSVLink data={csvData}>
+    <CsvLink data={csvData} filename="data.csv">
       <DownloadIcon color="secondary" />
-    </CSVLink>
+    </CsvLink>
   );
 };
 
-DownloadCSVButton.propTypes = {
+DownloadCsvButton.propTypes = {
   t: PropTypes.func.isRequired,
   appInstanceResources: PropTypes.arrayOf(
     PropTypes.shape({
@@ -39,7 +39,7 @@ DownloadCSVButton.propTypes = {
   ),
 };
 
-DownloadCSVButton.defaultProps = {
+DownloadCsvButton.defaultProps = {
   users: [],
   appInstanceResources: [],
 };
@@ -52,6 +52,6 @@ const mapStateToProps = ({ appInstanceResources, users }) => ({
 const ConnectedComponent = connect(
   mapStateToProps,
   null
-)(DownloadCSVButton);
+)(DownloadCsvButton);
 
 export default withTranslation()(ConnectedComponent);
