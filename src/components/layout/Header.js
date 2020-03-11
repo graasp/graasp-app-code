@@ -13,6 +13,7 @@ import {
 } from '@material-ui/icons';
 import { withTranslation } from 'react-i18next';
 import { addQueryParamsToUrl } from '../../utils/url';
+import DownloadCSVButton from '../modes/teacher/DownloadCSVButton';
 import { ReactComponent as Logo } from '../../resources/logo.svg';
 import {
   DEFAULT_MODE,
@@ -198,6 +199,7 @@ class Header extends Component {
       <IconButton onClick={this.handleRefresh} key="refresh">
         <RefreshIcon color="secondary" />
       </IconButton>,
+      <DownloadCSVButton />,
     ];
 
     if (view === DEFAULT_VIEW) {
