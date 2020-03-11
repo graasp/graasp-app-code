@@ -10976,10 +10976,9 @@ react-syntax-highlighter@11.0.2:
     prismjs "^1.8.4"
     refractor "^2.4.1"
 
-react-terminal-component@1.4.1:
+"react-terminal-component@git://github.com/graasp/react-terminal-component.git":
   version "1.4.1"
-  resolved "https://registry.yarnpkg.com/react-terminal-component/-/react-terminal-component-1.4.1.tgz#0d15383389db67667a94195c8855afe66a151f8d"
-  integrity sha512-cPgW+A9UfYo4c4ff6KsE09Pb84ftPuEhZvmh/DDVgY6qMovYr5nNSh1ZPr/RDCZxak9Fsw2QCBct6ytuEJCZjA==
+  resolved "git://github.com/graasp/react-terminal-component.git#e090bad3cd3eb2b7dddfb2cceb828ea892a39cb7"
   dependencies:
     javascript-terminal "^1.0.3"
     prop-types "^15.7.2"

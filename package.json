@@ -36,7 +36,7 @@
     "react-scripts": "3.3.0",
     "react-select": "2.4.3",
     "react-syntax-highlighter": "11.0.2",
-    "react-terminal-component": "1.4.1",
+    "react-terminal-component": "git://github.com/graasp/react-terminal-component.git",
     "react-toastify": "5.1.0",
     "react-wordcloud": "1.0.8",
     "redux": "4.0.4",
