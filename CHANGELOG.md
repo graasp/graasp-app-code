@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/graasp/graasp-app-code/compare/v0.3.1...v0.4.0) (2020-03-11)
+
+### Bug Fixes
+
+- fix issue with scroll ([8037a28](https://github.com/graasp/graasp-app-code/commit/8037a28))
+
+### Build System
+
+- update material ui ([4042ffe](https://github.com/graasp/graasp-app-code/commit/4042ffe))
+
+### Features
+
+- add export as csv button ([52f96b2](https://github.com/graasp/graasp-app-code/commit/52f96b2)), closes [#39](https://github.com/graasp/graasp-app-code/issues/39)
+- display input using material ui ([1af413a](https://github.com/graasp/graasp-app-code/commit/1af413a)), closes [#37](https://github.com/graasp/graasp-app-code/issues/37)
+
 ### [0.3.1](https://github.com/graasp/graasp-app-code/compare/v0.3.0...v0.3.1) (2020-02-06)
 
 ### Bug Fixes
