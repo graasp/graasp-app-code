@@ -21,6 +21,7 @@
     "enzyme-adapter-react-16": "1.13.0",
     "i18next": "15.1.1",
     "javascript-terminal": "1.0.3",
+    "json2csv": "4.5.4",
     "lodash": "4.17.13",
     "monaco-editor": "0.17.1",
     "prop-types": "15.7.2",
