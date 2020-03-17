@@ -9,7 +9,7 @@ import {
   Save as SaveIcon,
   PlayArrow as PlayArrowIcon,
   VerticalSplit as VerticalSplitIcon,
-  ViewHeadline as ViewHeadlineIcon,
+  Edit as EditIcon,
 } from '@material-ui/icons';
 import { withRouter } from 'react-router';
 import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
@@ -187,7 +187,7 @@ class StudentButtons extends Component {
           className={[classes.fab]}
         >
           <Tooltip title={t('Show Editor')}>
-            <ViewHeadlineIcon />
+            <EditIcon />
           </Tooltip>
         </Fab>,
       ];
