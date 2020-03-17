@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/graasp/graasp-app-code/compare/v0.4.1...v0.5.0) (2020-03-17)
+
+### Bug Fixes
+
+- change editor icon ([9550159](https://github.com/graasp/graasp-app-code/commit/9550159))
+- show header for feedback view ([f2e6dd1](https://github.com/graasp/graasp-app-code/commit/f2e6dd1))
+
+### Features
+
+- show feedback to user ([1f88a0d](https://github.com/graasp/graasp-app-code/commit/1f88a0d))
+- track clicks on different views ([41d5415](https://github.com/graasp/graasp-app-code/commit/41d5415))
+
 ### [0.4.1](https://github.com/graasp/graasp-app-code/compare/v0.4.0...v0.4.1) (2020-03-12)
 
 ## [0.4.0](https://github.com/graasp/graasp-app-code/compare/v0.3.1...v0.4.0) (2020-03-11)
