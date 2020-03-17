@@ -4,10 +4,7 @@ import { diff as AceDiffEditor } from 'react-ace';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { FEEDBACK, INPUT } from '../../config/appInstanceResourceTypes';
-import {
-  DEFAULT_PROGRAMMING_LANGUAGE,
-  PYTHON,
-} from '../../config/programmingLanguages';
+import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
 import {
   DEFAULT_FONT_SIZE,
   FULL_SCREEN_FONT_SIZE,
@@ -16,7 +13,6 @@ import {
 // eslint-disable-next-line react/prefer-stateless-function
 class DiffEditor extends Component {
   static propTypes = {
-    t: PropTypes.func.isRequired,
     code: PropTypes.string,
     feedback: PropTypes.string,
     programmingLanguage: PropTypes.string,
@@ -33,7 +29,6 @@ class DiffEditor extends Component {
 
   render() {
     const {
-      t,
       code,
       programmingLanguage,
       appInstanceId,
@@ -41,27 +36,19 @@ class DiffEditor extends Component {
       fullscreen,
     } = this.props;
 
-    const commentPrefix = programmingLanguage === PYTHON ? '#' : '//';
-
-    // todo: create proper headers
-    const codeWithHeader = `${commentPrefix} ${t('your code')}\n\n${code}`;
-    const feedbackWithHeader = `${commentPrefix} ${t(
-      'feedback'
-    )}\n\n${feedback}`;
-
     return (
       <AceDiffEditor
         mode={programmingLanguage}
         theme="xcode"
         name={appInstanceId || Math.random()}
-        height="100vh"
+        height="90vh"
         width="100vw"
         readOnly
         fontSize={fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE}
         showPrintMargin
         showGutter
         highlightActiveLine
-        value={[codeWithHeader, feedbackWithHeader]}
+        value={[code, feedback]}
         setOptions={{
           showLineNumbers: true,
           tabSize: 2,

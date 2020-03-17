@@ -102,7 +102,7 @@ class StudentButtons extends Component {
     ReactGa.event({
       category: 'code',
       action: VIEWED,
-      value: view,
+      label: view,
     });
   };
 
@@ -122,7 +122,7 @@ class StudentButtons extends Component {
     const saveDisabled = currentCode === savedCode || isFeedbackView;
     const runDisabled = _.isEmpty(currentCode) || isFeedbackView;
 
-    const buttons = [
+    let buttons = [
       <Fab
         onClick={this.handleSave}
         disabled={saveDisabled}
@@ -178,19 +178,19 @@ class StudentButtons extends Component {
     }
 
     if (isFeedbackView) {
-      buttons.unshift(
+      buttons = [
         <Fab
           onClick={() => this.handleNavigate(DEFAULT_VIEW)}
           color="primary"
           size="small"
           key="editor"
-          className={[classes.fab, classes.fab2]}
+          className={[classes.fab]}
         >
           <Tooltip title={t('Show Editor')}>
             <ViewHeadlineIcon />
           </Tooltip>
-        </Fab>
-      );
+        </Fab>,
+      ];
     }
     return buttons;
   }

@@ -32,6 +32,7 @@ export class App extends Component {
   };
 
   state = {
+    // this relates to the parent being in full screen
     fullscreen: false,
   };
 
@@ -43,6 +44,7 @@ export class App extends Component {
     // then get the app instance
     dispatchGetAppInstance();
 
+    // this relates to the parent being in full screen
     if (window.frameElement) {
       this.setState({
         fullscreen: Boolean(window.parent.document.fullscreenElement),
@@ -51,6 +53,7 @@ export class App extends Component {
 
     // set the language on first load
     this.handleChangeLang(lang);
+    // this relates to the parent being in full screen
     if (window.frameElement) {
       window.parent.document.addEventListener(
         'fullscreenchange',
@@ -69,6 +72,7 @@ export class App extends Component {
   }
 
   componentWillUnmount() {
+    // this relates to the parent being in full screen
     if (window.frameElement) {
       window.parent.document.removeEventListener(
         'fullscreenchange',
@@ -77,6 +81,7 @@ export class App extends Component {
     }
   }
 
+  // this relates to the parent being in full screen
   handleFullscreen = () => {
     if (window.frameElement) {
       const fullscreen = Boolean(window.parent.document.fullscreenElement);
