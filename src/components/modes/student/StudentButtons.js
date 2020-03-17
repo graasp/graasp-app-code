@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import ReactGa from 'react-ga';
 import PropTypes from 'prop-types';
 import { Fab, CircularProgress, Tooltip, withStyles } from '@material-ui/core';
 import {
@@ -10,10 +11,13 @@ import {
   VerticalSplit as VerticalSplitIcon,
   ViewHeadline as ViewHeadlineIcon,
 } from '@material-ui/icons';
+import { withRouter } from 'react-router';
 import { DEFAULT_VIEW, FEEDBACK_VIEW } from '../../../config/views';
 import { addQueryParamsToUrl } from '../../../utils/url';
 import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
-import { runCode, saveCode } from '../../../actions';
+import { getContext, runCode, saveCode } from '../../../actions';
+import { postAction } from '../../../actions/action';
+import { VIEWED } from '../../../config/verbs';
 
 class StudentButtons extends Component {
   static styles = theme => ({
@@ -46,11 +50,16 @@ class StudentButtons extends Component {
     t: PropTypes.func.isRequired,
     dispatchRunCode: PropTypes.func.isRequired,
     dispatchSaveCode: PropTypes.func.isRequired,
+    dispatchPostAction: PropTypes.func.isRequired,
+    dispatchGetContext: PropTypes.func.isRequired,
     currentCode: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     codeActivity: PropTypes.bool.isRequired,
     feedback: PropTypes.string,
     view: PropTypes.string,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
   };
 
   static defaultProps = {
@@ -78,6 +87,23 @@ class StudentButtons extends Component {
     const job = { data: currentCode };
 
     dispatchRunCode(job);
+  };
+
+  handleNavigate = view => {
+    const { dispatchGetContext, dispatchPostAction, history } = this.props;
+    history.push(`index.html${addQueryParamsToUrl({ view })}`);
+    dispatchGetContext();
+    dispatchPostAction({
+      verb: VIEWED,
+      data: {
+        view,
+      },
+    });
+    ReactGa.event({
+      category: 'code',
+      action: VIEWED,
+      value: view,
+    });
   };
 
   render() {
@@ -133,7 +159,7 @@ class StudentButtons extends Component {
     if (view === DEFAULT_VIEW && !feedbackDisabled) {
       buttons.unshift(
         <Fab
-          href={`index.html${addQueryParamsToUrl({ view: FEEDBACK_VIEW })}`}
+          onClick={() => this.handleNavigate(FEEDBACK_VIEW)}
           disabled={feedbackDisabled}
           color="primary"
           size="small"
@@ -154,7 +180,7 @@ class StudentButtons extends Component {
     if (isFeedbackView) {
       buttons.unshift(
         <Fab
-          href={`index.html${addQueryParamsToUrl({ view: DEFAULT_VIEW })}`}
+          onClick={() => this.handleNavigate(DEFAULT_VIEW)}
           color="primary"
           size="small"
           key="editor"
@@ -196,6 +222,8 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
 const mapDispatchToProps = {
   dispatchRunCode: runCode,
   dispatchSaveCode: saveCode,
+  dispatchGetContext: getContext,
+  dispatchPostAction: postAction,
 };
 
 const StyledComponent = withStyles(StudentButtons.styles)(StudentButtons);
@@ -205,4 +233,6 @@ const ConnectedComponent = connect(
   mapDispatchToProps
 )(StyledComponent);
 
-export default withTranslation()(ConnectedComponent);
+const TranslatedComponent = withTranslation()(ConnectedComponent);
+
+export default withRouter(TranslatedComponent);

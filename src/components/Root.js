@@ -2,6 +2,7 @@ import React from 'react';
 import ReactGa from 'react-ga';
 import PropTypes from 'prop-types';
 import { I18nextProvider } from 'react-i18next';
+import { BrowserRouter, Route } from 'react-router-dom';
 import {
   MuiThemeProvider,
   createMuiTheme,
@@ -66,7 +67,11 @@ const Root = ({ classes }) => (
   <div className={classes.root}>
     <MuiThemeProvider theme={theme}>
       <I18nextProvider i18n={i18nConfig}>
-        <App />
+        <BrowserRouter>
+          <Route path="/">
+            <App />
+          </Route>
+        </BrowserRouter>
         <ToastContainer />
       </I18nextProvider>
     </MuiThemeProvider>
