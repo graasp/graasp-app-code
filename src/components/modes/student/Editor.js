@@ -114,6 +114,7 @@ class Editor extends Component {
           showLineNumbers: true,
           tabSize: 2,
         }}
+        editorProps={{ $blockScrolling: true }}
       />
     );
   }

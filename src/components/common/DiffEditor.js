@@ -41,7 +41,7 @@ class DiffEditor extends Component {
         mode={programmingLanguage}
         theme="xcode"
         name={appInstanceId || Math.random()}
-        height="90vh"
+        height="100vh"
         width="100vw"
         readOnly
         fontSize={fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE}
@@ -53,6 +53,7 @@ class DiffEditor extends Component {
           showLineNumbers: true,
           tabSize: 2,
         }}
+        editorProps={{ $blockScrolling: true }}
       />
     );
   }
