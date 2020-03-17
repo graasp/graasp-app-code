@@ -2,39 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withStyles } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
-import ReactTerminal, { ReactThemes } from 'react-terminal-component';
 import Loader from '../../common/Loader';
 import DiffEditor from '../../common/DiffEditor';
-import {
-  DEFAULT_FONT_SIZE,
-  FULL_SCREEN_FONT_SIZE,
-} from '../../../config/settings';
 
-const Terminal = require('javascript-terminal');
-
-const styles = theme => ({
+const styles = () => ({
   main: {
-    flex: 1,
+    flexGrow: 1,
     height: '100%',
-  },
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    overflowX: 'hidden',
-  },
-  message: {
-    padding: theme.spacing(),
-    backgroundColor: theme.status.danger.background[500],
-    color: theme.status.danger.color,
-    marginBottom: theme.spacing(2),
-  },
-  textField: {
-    marginLeft: theme.spacing(),
-    marginRight: theme.spacing(),
-  },
-  button: {
-    marginRight: theme.spacing(),
+    width: '100%',
   },
 });
 
@@ -44,52 +21,31 @@ class FeedbackView extends Component {
     classes: PropTypes.shape({
       main: PropTypes.string,
       container: PropTypes.string,
-      message: PropTypes.string,
-      button: PropTypes.string,
-      textField: PropTypes.string,
     }).isRequired,
     fullscreen: PropTypes.bool.isRequired,
     ready: PropTypes.bool,
     activity: PropTypes.bool,
-    output: PropTypes.string,
   };
 
   static defaultProps = {
     activity: false,
     ready: false,
-    output: '',
   };
 
   render() {
-    const { classes, ready, activity, output, fullscreen } = this.props;
+    const { classes, ready, activity, fullscreen } = this.props;
 
     if (!ready || activity) {
       return <Loader />;
     }
 
-    // prepare output for printing in the terminal
-    const textOutput = Terminal.OutputFactory.makeTextOutput(output);
-    const customOutputs = Terminal.Outputs.create([textOutput]);
-    const emulatorState = Terminal.EmulatorState.create({
-      outputs: customOutputs,
-    });
-
     return (
       <div className={classes.main}>
-        <DiffEditor fullscreen={fullscreen} />
-        <ReactTerminal
-          autoFocus={false}
-          theme={{
-            ...ReactThemes.hacker,
-            width: '100%',
-            height: '50%',
-            spacing: '0',
-            fontSize: `${
-              fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE
-            }px`,
-          }}
-          emulatorState={emulatorState}
-        />
+        <Grid container spacing={0}>
+          <Grid item xs={12}>
+            <DiffEditor fullscreen={fullscreen} />
+          </Grid>
+        </Grid>
       </div>
     );
   }

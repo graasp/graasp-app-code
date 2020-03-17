@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { MonacoDiffEditor } from 'react-monaco-editor';
+import { diff as AceDiffEditor } from 'react-ace';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { FEEDBACK, INPUT } from '../../config/appInstanceResourceTypes';
-import { setCode } from '../../actions';
-import { DEFAULT_PROGRAMMING_LANGUAGE } from '../../config/programmingLanguages';
+import {
+  DEFAULT_PROGRAMMING_LANGUAGE,
+  PYTHON,
+} from '../../config/programmingLanguages';
 import {
   DEFAULT_FONT_SIZE,
   FULL_SCREEN_FONT_SIZE,
 } from '../../config/settings';
 
+// eslint-disable-next-line react/prefer-stateless-function
 class DiffEditor extends Component {
   static propTypes = {
-    dispatchSetCode: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
     code: PropTypes.string,
     feedback: PropTypes.string,
     programmingLanguage: PropTypes.string,
@@ -28,40 +31,41 @@ class DiffEditor extends Component {
     programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
   };
 
-  constructor(props) {
-    super(props);
-    const { dispatchSetCode, code } = props;
-    dispatchSetCode(code);
-  }
-
-  onChange = code => {
-    const { dispatchSetCode } = this.props;
-    dispatchSetCode(code);
-  };
-
   render() {
     const {
+      t,
       code,
       programmingLanguage,
       appInstanceId,
       feedback,
       fullscreen,
     } = this.props;
-    const options = {
-      renderSideBySide: true,
-      originalEditable: false,
-      fontSize: fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE,
-    };
+
+    const commentPrefix = programmingLanguage === PYTHON ? '#' : '//';
+
+    // todo: create proper headers
+    const codeWithHeader = `${commentPrefix} ${t('your code')}\n\n${code}`;
+    const feedbackWithHeader = `${commentPrefix} ${t(
+      'feedback'
+    )}\n\n${feedback}`;
+
     return (
-      <MonacoDiffEditor
+      <AceDiffEditor
+        mode={programmingLanguage}
+        theme="xcode"
         name={appInstanceId || Math.random()}
-        onChange={this.onChange}
-        original={feedback}
-        options={options}
-        value={code}
-        height="50%"
-        width="100%"
-        language={programmingLanguage}
+        height="100vh"
+        width="100vw"
+        readOnly
+        fontSize={fullscreen ? FULL_SCREEN_FONT_SIZE : DEFAULT_FONT_SIZE}
+        showPrintMargin
+        showGutter
+        highlightActiveLine
+        value={[codeWithHeader, feedbackWithHeader]}
+        setOptions={{
+          showLineNumbers: true,
+          tabSize: 2,
+        }}
       />
     );
   }
@@ -99,13 +103,6 @@ const mapStateToProps = ({ appInstance, context, appInstanceResources }) => {
   };
 };
 
-const mapDispatchToProps = {
-  dispatchSetCode: setCode,
-};
-
-const ConnectedComponent = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DiffEditor);
+const ConnectedComponent = connect(mapStateToProps)(DiffEditor);
 
 export default withTranslation()(ConnectedComponent);
