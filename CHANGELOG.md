@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/graasp/graasp-app-code/compare/v0.5.1...v0.5.2) (2020-03-20)
+
+### Bug Fixes
+
+- do not set app id for code app ([d8ae219](https://github.com/graasp/graasp-app-code/commit/d8ae219))
+
 ### [0.5.1](https://github.com/graasp/graasp-app-code/compare/v0.5.0...v0.5.1) (2020-03-17)
 
 ### Bug Fixes
