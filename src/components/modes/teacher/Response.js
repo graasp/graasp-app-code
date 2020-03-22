@@ -92,8 +92,9 @@ class Response extends Component {
       );
     }
 
-    // if the feedback is exactly the same as the data abort
-    // this means that the teacher left the diff untouched
+    // if the feedback the feedback submitted is an empty string and
+    // feedback existed previously, then delete the resource instead
+    // of saving an empty string
     if (feedback === '') {
       if (!_.isEmpty(feedbackResource)) {
         dispatchDeleteAppInstanceResource({ id: feedbackResource._id });
