@@ -33,7 +33,7 @@
     "Pyodide did not initialize correctly. Please refresh the page.": "Pyodide did not initialize correctly. Please refresh the page.",
     "When enabled, student uploads will be visible to other students. Teacher uploads are always visible to all students.": "When enabled, student uploads will be visible to other students. Teacher uploads are always visible to all students.",
     "Currently we do not support giving feedback to anonymous users.": "Currently we do not support giving feedback to anonymous users.",
-    "By clicking \"Delete\", you will be deleting the student's response. This action cannot be undone.": "By clicking \"Delete\", you will be deleting the student's response. This action cannot be undone.",
+    "By clicking 'Delete', you will be deleting the student's response. This action cannot be undone.": "By clicking 'Delete', you will be deleting the student's response. This action cannot be undone.",
     "write header code here (e.g. import libraries, init console)": "write header code here (e.g. import libraries, init console)",
     "write code to show to the student by default": "write code to show to the student by default",
     "write footer code here (e.g. display execution time)": "write footer code here (e.g. display execution time)"

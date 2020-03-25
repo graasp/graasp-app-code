@@ -188,7 +188,7 @@ class Response extends Component {
             open={confirmDialogOpen}
             title={t('Delete Student Response')}
             text={t(
-              'By clicking "Delete", you will be deleting the student\'s response. This action cannot be undone.'
+              "By clicking 'Delete', you will be deleting the student's response. This action cannot be undone."
             )}
             handleClose={this.handleToggleConfirmDialog(false)}
             handleConfirm={this.handleConfirmDelete}
