@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/graasp/graasp-app-code/compare/v0.5.3...v0.5.4) (2020-03-25)
+
+### Bug Fixes
+
+- fix issue with upload ([fe4100a](https://github.com/graasp/graasp-app-code/commit/fe4100a)), closes [#43](https://github.com/graasp/graasp-app-code/issues/43)
+- update english translations ([87a9507](https://github.com/graasp/graasp-app-code/commit/87a9507))
+- update translations ([366b83d](https://github.com/graasp/graasp-app-code/commit/366b83d))
+
+### Build System
+
+- invalidate cloudfront distribution path when deploying ([5f762ec](https://github.com/graasp/graasp-app-code/commit/5f762ec))
+
 ### [0.5.3](https://github.com/graasp/graasp-app-code/compare/v0.5.2...v0.5.3) (2020-03-22)
 
 ### Bug Fixes
