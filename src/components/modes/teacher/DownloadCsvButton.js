@@ -10,6 +10,7 @@ import { Parser } from 'json2csv';
 import { INPUT, FEEDBACK } from '../../../config/appInstanceResourceTypes';
 
 const DownloadCsvButton = ({ appInstanceResources, users, t }) => {
+  // if there are no users or no app instance resources do not show button
   if (!appInstanceResources.length || !users.length) {
     return null;
   }
@@ -17,21 +18,39 @@ const DownloadCsvButton = ({ appInstanceResources, users, t }) => {
   const formattedData = Object.entries(
     _.groupBy(appInstanceResources, 'user')
   ).map(([user, elements]) => {
-    const userData = users.find(({ id }) => id === user);
-    const name = userData ? userData.name : t('Anonymous');
-    const { data: input } = elements.find(({ type }) => type === INPUT);
-    const entry = { name, input };
+    try {
+      const userData = users.find(({ id }) => id === user);
+      const name = userData ? userData.name : t('Anonymous');
 
-    // export feedback if any
-    const feedback = elements.find(({ type }) => type === FEEDBACK);
-    if (feedback) {
-      entry.feedback = feedback.data;
+      // fall back to empty object in case there is no match
+      const { data: input } = elements.find(({ type }) => type === INPUT) || {};
+
+      // if there is no input, we ignore this entry
+      if (!input) {
+        return undefined;
+      }
+
+      const entry = { name, input };
+
+      // export feedback if any
+      const feedback = elements.find(({ type }) => type === FEEDBACK);
+      if (feedback) {
+        entry.feedback = feedback.data;
+      }
+      return entry;
+    } catch {
+      return undefined;
     }
-    return entry;
   });
 
-  const json2csvParser = new Parser();
-  const csvData = json2csvParser.parse(formattedData);
+  // do not show download button if there is an issue parsing the data
+  let csvData;
+  try {
+    const json2csvParser = new Parser();
+    csvData = json2csvParser.parse(formattedData);
+  } catch {
+    return null;
+  }
 
   return (
     <CsvLink data={csvData} filename="data.csv">
