@@ -9,13 +9,14 @@ import {
 } from '../types';
 import { showErrorToast } from '../utils/toasts';
 import { DEFAULT_PROGRAMMING_LANGUAGE } from '../config/programmingLanguages';
-import { DEFAULT_ORIENTATION } from '../config/settings';
+import { DEFAULT_ORIENTATION, DEFAULT_VISIBILITY } from '../config/settings';
 
 const DEFAULT_SETTINGS = {
   programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
   orientation: DEFAULT_ORIENTATION,
   headerCode: '',
   footerCode: '',
+  visibility: DEFAULT_VISIBILITY,
 };
 
 const INITIAL_STATE = {

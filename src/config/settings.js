@@ -40,7 +40,8 @@ export const MAX_NUM_FILES = 10;
 // ten megabytes times 1024 kilobytes/megabyte * 1024 bytes/kilobyte
 export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-export const DEFAULT_VISIBILITY = 'private';
 export const PUBLIC_VISIBILITY = 'public';
+export const PRIVATE_VISIBILITY = 'private';
+export const DEFAULT_VISIBILITY = PRIVATE_VISIBILITY;
 
 export { DEFAULT_API_HOST };

@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactGa from 'react-ga';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import {
   Fullscreen as FullscreenIcon,
@@ -12,6 +12,7 @@ import Fab from '@material-ui/core/Fab';
 import useFullscreenStatus from '../../hooks/useFullscreenStatus';
 import { postAction } from '../../actions/action';
 import { MAXIMIZED, MINIMIZED } from '../../config/verbs';
+import { DEFAULT_VISIBILITY } from '../../config/settings';
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -26,7 +27,9 @@ function MaximizableView({ children }) {
   const maximizableElement = React.useRef(null);
   let isFullscreen;
   let setIsFullscreen;
-
+  const visibility = useSelector(
+    state => state.appInstance.content.settings.visibility || DEFAULT_VISIBILITY
+  );
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -51,6 +54,7 @@ function MaximizableView({ children }) {
     dispatch(
       postAction({
         verb: isFullscreen ? MINIMIZED : MAXIMIZED,
+        visibility,
       })
     );
 
