@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.5](https://github.com/graasp/graasp-app-code/compare/v0.5.4...v0.5.5) (2020-07-31)
+
+### Features
+
+- adding option for action visibility ([519556a](https://github.com/graasp/graasp-app-code/commit/519556a359fa3bbe4a7053cf5271f36fa7eec393))
+
+### Build System
+
+- update dependencies ([fd56302](https://github.com/graasp/graasp-app-code/commit/fd56302cdce2e978c714ec4c98d2d06eb58b17b3))
+
 ### [0.5.4](https://github.com/graasp/graasp-app-code/compare/v0.5.3...v0.5.4) (2020-03-25)
 
 ### Bug Fixes
