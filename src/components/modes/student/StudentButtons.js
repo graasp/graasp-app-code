@@ -18,6 +18,7 @@ import { FEEDBACK, INPUT } from '../../../config/appInstanceResourceTypes';
 import { getContext, runCode, saveCode } from '../../../actions';
 import { postAction } from '../../../actions/action';
 import { VIEWED } from '../../../config/verbs';
+import { DEFAULT_VISIBILITY } from '../../../config/settings';
 
 class StudentButtons extends Component {
   static styles = theme => ({
@@ -52,6 +53,7 @@ class StudentButtons extends Component {
     dispatchSaveCode: PropTypes.func.isRequired,
     dispatchPostAction: PropTypes.func.isRequired,
     dispatchGetContext: PropTypes.func.isRequired,
+    visibility: PropTypes.string.isRequired,
     currentCode: PropTypes.string.isRequired,
     savedCode: PropTypes.string,
     codeActivity: PropTypes.bool.isRequired,
@@ -90,7 +92,12 @@ class StudentButtons extends Component {
   };
 
   handleNavigate = view => {
-    const { dispatchGetContext, dispatchPostAction, history } = this.props;
+    const {
+      dispatchGetContext,
+      dispatchPostAction,
+      history,
+      visibility,
+    } = this.props;
     history.push(`index.html${addQueryParamsToUrl({ view })}`);
     dispatchGetContext();
     dispatchPostAction({
@@ -98,6 +105,7 @@ class StudentButtons extends Component {
       data: {
         view,
       },
+      visibility,
     });
     ReactGa.event({
       category: 'code',
@@ -196,11 +204,17 @@ class StudentButtons extends Component {
   }
 }
 
-const mapStateToProps = ({ context, appInstanceResources, code }) => {
+const mapStateToProps = ({
+  context,
+  appInstanceResources,
+  code,
+  appInstance,
+}) => {
   const { userId, offline, appInstanceId } = context;
   const inputResource = appInstanceResources.content.find(({ user, type }) => {
     return user === userId && type === INPUT;
   });
+  const { visibility = DEFAULT_VISIBILITY } = appInstance.content.settings;
   const feedbackResource = appInstanceResources.content.find(
     ({ user, type }) => {
       return user === userId && type === FEEDBACK;
@@ -210,6 +224,7 @@ const mapStateToProps = ({ context, appInstanceResources, code }) => {
   return {
     offline,
     appInstanceId,
+    visibility,
     feedback: feedbackResource && feedbackResource.data,
     mode: context.mode,
     view: context.view,

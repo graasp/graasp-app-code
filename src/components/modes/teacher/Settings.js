@@ -30,7 +30,13 @@ import {
   PYTHON,
   DEFAULT_PROGRAMMING_LANGUAGE,
 } from '../../../config/programmingLanguages';
-import { DEFAULT_FONT_SIZE, HELPER_TEXT_COLOR } from '../../../config/settings';
+import {
+  DEFAULT_FONT_SIZE,
+  DEFAULT_VISIBILITY,
+  HELPER_TEXT_COLOR,
+  PRIVATE_VISIBILITY,
+  PUBLIC_VISIBILITY,
+} from '../../../config/settings';
 
 function getModalStyle() {
   const top = 50;
@@ -67,6 +73,12 @@ const styles = theme => ({
     position: 'absolute',
     right: theme.spacing(),
   },
+  formControlSpace: {
+    left: theme.spacing(2),
+  },
+  noMaxWidth: {
+    maxWidth: 'none',
+  },
   formControl: {
     minWidth: 180,
   },
@@ -88,6 +100,8 @@ class Settings extends Component {
       helperText: PropTypes.string,
       formControl: PropTypes.string,
       right: PropTypes.string,
+      noMaxWidth: PropTypes.string,
+      formControlSpace: PropTypes.string,
       appBar: PropTypes.string,
       fullScreen: PropTypes.string,
       fab: PropTypes.string,
@@ -96,6 +110,7 @@ class Settings extends Component {
     activity: PropTypes.bool.isRequired,
     settings: PropTypes.shape({
       programmingLanguage: PropTypes.string,
+      visibility: PropTypes.string.isRequired,
       headerCode: PropTypes.string,
       defaultCode: PropTypes.string,
       footerCode: PropTypes.string,
@@ -116,16 +131,18 @@ class Settings extends Component {
 
   state = {
     selectedProgrammingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
+    selectedVisibility: DEFAULT_VISIBILITY,
   };
 
   componentDidMount() {
     const {
-      settings: { programmingLanguage },
+      settings: { programmingLanguage, visibility },
     } = this.props;
 
     // set programming language handled by state from redux
     this.setState({
       selectedProgrammingLanguage: programmingLanguage,
+      selectedVisibility: visibility,
     });
   }
 
@@ -142,9 +159,18 @@ class Settings extends Component {
 
   handleChangeProgrammingLanguage = ({ target }) => {
     const { value } = target;
-    this.setState({
+    this.setState(prevState => ({
+      ...prevState,
       selectedProgrammingLanguage: value,
-    });
+    }));
+  };
+
+  handleChangeVisibility = ({ target }) => {
+    const { value } = target;
+    this.setState(prevState => ({
+      ...prevState,
+      selectedVisibility: value,
+    }));
   };
 
   onHeaderCodeLoad = () => {
@@ -200,6 +226,14 @@ class Settings extends Component {
     this.saveSettings(settingsToChange);
   };
 
+  saveVisibility = () => {
+    const { selectedVisibility } = this.state;
+    const settingsToChange = {
+      visibility: selectedVisibility,
+    };
+    this.saveSettings(settingsToChange);
+  };
+
   saveCode = () => {
     const {
       currentHeaderCode,
@@ -216,14 +250,18 @@ class Settings extends Component {
   };
 
   handleSave = () => {
-    const { selectedProgrammingLanguage: spl } = this.state;
+    const { selectedProgrammingLanguage: spl, selectedVisibility } = this.state;
     const {
-      settings: { programmingLanguage: pl },
+      settings: { programmingLanguage: pl, visibility },
     } = this.props;
     const programmingLanguageChanged = pl !== spl;
+    const visibilityChanged = visibility !== selectedVisibility;
     this.saveCode();
     if (programmingLanguageChanged) {
       this.saveProgrammingLanguage();
+    }
+    if (visibilityChanged) {
+      this.saveVisibility();
     }
   };
 
@@ -243,7 +281,7 @@ class Settings extends Component {
   };
 
   isSaveDisabled = () => {
-    const { selectedProgrammingLanguage: spl } = this.state;
+    const { selectedProgrammingLanguage: spl, selectedVisibility } = this.state;
     const {
       currentHeaderCode,
       currentFooterCode,
@@ -255,6 +293,7 @@ class Settings extends Component {
         headerCode,
         footerCode,
         defaultCode,
+        visibility,
       },
     } = this.props;
 
@@ -262,8 +301,11 @@ class Settings extends Component {
     const headerCodeChanged = headerCode !== currentHeaderCode;
     const footerCodeChanged = footerCode !== currentFooterCode;
     const defaultCodeChanged = !(defaultCode === currentDefaultCode);
+    const visibilityChanged = visibility !== selectedVisibility;
+
     return (
       !programmingLanguageChanged &&
+      !visibilityChanged &&
       !headerCodeChanged &&
       !footerCodeChanged &&
       !defaultCodeChanged
@@ -271,7 +313,7 @@ class Settings extends Component {
   };
 
   renderModalContent() {
-    const { selectedProgrammingLanguage } = this.state;
+    const { selectedProgrammingLanguage, selectedVisibility } = this.state;
     const { t, activity, classes } = this.props;
 
     if (activity) {
@@ -293,6 +335,21 @@ class Settings extends Component {
       </Select>
     );
 
+    const selectControlVisibility = (
+      <Select
+        className={classes.formControl}
+        value={selectedVisibility}
+        onChange={this.handleChangeVisibility}
+        inputProps={{
+          name: 'visibility',
+          id: 'visibilitySelected',
+        }}
+      >
+        <MenuItem value={PRIVATE_VISIBILITY}>Private</MenuItem>
+        <MenuItem value={PUBLIC_VISIBILITY}>Public</MenuItem>
+      </Select>
+    );
+
     return (
       <>
         <FormControl>
@@ -300,6 +357,20 @@ class Settings extends Component {
             {t('Programming Language')}
           </InputLabel>
           {selectControl}
+        </FormControl>
+        <FormControl className={classes.formControlSpace}>
+          <Tooltip
+            title={t(
+              "Select the 'public' option to make actions compatible with learning analytics applications."
+            )}
+            placement="top-start"
+            classes={{ tooltip: classes.noMaxWidth }}
+          >
+            <InputLabel htmlFor="visibilitySelect">
+              {t('Actions Visibility')}
+            </InputLabel>
+          </Tooltip>
+          {selectControlVisibility}
         </FormControl>
         {this.renderHeaderCodeEditor()}
         {this.renderDefaultCodeEditor()}
@@ -486,6 +557,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
     headerCode = '',
     defaultCode = '',
     footerCode = '',
+    visibility = DEFAULT_VISIBILITY,
   } = appInstance.content.settings;
   return {
     open: layout.settings.open,
@@ -495,6 +567,7 @@ const mapStateToProps = ({ code, layout, appInstance }) => {
       headerCode,
       defaultCode,
       footerCode,
+      visibility,
     },
     currentHeaderCode: code.header,
     currentFooterCode: code.footer,

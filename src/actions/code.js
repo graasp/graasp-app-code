@@ -37,6 +37,7 @@ import {
   postAppInstanceResource,
 } from './appInstanceResources';
 import { openInputPrompt } from './layout';
+import { DEFAULT_VISIBILITY } from '../config/settings';
 
 const flagRunningCode = flag(FLAG_RUNNING_CODE);
 const flagRegisteringWorker = flag(FLAG_REGISTERING_WORKER);
@@ -199,6 +200,7 @@ const runCode = job => (dispatch, getState) => {
         settings: {
           // fallback to defaults
           programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+          visibility = DEFAULT_VISIBILITY,
           headerCode = '',
           footerCode = '',
         },
@@ -271,6 +273,7 @@ const runCode = job => (dispatch, getState) => {
           headerCode: headerCode || undefined,
           footerCode: footerCode || undefined,
         },
+        visibility,
       })
     );
 
@@ -295,6 +298,7 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
         settings: {
           // fallback to defaults
           programmingLanguage = DEFAULT_PROGRAMMING_LANGUAGE,
+          visibility = DEFAULT_VISIBILITY,
         },
       },
     },
@@ -347,6 +351,7 @@ const saveCode = ({ currentCode }) => (dispatch, getState) => {
         programmingLanguage,
         code: currentCode,
       },
+      visibility,
     })
   );
 
