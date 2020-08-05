@@ -1,8 +1,24 @@
-export default encodeURIComponent(`
-  importScripts(
-    'https://graasp-pyodide.s3.amazonaws.com/v0.1.0/Pyodide.js',
-    'https://graasp-pyodide.s3.amazonaws.com/lib/v0.14.1/pyodide.js'
-  );
+const pythonWorkerCode = (offline) => {
+  let scripts = null;
+  let offlineBaseUrl = '';
+  if (offline) {
+    // define local dir for dependencies files
+    const { href } = document.location;
+    const dir = `${href.substring(0, href.lastIndexOf('/'))}/vendors/pyodide/`;
+    scripts = `'${dir}pyodide-v0.14.1.js','${dir}pyodide-v0.1.0.js'`;
+
+    // define languagePluginUrl for fetching more local dependency files
+    offlineBaseUrl = `self.languagePluginUrl = '${dir}'`;
+  } else {
+    // use remote dependency files
+    scripts = `'https://graasp-pyodide.s3.amazonaws.com/v0.1.0/Pyodide.js',
+        'https://graasp-pyodide.s3.amazonaws.com/lib/v0.14.1/pyodide.js'`;
+  }
+
+  return encodeURIComponent(`
+    ${offlineBaseUrl}
+
+    importScripts(${scripts});
 
   var loaded = false;
   
@@ -118,3 +134,6 @@ export default encodeURIComponent(`
     }
   };
 `);
+};
+
+export default pythonWorkerCode;

@@ -42,58 +42,58 @@ import { DEFAULT_VISIBILITY } from '../config/settings';
 const flagRunningCode = flag(FLAG_RUNNING_CODE);
 const flagRegisteringWorker = flag(FLAG_REGISTERING_WORKER);
 
-const resetNumUnexecutedChanges = () => dispatch =>
+const resetNumUnexecutedChanges = () => (dispatch) =>
   dispatch({
     type: RESET_NUM_UNEXECUTED_CHANGES,
   });
 
-const resetNumUnsavedChanges = () => dispatch =>
+const resetNumUnsavedChanges = () => (dispatch) =>
   dispatch({
     type: RESET_NUM_UNSAVED_CHANGES,
   });
 
-const countChange = () => dispatch =>
+const countChange = () => (dispatch) =>
   dispatch({
     type: COUNT_CHANGE,
   });
 
-const setCode = data => dispatch =>
+const setCode = (data) => (dispatch) =>
   dispatch({
     type: SET_CODE,
     payload: data,
   });
 
-const setHeaderCode = data => dispatch =>
+const setHeaderCode = (data) => (dispatch) =>
   dispatch({
     type: SET_HEADER_CODE,
     payload: data,
   });
 
-const setDefaultCode = data => dispatch =>
+const setDefaultCode = (data) => (dispatch) =>
   dispatch({
     type: SET_DEFAULT_CODE,
     payload: data,
   });
 
-const setFooterCode = data => dispatch =>
+const setFooterCode = (data) => (dispatch) =>
   dispatch({
     type: SET_FOOTER_CODE,
     payload: data,
   });
 
-const printOutput = data => dispatch =>
+const printOutput = (data) => (dispatch) =>
   dispatch({
     type: PRINT_OUTPUT,
     payload: data,
   });
 
-const setInput = data => dispatch =>
+const setInput = (data) => (dispatch) =>
   dispatch({
     type: SET_INPUT,
     payload: data,
   });
 
-const appendInput = data => (dispatch, getState) => {
+const appendInput = (data) => (dispatch, getState) => {
   const {
     code: { worker },
   } = getState();
@@ -110,7 +110,7 @@ const appendInput = data => (dispatch, getState) => {
   }
 };
 
-const sendInput = data => (dispatch, getState) => {
+const sendInput = (data) => (dispatch, getState) => {
   const {
     code: { worker },
   } = getState();
@@ -127,22 +127,24 @@ const sendInput = data => (dispatch, getState) => {
   }
 };
 
-const registerWorker = programmingLanguage => dispatch => {
+const registerWorker = (programmingLanguage) => (dispatch, getState) => {
   dispatch(flagRegisteringWorker(true));
+  const { context } = getState();
+  const offline = context.offline ? context.offline : false;
 
   try {
     let worker;
     switch (programmingLanguage) {
       case PYTHON:
         worker = new PyWorker(
-          `data://application/javascript,${pythonWorkerCode}`
+          `data://application/javascript,${pythonWorkerCode(offline)}`
         );
         worker.timeout = 60;
-        worker.addCommand('alert', msg => {
+        worker.addCommand('alert', (msg) => {
           alert(msg);
         });
 
-        worker.onOutput = text => {
+        worker.onOutput = (text) => {
           dispatch({
             payload: text,
             type: PRINT_OUTPUT,
@@ -150,7 +152,7 @@ const registerWorker = programmingLanguage => dispatch => {
         };
 
         // handle figures
-        worker.onFigure = imageDataUrl => {
+        worker.onFigure = (imageDataUrl) => {
           dispatch({
             payload: imageDataUrl,
             type: APPEND_FIGURE,
@@ -158,7 +160,7 @@ const registerWorker = programmingLanguage => dispatch => {
         };
 
         // handle dynamic user input
-        worker.onInput = text => {
+        worker.onInput = (text) => {
           const payload = { text };
           dispatch(openInputPrompt(payload));
         };
@@ -193,7 +195,7 @@ const registerWorker = programmingLanguage => dispatch => {
   }
 };
 
-const runCode = job => (dispatch, getState) => {
+const runCode = (job) => (dispatch, getState) => {
   const {
     appInstance: {
       content: {

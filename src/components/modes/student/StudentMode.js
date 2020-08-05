@@ -31,6 +31,7 @@ class StudentMode extends Component {
         uri: PropTypes.string,
       })
     ).isRequired,
+    offline: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -67,6 +68,7 @@ class StudentMode extends Component {
       files: prevFiles,
       appInstanceId: prevAppInstanceId,
       programmingLanguage: prevProgrammingLanguage,
+      offline: prevOffline,
     } = prevProps;
     const {
       appInstanceId,
@@ -76,6 +78,7 @@ class StudentMode extends Component {
       dispatchGetFiles,
       userId,
       files,
+      offline,
     } = this.props;
 
     // handle receiving the app instance id
@@ -87,6 +90,11 @@ class StudentMode extends Component {
 
     // handle changing programming language
     if (programmingLanguage !== prevProgrammingLanguage) {
+      dispatchRegisterWorker(programmingLanguage);
+    }
+
+    // handle changing offline context
+    if (offline !== prevOffline) {
       dispatchRegisterWorker(programmingLanguage);
     }
 
@@ -127,6 +135,7 @@ const mapStateToProps = ({ context, appInstanceResources, appInstance }) => {
   const files = appInstanceResources.content
     .filter(({ type }) => type === FILE)
     .map(({ data }) => data);
+  const { offline } = context;
 
   return {
     userId,
@@ -134,6 +143,7 @@ const mapStateToProps = ({ context, appInstanceResources, appInstance }) => {
     programmingLanguage,
     files,
     activity: Boolean(appInstanceResources.activity.length),
+    offline,
   };
 };
 

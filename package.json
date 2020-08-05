@@ -58,6 +58,7 @@
     "build:bundle": "webpack --config webpack.config.js --mode=production",
     "build:local": "env-cmd -f ./.env.local yarn build",
     "build:dev": "env-cmd -f ./.env.dev yarn build",
+    "build:offline": "env-cmd -f ./.env.offline yarn build",
     "build:prod": "env-cmd -f ./.env.prod yarn build",
     "build:version": "REACT_APP_VERSION=$CI_BRANCH env-cmd --no-override -f ./.env.prod yarn build",
     "hooks:uninstall": "node node_modules/husky/husky.js uninstall",
