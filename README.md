@@ -47,22 +47,6 @@ REACT_APP_VERSION=
 REACT_APP_BASE=
 ```
 
-
-If you are going to build the application for an offline use (ie. offline-ready app in Graasp Desktop), you will need to create
-a `.env.offline` file in your root folder following the patter below. Replace the value between `<>`
-with those that you received from our developers. In particular, `REACT_APP_BASE` should be empty in order to use local files.
-Please make sure you do not commit or share the
-values between `<>` with anyone, as they are confidential.
-
-```dotenv
-REACT_APP_GRAASP_DEVELOPER_ID=
-REACT_APP_GRAASP_APP_ID=
-REACT_APP_GRAASP_DOMAIN=graasp.eu
-REACT_APP_HOST=
-REACT_APP_VERSION=
-REACT_APP_BASE=
-```
-
 If you are going to deploy the application to our development server, you will need to create
 a `.env.dev` file in your root folder following the patter below. Replace the value between `<>`
 with those that you received from our developers. Please make sure you do not commit or share the

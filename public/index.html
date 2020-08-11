@@ -25,9 +25,13 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <base href="%REACT_APP_BASE%" />
+    <base />
     <title>Code</title>
     <script>
+      if (window.location.origin !== 'file://') {
+        document.getElementsByTagName('base')[0].href = '%REACT_APP_BASE%';
+      }
+
       // required to use the api
       document.domain = '%REACT_APP_GRAASP_DOMAIN%';
 
