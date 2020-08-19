@@ -26,7 +26,7 @@ import {
   PYTHON,
 } from '../config/programmingLanguages';
 import { runPython } from '../runners/python';
-import pythonWorkerCode from '../workers/python';
+import getPythonWorkerCode from '../workers/python';
 import PyWorker from '../vendor/PyWorker';
 import { flag } from './common';
 import { postAction } from './action';
@@ -130,14 +130,14 @@ const sendInput = (data) => (dispatch, getState) => {
 const registerWorker = (programmingLanguage) => (dispatch, getState) => {
   dispatch(flagRegisteringWorker(true));
   const { context } = getState();
-  const offline = context.offline ? context.offline : false;
+  const { offline = false } = context;
 
   try {
     let worker;
     switch (programmingLanguage) {
       case PYTHON:
         worker = new PyWorker(
-          `data://application/javascript,${pythonWorkerCode(offline)}`
+          `data://application/javascript,${getPythonWorkerCode(offline)}`
         );
         worker.timeout = 60;
         worker.addCommand('alert', (msg) => {

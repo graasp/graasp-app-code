@@ -34,18 +34,16 @@ const getAppInstance = async () => async (dispatch, getState) => {
       return false;
     }
 
+    // if offline send message to parent requesting resources
     if (offline) {
-      // if offline send message to parent requesting resources
-      if (offline) {
-        return postMessage({
-          type: GET_APP_INSTANCE,
-          payload: {
-            id: appInstanceId,
-            spaceId,
-            subSpaceId,
-          },
-        });
-      }
+      return postMessage({
+        type: GET_APP_INSTANCE,
+        payload: {
+          id: appInstanceId,
+          spaceId,
+          subSpaceId,
+        },
+      });
     }
 
     const url = `//${apiHost + APP_INSTANCES_ENDPOINT}/${appInstanceId}`;
