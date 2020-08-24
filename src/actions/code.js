@@ -130,7 +130,7 @@ const sendInput = (data) => (dispatch, getState) => {
 const registerWorker = (programmingLanguage) => (dispatch, getState) => {
   dispatch(flagRegisteringWorker(true));
   const { context } = getState();
-  const { offline = false } = context;
+  const { offline = false } = context || {};
 
   try {
     let worker;
