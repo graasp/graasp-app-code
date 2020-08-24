@@ -1,8 +1,9 @@
-import { flag, getApiContext, isErrorResponse } from './common';
+import { flag, getApiContext, isErrorResponse, postMessage } from './common';
 import {
   FLAG_GETTING_USERS,
   GET_USERS_FAILED,
   GET_USERS_SUCCEEDED,
+  GET_USERS,
 } from '../types';
 import {
   DEFAULT_GET_REQUEST,
@@ -15,11 +16,17 @@ const flagGettingUsers = flag(FLAG_GETTING_USERS);
 const getUsers = async () => async (dispatch, getState) => {
   dispatch(flagGettingUsers(true));
   try {
-    const { spaceId, apiHost, standalone } = getApiContext(getState);
+    const { spaceId, apiHost, standalone, offline } = getApiContext(getState);
 
     // if standalone, you cannot connect to api
     if (standalone) {
       return false;
+    }
+
+    if (offline) {
+      return postMessage({
+        type: GET_USERS,
+      });
     }
 
     const url = `//${apiHost + SPACES_ENDPOINT}/${spaceId}/${USERS_ENDPOINT}`;
