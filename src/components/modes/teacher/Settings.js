@@ -48,7 +48,7 @@ function getModalStyle() {
   };
 }
 
-const styles = theme => ({
+const styles = (theme) => ({
   paper: {
     position: 'absolute',
     width: theme.spacing(50),
@@ -146,7 +146,7 @@ class Settings extends Component {
     });
   }
 
-  saveSettings = settingsToChange => {
+  saveSettings = (settingsToChange) => {
     const { settings, dispatchPatchAppInstance } = this.props;
     const newSettings = {
       ...settings,
@@ -159,7 +159,7 @@ class Settings extends Component {
 
   handleChangeProgrammingLanguage = ({ target }) => {
     const { value } = target;
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       selectedProgrammingLanguage: value,
     }));
@@ -167,7 +167,7 @@ class Settings extends Component {
 
   handleChangeVisibility = ({ target }) => {
     const { value } = target;
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       selectedVisibility: value,
     }));
@@ -183,7 +183,7 @@ class Settings extends Component {
     dispatchSetHeaderCode(code);
   };
 
-  onHeaderCodeChange = value => {
+  onHeaderCodeChange = (value) => {
     const { dispatchSetHeaderCode } = this.props;
     dispatchSetHeaderCode(value);
   };
@@ -198,7 +198,7 @@ class Settings extends Component {
     dispatchSetDefaultCode(code);
   };
 
-  onDefaultCodeChange = value => {
+  onDefaultCodeChange = (value) => {
     const { dispatchSetDefaultCode } = this.props;
     dispatchSetDefaultCode(value);
   };
@@ -213,7 +213,7 @@ class Settings extends Component {
     dispatchSetFooterCode(code);
   };
 
-  onFooterCodeChange = value => {
+  onFooterCodeChange = (value) => {
     const { dispatchSetFooterCode } = this.props;
     dispatchSetFooterCode(value);
   };
@@ -411,7 +411,7 @@ class Settings extends Component {
             enableLiveAutocompletion: true,
             enableSnippets: true,
             showLineNumbers: true,
-            tabSize: 2,
+            tabSize: 4,
           }}
         />
       </div>
@@ -450,7 +450,7 @@ class Settings extends Component {
             enableLiveAutocompletion: true,
             enableSnippets: true,
             showLineNumbers: true,
-            tabSize: 2,
+            tabSize: 4,
           }}
         />
       </div>
@@ -489,7 +489,7 @@ class Settings extends Component {
             enableLiveAutocompletion: true,
             enableSnippets: true,
             showLineNumbers: true,
-            tabSize: 2,
+            tabSize: 4,
           }}
         />
       </div>

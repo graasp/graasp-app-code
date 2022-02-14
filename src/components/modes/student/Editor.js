@@ -45,7 +45,7 @@ class Editor extends Component {
     }
   }
 
-  onChange = code => {
+  onChange = (code) => {
     const { dispatchSetCode, dispatchCountChange } = this.props;
     dispatchSetCode(code);
     // used to track how many unsaved and unexecuted changes there are
@@ -57,14 +57,14 @@ class Editor extends Component {
     dispatchSetCode(code);
   };
 
-  handleCommandEnter = editor => {
+  handleCommandEnter = (editor) => {
     const code = editor.getValue();
     const { dispatchRunCode } = this.props;
     const job = { data: code };
     dispatchRunCode(job);
   };
 
-  handleCommandSave = editor => {
+  handleCommandSave = (editor) => {
     const code = editor.getValue();
     const { dispatchSaveCode } = this.props;
     dispatchSaveCode({ currentCode: code });
@@ -112,7 +112,7 @@ class Editor extends Component {
           enableLiveAutocompletion: true,
           enableSnippets: true,
           showLineNumbers: true,
-          tabSize: 2,
+          tabSize: 4,
         }}
         editorProps={{ $blockScrolling: true }}
       />

@@ -51,7 +51,7 @@ class DiffEditor extends Component {
         value={[code, feedback]}
         setOptions={{
           showLineNumbers: true,
-          tabSize: 2,
+          tabSize: 4,
         }}
         editorProps={{ $blockScrolling: true }}
       />
