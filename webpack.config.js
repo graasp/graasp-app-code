@@ -8,6 +8,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 // from: https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/config/env.js
 // grab react app environment variables
 const REACT_APP = /^REACT_APP_/i;
+
 const REACT_ENV = Object.keys(process.env)
   .filter(key => REACT_APP.test(key))
   .reduce(

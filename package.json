@@ -7,7 +7,7 @@
     "Juan Carlos Farah"
   ],
   "homepage": ".",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "@material-ui/core": "4.9.2",
     "@material-ui/icons": "4.9.1",
