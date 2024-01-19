@@ -1,3 +1,12 @@
+> [!WARNING]
+> **Project Archived**
+> 
+> This app was developed for `graasp.eu` and has been archived when `graasp.eu` has been sunset (Jan 2024).
+> 
+> If you are looking for a replacement, take a look at [the code capsule app](https://github.com/graasp/graasp-app-code-capsule). It allows you to run python code in the browser and even supports other use cases like code reviews. And it runs on `graasp.org` the new version of Graasp !
+
+
+
 <p align="center">
   <a href="https://graasp.eu/">
     <img alt="Graasp" src="https://avatars3.githubusercontent.com/u/43075056" width="300">
